@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kalki 2898 AD - Auteur Cinema</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#201f1f",
+              "on-tertiary": "#2f2e43",
+              "outline-variant": "#4a4452",
+              "on-background": "#e5e2e1",
+              "primary-fixed-dim": "#d6baff",
+              "on-secondary-container": "#d6a9ff",
+              "secondary-container": "#6f00be",
+              "tertiary-fixed-dim": "#c6c4df",
+              "surface-tint": "#d6baff",
+              "surface-variant": "#353534",
+              "tertiary-fixed": "#e2e0fc",
+              "error-container": "#93000a",
+              "secondary-fixed": "#f0dbff",
+              "tertiary-container": "#56556c",
+              "on-secondary-fixed-variant": "#6900b3",
+              "surface-container-high": "#2a2a2a",
+              "tertiary": "#c6c4df",
+              "on-tertiary-fixed-variant": "#45455b",
+              "background": "#131313",
+              "primary": "#d6baff",
+              "surface-container-low": "#1c1b1b",
+              "on-tertiary-fixed": "#1a1a2e",
+              "surface-container-highest": "#353534",
+              "surface-bright": "#3a3939",
+              "on-primary-fixed-variant": "#5a26a3",
+              "on-error": "#690005",
+              "surface": "#131313",
+              "on-primary-container": "#dcc4ff",
+              "surface-dim": "#131313",
+              "surface-container-lowest": "#0e0e0e",
+              "secondary": "#ddb7ff",
+              "on-surface": "#e5e2e1",
+              "error": "#ffb4ab",
+              "on-tertiary-container": "#cdcbe6",
+              "on-surface-variant": "#ccc3d4",
+              "on-secondary-fixed": "#2c0051",
+              "on-primary-fixed": "#280057",
+              "primary-fixed": "#ecdcff",
+              "secondary-fixed-dim": "#ddb7ff",
+              "outline": "#968e9e",
+              "on-primary": "#420089",
+              "on-error-container": "#ffdad6",
+              "primary-container": "#6c3bb5",
+              "inverse-surface": "#e5e2e1",
+              "inverse-primary": "#7343bc",
+              "inverse-on-surface": "#313030",
+              "on-secondary": "#490080"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #0D0D0D; color: #e5e2e1; }
+        .font-space-grotesk { font-family: 'Space Grotesk', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .hero-gradient { background: linear-gradient(to top, #0D0D0D 0%, transparent 70%), linear-gradient(to right, #0D0D0D 0%, transparent 60%); }
+        .auteur-gradient { background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%); }
+    </style>
+</head>
+<body class="selection:bg-primary-container selection:text-white">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-transparent dark:bg-surface/70 backdrop-blur-xl flex justify-between items-center px-8 py-4 w-full">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold tracking-tighter text-white uppercase font-space-grotesk">Auteur Cinema</span>
+<div class="hidden md:flex items-center gap-2 text-white/70 hover:text-white cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="text-sm font-medium tracking-wide">Mumbai</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/50 text-xl" data-icon="search">search</span>
+<input class="bg-surface-container-lowest border-none rounded-full py-2 pl-10 pr-4 w-64 focus:ring-1 focus:ring-primary text-sm transition-all outline-none" placeholder="Search for Movies, Events..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-white/70 hover:text-white text-sm font-medium transition-colors">Sign In</button>
+<button class="auteur-gradient px-6 py-2 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(108,59,181,0.4)] hover:scale-105 duration-200 transition-all">Register</button>
+</div>
+</div>
+</header>
+<main class="pt-20">
+<!-- Breadcrumb -->
+<nav class="px-8 py-4">
+<ol class="flex items-center gap-2 text-xs font-medium text-white/40 tracking-wider">
+<li class="hover:text-primary transition-colors cursor-pointer">Home</li>
+<li class="material-symbols-outlined text-[10px]">chevron_right</li>
+<li class="hover:text-primary transition-colors cursor-pointer">Movies</li>
+<li class="material-symbols-outlined text-[10px]">chevron_right</li>
+<li class="text-white/70">Kalki 2898 AD</li>
+</ol>
+</nav>
+<!-- Hero Backdrop -->
+<section class="relative h-[520px] w-full overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="cinematic wide shot of a futuristic sci-fi desert landscape with massive mechanical structures and dramatic amber lighting at dusk" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC596Aux4Q8FHtxGND8wAXDAhG448taNx1_2UQKcGJQnSgwdpRdsBGAzBzr7mCVEM21XPfvmjDL4nyd9-MiAs2eWjfTcfBjXrYSpRmhE60bXSGYPLSc99Xh6DT5DxUrv_XgUZFZyceKIMj2tmiVKiqXen3s9VM7lKHzvLX8FdqqTeidfYJ7GeVWGc6sChzYADFcUghaP2-_4R8_Z38ZZru1byPrw-cwjSD4gqTTdvztz1kYKF9pOIt04ngpU-a2NgyuRMmQDkbyew')"></div>
+<div class="absolute inset-0 hero-gradient"></div>
+<div class="absolute bottom-0 left-0 w-full px-8 pb-12 flex flex-col md:flex-row gap-8 items-end">
+<!-- Movie Poster Card -->
+<div class="relative w-[220px] aspect-[2/3] rounded-xl overflow-hidden shadow-2xl shrink-0 transform -mb-24 hidden md:block">
+<img class="w-full h-full object-cover" data-alt="high contrast movie poster showing a lone silhouette walking towards a giant futuristic glowing portal in a dark cyberpunk city" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnhSYIhYajJn1lWhH9FpMMkdYPH2N6h1JmTgWOzZzmLqULuPDYmN-50AQ4CfgCVvkuvZcuDumD1u9XQM_g3NzZZWrCKxHAMOj91_RVwL0HJg_RN_k1ueyIG6WLcjMvUWtSf0eRSDiTo26qYtHS7Gusl0DTkF_7APWBx6ezhcUbzBM2CvyO-D2PpfDgnEvmZNNv48zy7ivcylQZnrZ17R6n90lAXX_xTTZoTnD7xrazqGBkT0semXIYLkX76UY6s6FpuGby3wxKeg"/>
+<div class="absolute top-4 -left-8 bg-primary-container text-white px-10 py-1 -rotate-45 text-[10px] font-bold tracking-[0.2em] shadow-lg">NOW SHOWING</div>
+</div>
+<!-- Title & Meta -->
+<div class="flex-1 space-y-4">
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-highest/60 backdrop-blur-md rounded text-[10px] font-bold tracking-widest text-white/90">UA</span>
+<span class="px-3 py-1 bg-surface-container-highest/60 backdrop-blur-md rounded text-[10px] font-bold tracking-widest text-white/90">2D</span>
+<span class="px-3 py-1 bg-surface-container-highest/60 backdrop-blur-md rounded text-[10px] font-bold tracking-widest text-white/90">3D</span>
+<span class="px-3 py-1 bg-surface-container-highest/60 backdrop-blur-md rounded text-[10px] font-bold tracking-widest text-white/90">IMAX</span>
+</div>
+<h1 class="text-5xl md:text-7xl font-extrabold font-space-grotesk tracking-tighter text-white">Kalki 2898 AD</h1>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xl font-bold text-white">4.2<span class="text-sm font-normal text-white/50">/5</span></span>
+<span class="text-xs text-white/40 ml-1">(12.4K Ratings)</span>
+</div>
+<div class="h-4 w-px bg-white/20"></div>
+<div class="text-sm text-white/60 tracking-wide font-medium">2h 55m • Action, Sci-Fi • Telugu, Hindi, Tamil • 27 Jun, 2024</div>
+</div>
+<div class="flex gap-4 pt-4">
+<button class="auteur-gradient px-10 py-4 rounded-full font-bold text-white shadow-[0_0_20px_rgba(108,59,181,0.5)] hover:scale-105 transition-all duration-300">Book Tickets</button>
+<button class="px-10 py-4 rounded-full font-bold text-primary border border-primary/30 backdrop-blur-sm hover:bg-primary/10 transition-all duration-300 flex items-center gap-2">
+<span class="material-symbols-outlined">play_circle</span>
+                            Watch Trailer
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Navigation Tabs (Sticky) -->
+<nav class="sticky top-[72px] z-40 bg-background/90 backdrop-blur-md border-b border-white/5 mt-32 md:mt-24">
+<div class="max-w-7xl mx-auto px-8">
+<div class="flex gap-8">
+<a class="py-5 text-sm font-bold tracking-widest text-primary border-b-2 border-primary uppercase" href="#">About</a>
+<a class="py-5 text-sm font-bold tracking-widest text-white/40 hover:text-white transition-colors uppercase" href="#">Book Tickets</a>
+<a class="py-5 text-sm font-bold tracking-widest text-white/40 hover:text-white transition-colors uppercase" href="#">Reviews</a>
+<a class="py-5 text-sm font-bold tracking-widest text-white/40 hover:text-white transition-colors uppercase" href="#">Cast &amp; Crew</a>
+<a class="py-5 text-sm font-bold tracking-widest text-white/40 hover:text-white transition-colors uppercase" href="#">Trailers</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Grid -->
+<div class="max-w-7xl mx-auto px-8 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Left Column (Main Content) -->
+<div class="lg:col-span-8 space-y-16">
+<!-- Synopsis -->
+<section>
+<h2 class="text-xs font-bold tracking-[0.3em] text-white/40 uppercase mb-6">Synopsis</h2>
+<p class="text-lg leading-relaxed text-white/80 font-light">
+                        When the world is overrun by darkness and the tyrannical ruler Kali dominates the surviving city of Kasi, a modern-day avatar of Vishnu descends to Earth. A bounty hunter named Bhairava and a group of rebels embark on a perilous journey to protect the woman carrying the child who will end the age of darkness. A grand cinematic saga blending ancient mythology with cutting-edge science fiction.
+                    </p>
+</section>
+<!-- Cast -->
+<section>
+<div class="flex justify-between items-center mb-8">
+<h2 class="text-xs font-bold tracking-[0.3em] text-white/40 uppercase">Cast</h2>
+<span class="text-[10px] text-primary cursor-pointer hover:underline uppercase tracking-widest">View All</span>
+</div>
+<div class="flex gap-10 overflow-x-auto hide-scrollbar pb-4">
+<div class="flex flex-col items-center gap-3 shrink-0 group">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="portrait of a middle-aged actor with sharp features and thoughtful expression, cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU-lDYgPk_kPX2UHsIQ8nNApFq4MqXmkLMwxmSrH-QLt3p_29gd3GS8bmKElBGemi2hZVOcGphxnbAORwEnuiVAg4aev6JN9yjUMSHRVHvTWSOgO_CzCFitknevpOfMW4Ex2fPQQly_zTGBwfh48qwDRoQl2YsqbdDhgeZmOeGslrkoq5XLtiCPT3VPPBuOTRPlh5zQugvlvDJHMQTxMqlFsr9sPnoIbn_LNiZppxFudtEzITAdPHHOZxjWz-l7SXMiClqzh1FRw"/>
+</div>
+<span class="text-sm font-bold text-white">Prabhas</span>
+<span class="text-[10px] text-white/40 uppercase tracking-widest">Bhairava</span>
+</div>
+<div class="flex flex-col items-center gap-3 shrink-0 group">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="portrait of a legendary veteran actor with salt and pepper hair and intense eyes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpA09Fiar2FPoSRHL2O8gQUmEyDYzCuKkgHpIfOibdyRrJJn1eQL0oJBpmU1UiE6uF2Uzr6-I5cT8y1iK5LZ7sM1s343EswxyF3cZEmlFOg7grY_YKfNFf20Rq5LVP3yUSQ62D-pKtUgi2Du9mJBmD9AoG_Pop9L39We7ZguqlPoY1tr3yd-5v4mbo5CfEGy28MGoxr9y1QEIrvDMFMs7-8J0epqZ5-zA4xZKw9rJvGWXWPnYTu1jQuym8GcfwbRTj4XHW8u_WMg"/>
+</div>
+<span class="text-sm font-bold text-white">Amitabh Bachchan</span>
+<span class="text-[10px] text-white/40 uppercase tracking-widest">Ashwatthama</span>
+</div>
+<div class="flex flex-col items-center gap-3 shrink-0 group">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="portrait of a beautiful actress with long dark hair and striking features" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBct6HmtB0u5QznpxPjDDJakU0uEMDXozo2Koa9-EkalVzt9jFR5tTUwtQyRggvPn3lUr4lLegjWM2qoGbr8UzWzJgKVkn4CpHTi03H9MIVepW9ZyiZlSD8UWd8jN1c0dPuDjUvmhFyyl49wbWVzxlyA_1mwDaQEerWsavRXLqnT48Go5dAiKN6KbNqXSoTPP-KvVRZbxtMl6vHIytlFIgvbv_Yj5c8rorES7nxCB35s9exn4IBbxJYHSyGEr0_3jM909xwMpsBew"/>
+</div>
+<span class="text-sm font-bold text-white">Deepika Padukone</span>
+<span class="text-[10px] text-white/40 uppercase tracking-widest">SUM-80</span>
+</div>
+<div class="flex flex-col items-center gap-3 shrink-0 group">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="portrait of a charismatic actor with a modern edgy look" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgoj0j0dL_39uAy7loxjW-XYSCIzEEaIegsVbk5wPj4ullb0WOQwoSYf2HgbNcxZV2ahBNXYq62yPBy_U5Sbs2nWHTHRzHTsKl-5rG8eM8CBbuSneo4_V1wLJEiGtgH8yIDJdDjFqWDuEjcmST-7CYozv5ehYJKJP886OJ2Ph3hfGmfTIoBYZ6FXGYRJKqncJNJQvLFY8lKNjnueFmzmeEWxQmQI1Vs9dISrbwPY91NtdIIJ6FByUtdhaj95wM1fKpTMdQ4c_yQw"/>
+</div>
+<span class="text-sm font-bold text-white">Kamal Haasan</span>
+<span class="text-[10px] text-white/40 uppercase tracking-widest">Supreme Yaskin</span>
+</div>
+<div class="flex flex-col items-center gap-3 shrink-0 group">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="portrait of a versatile character actor in professional attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpOB1GD6BaJd7drEBpmNcxHhAJKTlGR1snPWK5D2ecwhs_jbnRaQkG6b_CLCT11vE2vAicp9clm2Pfea2BsP0DY9AEQkGKSDGpEMGQqeDEU1qcwsSKsBv5uo0aHNGY1nYdZfuLVTekhcgXxo8a1QEm-n4btxc_UA0enhsKfKLUi7eEVyGSUYzjaxhjDLOObKxxGs7wxRBdKPNBwon3U0QwHgIcnE5rO7kMWSU9ZCxJwjR727aLPq9anrj_rGQOUe5171S3SRZkLQ"/>
+</div>
+<span class="text-sm font-bold text-white">Disha Patani</span>
+<span class="text-[10px] text-white/40 uppercase tracking-widest">Roxie</span>
+</div>
+</div>
+</section>
+<!-- Crew -->
+<section>
+<h2 class="text-xs font-bold tracking-[0.3em] text-white/40 uppercase mb-8">Crew</h2>
+<div class="flex gap-10 overflow-x-auto hide-scrollbar pb-4">
+<div class="flex flex-col items-center gap-3 shrink-0 group">
+<div class="w-24 h-24 rounded-full overflow-hidden bg-surface-container flex items-center justify-center group-hover:bg-primary-container/20 transition-all duration-300">
+<span class="material-symbols-outlined text-3xl text-primary/60">movie_edit</span>
+</div>
+<span class="text-sm font-bold text-white">Nag Ashwin</span>
+<span class="text-[10px] text-white/40 uppercase tracking-widest">Director</span>
+</div>
+<div class="flex flex-col items-center gap-3 shrink-0 group">
+<div class="w-24 h-24 rounded-full overflow-hidden bg-surface-container flex items-center justify-center group-hover:bg-primary-container/20 transition-all duration-300">
+<span class="material-symbols-outlined text-3xl text-primary/60">piano</span>
+</div>
+<span class="text-sm font-bold text-white">Santhosh Narayanan</span>
+<span class="text-[10px] text-white/40 uppercase tracking-widest">Music</span>
+</div>
+<div class="flex flex-col items-center gap-3 shrink-0 group">
+<div class="w-24 h-24 rounded-full overflow-hidden bg-surface-container flex items-center justify-center group-hover:bg-primary-container/20 transition-all duration-300">
+<span class="material-symbols-outlined text-3xl text-primary/60">photo_camera</span>
+</div>
+<span class="text-sm font-bold text-white">Djordje Stojiljkovic</span>
+<span class="text-[10px] text-white/40 uppercase tracking-widest">Cinematography</span>
+</div>
+</div>
+</section>
+<!-- Top Reviews -->
+<section>
+<div class="flex justify-between items-center mb-8">
+<h2 class="text-xs font-bold tracking-[0.3em] text-white/40 uppercase">Top Reviews</h2>
+<span class="text-[10px] text-primary cursor-pointer hover:underline uppercase tracking-widest">Read All 1,240 Reviews</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Review Card 1 -->
+<div class="bg-surface-container p-6 rounded-xl space-y-4 hover:bg-surface-bright transition-colors duration-300">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-white font-bold">RK</div>
+<div>
+<p class="text-sm font-bold text-white">Rohan Kapoor</p>
+<p class="text-[10px] text-white/40">Verified Buyer • 2 days ago</p>
+</div>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-highest px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-bold">5.0</span>
+</div>
+</div>
+<p class="text-sm leading-relaxed text-white/70 italic">"A visual spectacle like never before in Indian cinema. The world-building is extraordinary and Amitabh Bachchan steals every scene he is in. Pure epicness!"</p>
+<div class="flex gap-4">
+<button class="flex items-center gap-1 text-[10px] text-white/40 hover:text-white"><span class="material-symbols-outlined text-sm">thumb_up</span> 428</button>
+<button class="flex items-center gap-1 text-[10px] text-white/40 hover:text-white"><span class="material-symbols-outlined text-sm">thumb_down</span> 12</button>
+</div>
+</div>
+<!-- Review Card 2 -->
+<div class="bg-surface-container p-6 rounded-xl space-y-4 hover:bg-surface-bright transition-colors duration-300">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-white font-bold">AS</div>
+<div>
+<p class="text-sm font-bold text-white">Ananya Sharma</p>
+<p class="text-[10px] text-white/40">Critics Circle • 1 week ago</p>
+</div>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-highest px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-bold">4.0</span>
+</div>
+</div>
+<p class="text-sm leading-relaxed text-white/70 italic">"The first half takes time to build, but the second half and the climax are mind-blowing. Nag Ashwin's vision is commendable. Must watch on the big screen."</p>
+<div class="flex gap-4">
+<button class="flex items-center gap-1 text-[10px] text-white/40 hover:text-white"><span class="material-symbols-outlined text-sm">thumb_up</span> 194</button>
+<button class="flex items-center gap-1 text-[10px] text-white/40 hover:text-white"><span class="material-symbols-outlined text-sm">thumb_down</span> 5</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column (Sidebar) -->
+<aside class="lg:col-span-4 space-y-8">
+<!-- Movie Info Card -->
+<div class="bg-surface-container-low rounded-xl p-8 space-y-6">
+<h3 class="text-xs font-bold tracking-[0.3em] text-white/40 uppercase">Movie Info</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center py-3 border-b border-white/5">
+<span class="text-xs text-white/50 uppercase tracking-widest">Release Date</span>
+<span class="text-sm font-medium text-white">27 June 2024</span>
+</div>
+<div class="flex justify-between items-center py-3 border-b border-white/5">
+<span class="text-xs text-white/50 uppercase tracking-widest">Director</span>
+<span class="text-sm font-medium text-primary">Nag Ashwin</span>
+</div>
+<div class="flex justify-between items-center py-3 border-b border-white/5">
+<span class="text-xs text-white/50 uppercase tracking-widest">Studio</span>
+<span class="text-sm font-medium text-white">Vyjayanthi Movies</span>
+</div>
+<div class="flex justify-between items-center py-3">
+<span class="text-xs text-white/50 uppercase tracking-widest">Language</span>
+<span class="text-sm font-medium text-white">Telugu (Original)</span>
+</div>
+</div>
+</div>
+<!-- Box Office Card -->
+<div class="bg-surface-container-low rounded-xl p-8 space-y-6">
+<h3 class="text-xs font-bold tracking-[0.3em] text-white/40 uppercase">Box Office</h3>
+<div class="space-y-6">
+<div>
+<p class="text-[10px] text-white/40 uppercase tracking-widest mb-1">Estimated Budget</p>
+<p class="text-2xl font-bold font-space-grotesk text-white">₹600 Crores</p>
+</div>
+<div>
+<p class="text-[10px] text-white/40 uppercase tracking-widest mb-1">Worldwide Collection</p>
+<p class="text-2xl font-bold font-space-grotesk text-primary">₹1,100+ Crores</p>
+</div>
+<div class="pt-4">
+<div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%] rounded-full shadow-[0_0_10px_rgba(214,186,255,0.5)]"></div>
+</div>
+<p class="text-[10px] text-white/40 mt-2">Highly Profitable • Blockbuster Hit</p>
+</div>
+</div>
+</div>
+<!-- Advertising/Promotional Space -->
+<div class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="futuristic electronics and gadget store with neon purple lighting and sleek metallic surfaces" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQW6AXcg_uJz5x8wp9PtfxrMEeWHEY-_Rsqrat8CZbXDE0oBT3g1DqGGwYGDdO99vBNZEfh2645E8K0JgoIyXmB5YC5-MhmjqjBnkg8EJyu3QoqkYxvdH24QQNsGZ-JrYlUh-aiektsdFYvhQK9vfTgF_f67uFgT8f3iIno91WXPDCFMR-BszeLpmNYIFcXUpV-OSmKA144EAiN7C3jIJ90PE_Cpo-cN4JyLNRdgO68EKZTvRtq_6SgIdcJ95zCBdsoDU7Nz_lsw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6">
+<span class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1">Auteur Exclusive</span>
+<p class="text-sm font-bold text-white leading-tight">Win limited edition Kalki 2898 AD merchandise!</p>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-full px-6 py-3 bg-surface/70 dark:bg-black/70 backdrop-blur-2xl flex justify-around items-center z-50 shadow-[0_0_20px_rgba(108,59,181,0.3)]">
+<a class="flex flex-col items-center justify-center bg-violet-600/20 text-violet-300 rounded-full px-4 py-2 scale-110 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="movie" style="font-variation-settings: 'FILL' 1;">movie</span>
+<span class="text-[10px] font-medium font-inter uppercase tracking-widest mt-1">Movies</span>
+</a>
+<a class="flex flex-col items-center justify-center text-white/50 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="theater_comedy">theater_comedy</span>
+<span class="text-[10px] font-medium font-inter uppercase tracking-widest mt-1">Cinemas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-white/50 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+<span class="text-[10px] font-medium font-inter uppercase tracking-widest mt-1">Tickets</span>
+</a>
+<a class="flex flex-col items-center justify-center text-white/50 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-medium font-inter uppercase tracking-widest mt-1">Profile</span>
+</a>
+</nav>
+<footer class="bg-surface-container-lowest mt-24 py-16 px-8 border-t border-white/5">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="space-y-6">
+<span class="text-xl font-bold tracking-tighter text-white uppercase font-space-grotesk">Auteur Cinema</span>
+<p class="text-xs text-white/40 leading-relaxed">Defining the digital cinematic experience through curated selection and premium interface design. Your gateway to the world's finest cinema.</p>
+</div>
+<div class="space-y-4">
+<h4 class="text-[10px] font-bold tracking-widest text-white uppercase">Platform</h4>
+<ul class="space-y-2 text-xs text-white/60">
+<li class="hover:text-primary transition-colors cursor-pointer">Movies</li>
+<li class="hover:text-primary transition-colors cursor-pointer">Cinemas</li>
+<li class="hover:text-primary transition-colors cursor-pointer">Offers</li>
+<li class="hover:text-primary transition-colors cursor-pointer">Gift Cards</li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="text-[10px] font-bold tracking-widest text-white uppercase">Corporate</h4>
+<ul class="space-y-2 text-xs text-white/60">
+<li class="hover:text-primary transition-colors cursor-pointer">About Us</li>
+<li class="hover:text-primary transition-colors cursor-pointer">Careers</li>
+<li class="hover:text-primary transition-colors cursor-pointer">Press Release</li>
+<li class="hover:text-primary transition-colors cursor-pointer">Privacy Policy</li>
+</ul>
+</div>
+<div class="space-y-6">
+<h4 class="text-[10px] font-bold tracking-widest text-white uppercase">Newsletter</h4>
+<div class="relative">
+<input class="bg-surface-container border-none rounded-full py-3 px-4 w-full text-xs outline-none focus:ring-1 focus:ring-primary" placeholder="Email Address" type="email"/>
+<button class="absolute right-1 top-1 bottom-1 px-4 bg-primary text-on-primary rounded-full text-[10px] font-bold uppercase tracking-widest">Join</button>
+</div>
+<div class="flex gap-4">
+<div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-sm">public</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-sm">movie</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-sm">alternate_email</span>
+</div>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-[10px] text-white/20 uppercase tracking-[0.2em]">© 2024 Auteur Cinema Global. All Rights Reserved.</p>
+<div class="flex gap-8">
+<span class="text-[10px] text-white/20 hover:text-white cursor-pointer transition-colors uppercase tracking-widest">Terms of Service</span>
+<span class="text-[10px] text-white/20 hover:text-white cursor-pointer transition-colors uppercase tracking-widest">Cookie Settings</span>
+</div>
+</div>
+</footer>
+</body></html>

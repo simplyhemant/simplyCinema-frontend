@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Checkout | SimplyCinema</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#201f1f",
+            "background": "#131313",
+            "outline": "#968e9e",
+            "primary-fixed-dim": "#d6baff",
+            "on-background": "#e5e2e1",
+            "primary-container": "#6c3bb5",
+            "on-surface-variant": "#ccc3d4",
+            "surface-bright": "#3a3939",
+            "surface-container-highest": "#353534",
+            "surface-dim": "#131313",
+            "surface-container-lowest": "#0e0e0e",
+            "surface-variant": "#353534",
+            "surface-container-low": "#1c1b1b",
+            "surface-container-high": "#2a2a2a",
+            "primary": "#d6baff",
+            "error": "#ffb4ab",
+            "error-container": "#93000a"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .auteur-gradient { background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%); }
+    .lume-glow:hover { box-shadow: 0 0 20px rgba(108, 59, 181, 0.5); }
+  </style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+  <!-- Razorpay SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30">
+
+<div id="navbar-placeholder"></div>
+
+<main class="min-h-screen pt-[100px] pb-24 px-6 md:px-12 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+  
+  <!-- Left Column: Checkout Process -->
+  <div class="lg:col-span-8 space-y-10">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div>
+        <h1 class="font-headline text-4xl font-bold tracking-tighter text-white">SimplyCinema</h1>
+        <p class="text-on-surface-variant tracking-wide mt-2">Complete your cinematic journey</p>
+      </div>
+      <div class="flex items-center gap-3 bg-error-container/20 px-4 py-2 rounded-full border border-error/20">
+        <span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">timer</span>
+        <span class="font-headline font-bold text-error tracking-widest" id="timer">10:00</span>
+      </div>
+    </div>
+
+    <!-- Progress Stepper (Step 2 Active) -->
+    <nav class="flex items-center justify-between max-w-md">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center font-bold">
+          <span class="material-symbols-outlined text-sm">check</span>
+        </div>
+        <span class="text-sm font-medium text-on-surface-variant">Details</span>
+      </div>
+      <div class="flex-1 h-[2px] mx-4 bg-primary-container"></div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-primary text-background flex items-center justify-center font-bold shadow-[0_0_15px_rgba(214,186,255,0.4)]">2</div>
+        <span class="text-sm font-bold text-primary">Payment</span>
+      </div>
+      <div class="flex-1 h-[2px] mx-4 bg-surface-container-highest"></div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-surface-container-highest text-outline flex items-center justify-center font-bold">3</div>
+        <span class="text-sm font-medium text-outline">Confirm</span>
+      </div>
+    </nav>
+
+    <!-- Payment Methods -->
+    <section class="space-y-6">
+      <h2 class="font-headline text-2xl font-semibold text-white">Secure Checkout</h2>
+      <div class="space-y-4">
+        
+        <!-- Razorpay Secure Payment -->
+        <div class="bg-surface-container border-2 border-primary/30 p-8 rounded-xl shadow-2xl">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-4">
+              <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">enhanced_encryption</span>
+              <span class="font-bold text-lg text-white">Razorpay Secure Payment</span>
+            </div>
+            <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" class="h-6 opacity-80" />
+          </div>
+          
+          <p class="text-on-surface-variant leading-relaxed">
+            By clicking "Pay Now", you'll be redirected to a secure Razorpay window to complete your payment using Credits/Debits Cards, UPI, NetBanking or Wallets.
+          </p>
+
+          <div class="mt-6 bg-primary/10 border border-primary/20 rounded-lg p-5">
+            <h4 class="text-primary font-bold mb-3 flex items-center gap-2">
+              <span class="material-symbols-outlined text-xl">credit_card</span>
+              Recommended (Fastest - Use this):
+            </h4>
+            <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm font-mono text-outline">
+              <div><span class="text-white mb-1 block text-xs font-sans uppercase tracking-wider">Card</span>4111 1111 1111 1111</div>
+              <div><span class="text-white mb-1 block text-xs font-sans uppercase tracking-wider">Expiry</span>Any future date</div>
+              <div><span class="text-white mb-1 block text-xs font-sans uppercase tracking-wider">CVV</span>123</div>
+              <div><span class="text-white mb-1 block text-xs font-sans uppercase tracking-wider">OTP</span>123456</div>
+            </div>
+          </div>
+          
+          <div class="mt-8 flex items-center gap-3 text-xs text-outline font-medium">
+             <span class="material-symbols-outlined text-sm">verified_user</span>
+             PCI-DSS Compliant • 256-bit AES Encryption
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Final Action -->
+    <button id="pay-btn" class="auteur-gradient w-full py-5 rounded-full font-headline font-bold text-xl text-white shadow-xl lume-glow transition-transform active:scale-95 flex items-center justify-center gap-3">
+      Pay <span id="btn-amount">₹0.00</span>
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </button>
+  </div>
+
+  <!-- Right Column: Order Summary Sidebar -->
+  <aside class="lg:col-span-4 space-y-6">
+    <div class="bg-surface-container rounded-2xl overflow-hidden shadow-2xl border border-outline-variant/10">
+      <div class="h-32 w-full relative">
+        <img id="summary-img" class="w-full h-full object-cover opacity-40" src="https://via.placeholder.com/600x200" alt="Backdrop"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-surface-container to-transparent"></div>
+      </div>
+      <div class="p-8 -mt-12 relative z-10 space-y-6">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary-container/20 px-2 py-1 rounded">Now Booking</span>
+          <h3 id="summary-title" class="font-headline text-2xl font-bold text-white mt-3">Loading...</h3>
+          <p class="text-sm text-on-surface-variant mt-1 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">location_on</span>
+            SimplyCinema Default Theatre
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant/5">
+            <p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Seats</p>
+            <p id="summary-seats" class="text-sm font-semibold text-white mt-1">...</p>
+          </div>
+          <div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant/5">
+            <p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Count</p>
+            <p id="summary-count" class="text-sm font-semibold text-white mt-1">0 Tickets</p>
+          </div>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-outline-variant/20">
+          <div class="flex justify-between text-sm">
+            <span class="text-on-surface-variant" id="summary-ticket-lbl">Tickets</span>
+            <span class="text-white" id="summary-base">₹0.00</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-on-surface-variant">Convenience Fee</span>
+            <span class="text-white" id="summary-fee">₹50.00</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-on-surface-variant">Taxes (GST)</span>
+            <span class="text-white" id="summary-tax">₹0.00</span>
+          </div>
+          <div class="flex justify-between items-end pt-4">
+            <span class="font-headline text-lg font-bold text-white">Total Amount</span>
+            <span id="summary-total" class="font-headline text-3xl font-bold text-primary tracking-tighter">₹0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script>
+  injectComponent("#navbar-placeholder", "../../components/navbar.html");
+  injectComponent("#footer-placeholder", "../../components/footer.html");
+
+  let bookingCtx = {};
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    requireAuth();
+
+    try {
+      bookingCtx = JSON.parse(sessionStorage.getItem('sc_booking') || "{}");
+    } catch(e) {}
+
+    if(!bookingCtx.showId || !bookingCtx.seatIds || bookingCtx.seatIds.length === 0) {
+      showToast("No active booking found", "error");
+      setTimeout(() => window.location.href = '/pages/customer/home', 1500);
+      return;
+    }
+
+    // LOCK SEATS IMMEDIATELY UPON ENTRY
+    (async () => {
+       try {
+          await Bookings.lockSeats(bookingCtx.showId, bookingCtx.seatIds);
+       } catch (err) {
+          showToast(err.message || "Oops! One or more of these seats were just taken. Please reselect.", "error");
+          sessionStorage.removeItem("sc_booking");
+          setTimeout(() => {
+              window.location.href = '/pages/customer/seat-selection?movieId=' + bookingCtx.movieId + '&showId=' + bookingCtx.showId;
+          }, 2000);
+       }
+    })();
+
+    // Attempt to release on unload (beacon/fetch)
+    window.addEventListener("beforeunload", () => {
+        // We sync fetch or simple fire and forget to release seats!
+        Bookings.releaseSeats(bookingCtx.showId, bookingCtx.seatIds).catch(()=>{});
+    });
+
+    // Populate summary
+    document.getElementById('summary-title').innerText = bookingCtx.title || 'Movie';
+    const baseTotal = bookingCtx.totalAmount || 0;
+    const count = bookingCtx.seatIds.length;
+    const fee = count * 25; // 25 rs per ticket logic
+    const tax = Math.round(baseTotal * 0.18); // 18% gst
+    const finalTotal = baseTotal + fee + tax;
+
+    bookingCtx.finalTotal = finalTotal; // save for razorpay
+
+    if(bookingCtx.posterUrl) {
+       document.getElementById('summary-img').src = bookingCtx.posterUrl;
+    }
+
+    document.getElementById('summary-seats').innerText = `${count} Seats Selected`;
+    document.getElementById('summary-count').innerText = `${count} Tickets`;
+    document.getElementById('summary-ticket-lbl').innerText = `Tickets (${count}x)`;
+    document.getElementById('summary-base').innerText = `₹${baseTotal.toFixed(2)}`;
+    document.getElementById('summary-fee').innerText = `₹${fee.toFixed(2)}`;
+    document.getElementById('summary-tax').innerText = `₹${tax.toFixed(2)}`;
+    
+    document.getElementById('summary-total').innerText = `₹${finalTotal.toFixed(2)}`;
+    document.getElementById('btn-amount').innerText = `₹${finalTotal.toFixed(2)}`;
+
+    // Simple timer
+    let timeLeft = 600; // 10 mins
+    const timerEl = document.getElementById('timer');
+    const timerInterval = setInterval(() => {
+       if(timeLeft <= 0) {
+          clearInterval(timerInterval);
+          window.location.href = '/pages/customer/seat-selection?movieId=' + bookingCtx.movieId;
+       }
+       timeLeft--;
+       const m = Math.floor(timeLeft/60).toString().padStart(2, '0');
+       const s = (timeLeft%60).toString().padStart(2, '0');
+       timerEl.innerText = `${m}:${s}`;
+    }, 1000);
+  });
+
+  document.getElementById('pay-btn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const payBtn = e.target.closest('button');
+    const oldHtml = payBtn.innerHTML;
+    
+    payBtn.innerHTML = `<div class="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Processing...`;
+    payBtn.disabled = true;
+
+    try {
+      // 1. Create Booking / Initialize Razorpay Order
+      const response = await Bookings.create(bookingCtx.showId, bookingCtx.seatIds);
+      if(!response || !response.razorpayOrderId) {
+        throw new Error("Failed to initialize payment");
+      }
+
+      console.log("💰 Razorpay Order Created:", response.razorpayOrderId);
+
+      // DUMMY PAYMENT FLOW
+      const overlay = document.createElement("div");
+      overlay.className = "fixed inset-0 z-[10000] bg-background/90 backdrop-blur flex flex-col justify-center items-center transition-all duration-300";
+      overlay.innerHTML = `
+        <div class="bg-surface-container border border-white/10 p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full mx-4">
+             <div class="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 text-primary">
+                 <span class="material-symbols-outlined text-4xl animate-spin">data_saver_on</span>
+             </div>
+             <h3 class="text-2xl font-bold text-white mb-2 font-headline">Processing Test Payment...</h3>
+             <p class="text-on-surface-variant text-sm">Please do not close this window</p>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      setTimeout(async () => {
+         overlay.querySelector('.bg-surface-container').innerHTML = `
+             <div class="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/20 text-green-400">
+                 <span class="material-symbols-outlined text-4xl">check_circle</span>
+             </div>
+             <h3 class="text-2xl font-bold text-white mb-2 font-headline">Payment Complete!</h3>
+             <p class="text-on-surface-variant text-sm">Finalizing booking...</p>
+         `;
+
+         // Confirm Booking with dummy data (enabled by backend dummy_signature backdoor)
+         const user = JSON.parse(localStorage.getItem('sc_user') || "{}");
+         const confirmData = {
+           email: user.email,
+           showId: bookingCtx.showId,
+           paymentToken: "pay_dummy_" + Date.now(),
+           razorpayOrderId: response.razorpayOrderId,
+           razorpaySignature: "dummy_signature"
+         };
+
+         setTimeout(async () => {
+             const finalBooking = await Bookings.confirm(confirmData);
+             if(finalBooking) {
+               sessionStorage.setItem('sc_final_booking', JSON.stringify(finalBooking));
+               sessionStorage.removeItem('sc_booking');
+               window.location.href = '/pages/customer/booking-confirm';
+             } else {
+               overlay.remove();
+               payBtn.innerHTML = oldHtml;
+               payBtn.disabled = false;
+               showToast("Payment verification failed", "error");
+             }
+         }, 1000);
+      }, 1500);
+
+    } catch(err) {
+      console.error("❌ Payment Error:", err);
+      payBtn.innerHTML = oldHtml;
+      payBtn.disabled = false;
+      showToast(err.message || "Something went wrong", "error");
+    }
+  });
+</script>
+
+</body>
+</html>

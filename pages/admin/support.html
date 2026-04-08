@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Support Management | SimplyCinema Admin</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: { extend: { colors: {
+        "surface-container": "#201f1f", "background": "#131313", "outline": "#968e9e",
+        "outline-variant": "#4a4452", "primary-fixed-dim": "#d6baff", "on-background": "#e5e2e1",
+        "primary-container": "#6c3bb5", "surface-container-highest": "#353534",
+        "surface-container-lowest": "#0e0e0e", "surface-container-low": "#1c1b1b",
+        "primary": "#d6baff", "error": "#ffb4ab", "secondary": "#ddb7ff"
+      }, fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"] } } }
+    }
+  </script>
+  <style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body">
+
+<div id="admin-sidebar-placeholder"></div>
+<div id="admin-topbar-placeholder"></div>
+
+<main class="pl-64 pt-20 min-h-screen">
+  <div class="p-8 space-y-8">
+    <div class="flex justify-between items-end">
+      <div>
+        <h1 class="font-headline text-3xl font-bold tracking-tight text-white mb-2">Support Tickets</h1>
+        <p class="text-outline text-sm">Manage issues raised by customers and theatre owners.</p>
+      </div>
+      <div class="flex gap-4">
+          <select id="status-filter" onchange="loadTickets()" class="bg-surface-container-low border-white/5 rounded-full px-4 py-2 text-sm text-outline focus:ring-primary outline-none">
+              <option value="ALL">All Status</option>
+              <option value="OPEN">Open</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="RESOLVED">Resolved</option>
+          </select>
+      </div>
+    </div>
+
+    <div class="bg-surface-container-low rounded-xl border border-white/5 overflow-hidden">
+        <div class="p-6 border-b border-white/5 bg-surface-container-lowest uppercase tracking-widest text-[10px] text-outline font-bold grid grid-cols-12 gap-4">
+            <div class="col-span-1">ID</div>
+            <div class="col-span-5">Issue Description</div>
+            <div class="col-span-2">User (Role)</div>
+            <div class="col-span-2">Status</div>
+            <div class="col-span-2 text-right">Actions</div>
+        </div>
+        <div id="ticket-list" class="divide-y divide-white/5"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+  injectComponent("#admin-sidebar-placeholder", "../../components/admin-sidebar.html");
+  injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
+
+  document.addEventListener('DOMContentLoaded', async () => {
+      requireAuth(['ADMIN']);
+      loadTickets();
+  });
+
+  async function loadTickets() {
+      const container = document.getElementById('ticket-list');
+      const filter = document.getElementById('status-filter').value;
+      container.innerHTML = '<div class="p-8 text-center text-outline">Loading tickets...</div>';
+
+      try {
+          const res = await Support.getAll();
+          let tickets = res || [];
+          
+          if(filter !== 'ALL') {
+              tickets = tickets.filter(t => t.status === filter);
+          }
+
+          if(tickets.length === 0) {
+              container.innerHTML = '<div class="p-8 text-center text-outline">No tickets found.</div>';
+              return;
+          }
+
+          container.innerHTML = '';
+          tickets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(t => {
+              const row = document.createElement('div');
+              row.className = 'p-6 grid grid-cols-12 gap-4 items-center hover:bg-surface-container transition-colors';
+              
+              let statusClass = 'text-error bg-error/10';
+              if(t.status === 'RESOLVED') statusClass = 'text-green-400 bg-green-400/10';
+              else if(t.status === 'IN_PROGRESS') statusClass = 'text-primary bg-primary/10';
+
+              row.innerHTML = `
+                  <div class="col-span-1 text-[10px] text-outline font-mono">#${t.id}</div>
+                  <div class="col-span-5 text-sm text-white font-medium">${t.description}</div>
+                  <div class="col-span-2">
+                      <div class="text-xs text-white">ID: ${t.userId}</div>
+                      <div class="text-[10px] uppercase tracking-widest text-outline">${t.userRole}</div>
+                  </div>
+                  <div class="col-span-2 text-right">
+                      <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusClass}">${t.status}</span>
+                  </div>
+                  <div class="col-span-2 text-right flex justify-end gap-2">
+                      <button onclick="updateStatus(${t.id}, 'IN_PROGRESS', false)" class="text-primary hover:scale-110 transition-transform" title="Mark In Progress"><span class="material-symbols-outlined text-[18px]">pending</span></button>
+                      <button onclick="updateStatus(${t.id}, 'RESOLVED', true)" class="text-green-400 hover:scale-110 transition-transform" title="Resolve"><span class="material-symbols-outlined text-[18px]">check_circle</span></button>
+                  </div>
+              `;
+              container.appendChild(row);
+          });
+      } catch(e) {
+          container.innerHTML = '<div class="p-8 text-center text-error">Failed to fetch support data.</div>';
+      }
+  }
+
+  async function updateStatus(id, status, isResolved) {
+      const res = await Support.updateStatus(id, status, isResolved);
+      if(res) {
+          showToast(`Ticket #${id} marked as ${status}`);
+          loadTickets();
+      }
+  }
+</script>
+</body>
+</html>

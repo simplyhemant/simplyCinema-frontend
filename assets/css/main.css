@@ -1,0 +1,16 @@
+.seat-map-grid { perspective: 1000px; }
+.curved-screen { 
+  box-shadow: 0 -15px 40px -10px rgba(108, 59, 181, 0.4);
+  transform: rotateX(-10deg);
+}
+
+.confetti-overlay {
+  background-image: radial-gradient(circle, #6C3BB5 1px, transparent 1px);
+  background-size: 40px 40px; 
+  opacity: 0.15;
+}
+
+.ticket-tear {
+  background-image: radial-gradient(circle at 0 50%, transparent 12px, #201f1f 13px);
+  background-size: 100% 40px;
+}

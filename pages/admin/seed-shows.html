@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Seed Shows | SimplyCinema Admin</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = { 
+      darkMode: "class", 
+      theme: { 
+        extend: { 
+          colors: { 
+            "surface-container": "#201f1f", 
+            "background": "#131313", 
+            "outline": "#968e9e", 
+            "primary-container": "#6c3bb5", 
+            "surface-container-highest": "#353534", 
+            "surface-container-low": "#1c1b1b", 
+            "primary": "#d6baff" 
+          }, 
+          fontFamily: { 
+            "headline": ["Space Grotesk"], 
+            "body": ["Inter"] 
+          } 
+        } 
+      } 
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    #log-container::-webkit-scrollbar { width: 6px; }
+    #log-container::-webkit-scrollbar-track { background: transparent; }
+    #log-container::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
+    .log-entry { border-left: 2px solid #6c3bb5; padding-left: 10px; margin-bottom: 8px; }
+    .log-success { border-left-color: #4ade80; color: #4ade80; }
+    .log-error { border-left-color: #f87171; color: #f87171; }
+  </style>
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-white font-body">
+
+<div id="admin-sidebar-placeholder"></div>
+<div id="admin-topbar-placeholder"></div>
+
+<main class="pl-64 pt-24 pr-8 pb-12 min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-headline font-bold mb-2">Comprehensive Show Seeding</h1>
+        <p class="text-outline">Populate theaters with shows for April 15 - April 20, 2026.</p>
+      </div>
+      <button id="start-seeding-btn" class="px-8 py-3 bg-primary-container text-white font-bold rounded-full hover:scale-105 transition-all shadow-lg flex items-center gap-2">
+        <span class="material-symbols-outlined">database</span>
+        Start Seeding Process
+      </button>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-center text-outline">
+        <div class="bg-surface-container rounded-2xl p-6 border border-white/5">
+            <h3 class="text-xs uppercase tracking-widest mb-1">Target Period</h3>
+            <p class="text-white font-headline text-lg italic">Apr 15 - Apr 20</p>
+        </div>
+        <div class="bg-surface-container rounded-2xl p-6 border border-white/5">
+            <h3 class="text-xs uppercase tracking-widest mb-1">Shows/Day/Screen</h3>
+            <p class="text-white font-headline text-lg">4 slots</p>
+        </div>
+        <div class="bg-surface-container rounded-2xl p-6 border border-white/5">
+            <h3 class="text-xs uppercase tracking-widest mb-1">Total Expected</h3>
+            <p class="text-white font-headline text-lg">~2,800 shows</p>
+        </div>
+    </div>
+
+    <!-- Progress Indicator (Hidden initially) -->
+    <div id="progress-card" class="bg-surface-container rounded-3xl p-8 border border-white/5 mb-8 hidden">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-headline font-bold">Seeding Status</h2>
+            <div id="status-badge" class="px-3 py-1 bg-yellow-900/30 text-yellow-500 rounded-full text-xs font-bold uppercase tracking-wider animate-pulse">Running</div>
+        </div>
+        
+        <div class="flex items-end justify-between mb-2">
+            <p id="current-task" class="text-outline text-sm italic">Initializing...</p>
+            <p id="progress-percent" class="text-primary font-bold">0%</p>
+        </div>
+        <div class="w-full h-2 bg-background rounded-full overflow-hidden mb-8">
+            <div id="progress-bar" class="h-full bg-primary w-0 transition-all duration-300 shadow-[0_0_10px_#d6baff]"></div>
+        </div>
+
+        <!-- Logs -->
+        <h3 class="text-xs uppercase tracking-widest text-outline mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">terminal</span>
+            Execution Logs
+        </h3>
+        <div id="log-container" class="bg-background rounded-2xl p-6 font-mono text-sm h-[400px] overflow-y-auto border border-white/5 shadow-inner">
+            <!-- Logs go here -->
+            <div class="log-entry">Awaiting user action...</div>
+        </div>
+    </div>
+  </div>
+</main>
+
+<script src="/seed_comprehensive_shows.js"></script>
+<script>
+  injectComponent("#admin-sidebar-placeholder", "../../components/admin-sidebar.html");
+  injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
+
+  document.addEventListener('DOMContentLoaded', () => {
+      requireAuth(['ADMIN']);
+      
+      const startBtn = document.getElementById('start-seeding-btn');
+      startBtn.addEventListener('click', () => {
+          if (confirm("This will create approximately 2,800 shows. Are you sure?")) {
+              startBtn.disabled = true;
+              startBtn.textContent = "Processing...";
+              document.getElementById('progress-card').classList.remove('hidden');
+              
+              // Call the global function from seed_comprehensive_shows.js
+              if (typeof window.runBrowserSeeding === 'function') {
+                  window.runBrowserSeeding();
+              } else {
+                  addLog("Error: Seeding script not loaded correctly.", "error");
+              }
+          }
+      });
+  });
+
+  // Global logging helper for the script to use
+  window.addLog = (message, type = "info") => {
+      const logContainer = document.getElementById('log-container');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type === 'success' ? 'log-success' : type === 'error' ? 'log-error' : ''}`;
+      
+      const time = new Date().toLocaleTimeString();
+      entry.innerHTML = `<span class="text-outline mr-2">[${time}]</span> ${message}`;
+      
+      logContainer.appendChild(entry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+  };
+  
+  window.updateStatus = (task, percent) => {
+      document.getElementById('current-task').textContent = task;
+      if (percent !== undefined) {
+          document.getElementById('progress-bar').style.width = `${percent}%`;
+          document.getElementById('progress-percent').textContent = `${Math.round(percent)}%`;
+      }
+  };
+
+  window.markSeedingComplete = (total) => {
+      document.getElementById('status-badge').textContent = "Complete";
+      document.getElementById('status-badge').className = "px-3 py-1 bg-green-900/30 text-green-500 rounded-full text-xs font-bold uppercase tracking-wider";
+      document.getElementById('status-badge').classList.remove('animate-pulse');
+      document.getElementById('start-seeding-btn').textContent = "Seeding Complete";
+      addLog(`Seeding finished! Created ${total} shows.`, "success");
+  };
+</script>
+</body>
+</html>

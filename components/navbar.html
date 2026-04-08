@@ -1,0 +1,380 @@
+<header id="main-nav" class="fixed top-0 w-full h-16 z-50 bg-violet-950/70 backdrop-blur-xl shadow-[0_0_20px_rgba(108,59,181,0.3)] font-['Space_Grotesk'] antialiased tracking-tight transition-all">
+<div class="flex justify-between items-center px-8 w-full max-w-screen-2xl mx-auto h-full">
+<!-- Left: Logo -->
+<div class="flex items-center gap-6">
+  <a href="/" class="flex items-center gap-2">
+    <span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">movie</span>
+    <h1 class="text-2xl font-bold text-white tracking-tighter">Simply<span class="text-primary-container">Cinema</span></h1>
+  </a>
+  <!-- City Selector -->
+  <div class="relative">
+    <button id="nav-city-btn" class="hidden md:flex items-center gap-2 px-4 py-1.5 border border-primary-container rounded-full text-sm text-on-surface-variant hover:bg-white/5 transition-all">
+      <span class="material-symbols-outlined text-sm">location_on</span>
+      <span id="nav-city-name">All Cities</span>
+      <span class="material-symbols-outlined text-sm">expand_more</span>
+    </button>
+    <div id="city-dropdown" class="hidden absolute top-full left-0 mt-2 w-48 bg-surface-container-high border border-outline-variant rounded-xl shadow-xl overflow-hidden py-2 z-50">
+      <!-- Injected via JS -->
+    </div>
+  </div>
+</div>
+<!-- Center: Search & Links -->
+<div class="hidden lg:flex flex-1 max-w-xl mx-8 items-center gap-6">
+<div class="relative w-full" id="global-search-container">
+  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+  <input id="global-search-input" class="w-full bg-surface-container-lowest border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-primary-container placeholder:text-outline transition-all" placeholder="Search for Movies or Cinemas..." type="text" autocomplete="off"/>
+  <!-- Search Results Dropdown -->
+  <div id="global-search-dropdown" class="hidden absolute top-full mt-2 w-full bg-surface-container-high border border-outline-variant rounded-xl shadow-2xl overflow-hidden z-50 flex flex-col max-h-[400px]">
+     <div id="search-results-content" class="overflow-y-auto hide-scrollbar"></div>
+  </div>
+</div>
+<nav class="flex items-center gap-6 whitespace-nowrap">
+  <a class="text-violet-400 font-bold border-b-2 border-violet-500 pb-1" href="/pages/customer/home.html">Movies</a>
+  <a class="text-slate-300 hover:text-white transition-colors" href="/?tab=events">Events</a>
+  <a class="text-slate-300 hover:text-white transition-colors" href="/pages/customer/cinemas.html">Cinemas</a>
+  <a class="text-slate-300 hover:text-white transition-colors cursor-pointer" onclick="openSupportModal()">Support</a>
+</nav>
+</div>
+<!-- Right: Actions -->
+<div class="flex items-center gap-4">
+  <div id="nav-guest-actions" class="flex gap-4">
+    <a href="/pages/auth/login.html" class="hidden sm:block px-6 py-2 border border-outline-variant text-primary font-medium hover:bg-white/5 transition-all scale-95 active:scale-90 rounded-full text-center">Sign In</a>
+    <a href="/pages/auth/register.html" class="px-6 py-2 bg-primary-container text-on-primary-container font-bold shadow-[0_0_15px_rgba(108,59,181,0.4)] hover:shadow-[0_0_20px_rgba(108,59,181,0.6)] transition-all scale-95 active:scale-90 rounded-full text-center">Register</a>
+  </div>
+  <div id="nav-user-actions" class="hidden relative">
+    <button id="nav-avatar-btn" class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-lg">
+      U
+    </button>
+    <div id="avatar-dropdown" class="hidden absolute top-full right-0 mt-2 w-48 bg-surface-container-high border border-outline-variant rounded-xl shadow-xl overflow-hidden py-2 z-50 flex flex-col">
+      <a href="/pages/customer/account.html" class="px-4 py-2 hover:bg-white/5 text-sm text-white flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">settings</span>
+        My Profile
+      </a>
+      <a href="/pages/customer/my-bookings.html" class="px-4 py-2 hover:bg-white/5 text-sm text-white flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">confirmation_number</span>
+        My Bookings
+      </a>
+      <a id="nav-admin-link" href="#" class="hidden px-4 py-2 hover:bg-white/5 text-sm text-white flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">dashboard</span>
+        Dashboard
+      </a>
+      <hr class="border-outline-variant my-1">
+      <button onclick="logout()" class="px-4 py-2 hover:bg-white/5 text-sm text-red-400 text-left w-full flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">logout</span>
+        Logout
+      </button>
+    </div>
+  </div>
+  <button id="mobile-menu-btn" class="lg:hidden p-2 text-white">
+    <span class="material-symbols-outlined">menu</span>
+  </button>
+</div>
+</div>
+</header>
+<!-- Mobile Drawer -->
+<div id="mobile-drawer" class="fixed inset-y-0 right-0 w-64 bg-surface-container shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 p-6 flex flex-col">
+  <div class="flex justify-end mb-6">
+    <button id="mobile-close-btn" class="text-white"><span class="material-symbols-outlined">close</span></button>
+  </div>
+  <nav class="flex flex-col gap-4 text-white">
+    <a href="/pages/customer/home.html" class="text-lg font-bold border-b border-white/10 pb-2">Movies</a>
+    <a href="/?tab=events" class="text-lg border-b border-white/10 pb-2">Events</a>
+    <a href="/pages/customer/cinemas.html" class="text-lg border-b border-white/10 pb-2">Cinemas</a>
+    <a onclick="openSupportModal()" class="text-lg border-b border-white/10 pb-2 cursor-pointer">Support</a>
+  </nav>
+</div>
+<div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-[55] hidden opacity-0 transition-opacity"></div>
+
+<script>
+  function initNavbar() {
+    // Mobile menu logic
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const closeBtn = document.getElementById('mobile-close-btn');
+    const drawer = document.getElementById('mobile-drawer');
+    const overlay = document.getElementById('mobile-overlay');
+
+    const toggleMenu = () => {
+      drawer.classList.toggle('translate-x-full');
+      overlay.classList.toggle('hidden');
+      setTimeout(() => overlay.classList.toggle('opacity-0'), 10);
+    };
+
+    if(menuBtn) menuBtn.addEventListener('click', toggleMenu);
+    if(closeBtn) closeBtn.addEventListener('click', toggleMenu);
+    if(overlay) overlay.addEventListener('click', toggleMenu);
+
+    // Initial auth state checks
+    const guestActions = document.getElementById('nav-guest-actions');
+    const userActions = document.getElementById('nav-user-actions');
+    const avatarBtn = document.getElementById('nav-avatar-btn');
+    const adminLink = document.getElementById('nav-admin-link');
+
+    if (isLoggedIn()) {
+      if(guestActions) guestActions.classList.add('hidden');
+      if(userActions) userActions.classList.remove('hidden');
+      
+      const updateAvatar = () => {
+        const userStr = localStorage.getItem("sc_user");
+        let initial = "U";
+        
+        if (userStr) {
+          try {
+            const u = JSON.parse(userStr);
+            initial = (u.firstName || u.name || u.email || "U").charAt(0).toUpperCase();
+          } catch(e) {}
+        } else {
+          // Fallback: Try to get name from token payload
+          const token = localStorage.getItem("sc_token");
+          if (token) {
+            const payload = decodeToken(token);
+            if (payload && payload.sub) initial = payload.sub.charAt(0).toUpperCase();
+          }
+        }
+        if (avatarBtn) avatarBtn.textContent = initial;
+      };
+      
+      updateAvatar();
+      
+      // Also fetch profile if not cached to ensure avatar is correct
+      if (!localStorage.getItem("sc_user") && typeof User !== 'undefined' && User.getProfile) {
+        User.getProfile().then(p => {
+            if (p) {
+                localStorage.setItem("sc_user", JSON.stringify(p));
+                updateAvatar();
+            }
+        });
+      }
+
+      const role = getRole();
+      if (adminLink) {
+          if (role === 'ADMIN') {
+            adminLink.href = "/pages/admin/dashboard.html";
+            adminLink.classList.remove('hidden');
+          } else if (role === 'THEATRE_OWNER') {
+            adminLink.href = "/pages/owner/dashboard.html";
+            adminLink.classList.remove('hidden');
+          } else {
+            adminLink.classList.add('hidden');
+          }
+      }
+      
+      // Avatar Dropdown
+      const avatarDropdown = document.getElementById('avatar-dropdown');
+      avatarBtn.addEventListener('click', () => {
+        avatarDropdown.classList.toggle('hidden');
+      });
+      document.addEventListener('click', (e) => {
+        if(!userActions.contains(e.target)) avatarDropdown.classList.add('hidden');
+      });
+
+    } else {
+      guestActions.classList.remove('hidden');
+      userActions.classList.add('hidden');
+    }
+
+    // City Dropdown Logic
+    const cityBtn = document.getElementById('nav-city-btn');
+    const cityDropdown = document.getElementById('city-dropdown');
+    const cityNameSpan = document.getElementById('nav-city-name');
+
+    // Load saved city
+    const savedCity = localStorage.getItem('sc_city');
+    if (savedCity) {
+      try {
+        const c = JSON.parse(savedCity);
+        cityNameSpan.innerText = c.cityName || 'All Cities';
+      } catch(e){}
+    } else {
+      cityNameSpan.innerText = 'All Cities';
+    }
+
+    if (cityBtn) {
+      cityBtn.addEventListener('click', async () => {
+        cityDropdown.classList.toggle('hidden');
+        if (!cityDropdown.classList.contains('hidden') && cityDropdown.children.length === 0) {
+          cityDropdown.innerHTML = '<div class="p-3 text-sm text-center text-outline">Loading...</div>';
+          const cities = await Cities.getAll();
+          if (cities && cities.length > 0) {
+            cityDropdown.innerHTML = '';
+            
+            // "All Cities" option
+            const allCityDiv = document.createElement('div');
+            allCityDiv.className = 'px-4 py-2 hover:bg-white/5 cursor-pointer text-sm text-white border-b border-white/5';
+            allCityDiv.innerText = 'All Cities';
+            allCityDiv.onclick = () => {
+                localStorage.removeItem('sc_city');
+                cityNameSpan.innerText = 'All Cities';
+                cityDropdown.classList.add('hidden');
+                window.dispatchEvent(new Event('cityChanged'));
+            };
+            cityDropdown.appendChild(allCityDiv);
+
+            cities.forEach(city => {
+              const div = document.createElement('div');
+              div.className = 'px-4 py-2 hover:bg-white/5 cursor-pointer text-sm text-white';
+              div.innerText = city.name;
+              div.onclick = () => {
+                localStorage.setItem('sc_city', JSON.stringify({cityId: city.id, cityName: city.name}));
+                cityNameSpan.innerText = city.name;
+                cityDropdown.classList.add('hidden');
+                window.dispatchEvent(new Event('cityChanged'));
+              };
+              cityDropdown.appendChild(div);
+            });
+          } else {
+             cityDropdown.innerHTML = '<div class="p-3 text-sm text-center text-outline">No cities found</div>';
+          }
+        }
+      });
+      
+      document.addEventListener('click', (e) => {
+        if(!cityBtn.contains(e.target) && !cityDropdown.contains(e.target)) {
+          cityDropdown.classList.add('hidden');
+        }
+      });
+    }
+  }
+
+  // Call initNavbar immediately when the script executes
+  initNavbar();
+
+  // Support Modal Functions
+  function openSupportModal() {
+      if(!isLoggedIn()) {
+          showToast("Please login to contact support", "error");
+          window.location.href = "/pages/auth/login.html";
+          return;
+      }
+      document.body.insertAdjacentHTML('beforeend', `
+          <div id="support-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+              <div class="bg-[#1c1b1b] border border-white/5 w-full max-w-md rounded-2xl p-8 shadow-2xl space-y-6">
+                  <div class="flex justify-between items-start">
+                      <h3 class="font-headline text-2xl font-bold text-white tracking-tight">Contact Support</h3>
+                      <button onclick="closeSupportModal()" class="text-outline hover:text-white"><span class="material-symbols-outlined">close</span></button>
+                  </div>
+                  <p class="text-outline text-sm leading-relaxed">Have an issue? Describe it below and our team will look into it.</p>
+                  <form id="support-form-nav" class="space-y-4">
+                      <textarea id="support-desc-nav" required placeholder="Describe your problem or request..." 
+                                class="w-full bg-[#353534] border-none rounded-xl p-4 text-white focus:ring-1 focus:ring-primary min-h-[120px] text-sm resize-none"></textarea>
+                      <button type="submit" class="w-full py-4 bg-[#d6baff] text-[#131313] font-bold rounded-xl hover:brightness-110 transition-all shadow-lg uppercase tracking-widest text-xs">Submit Ticket</button>
+                  </form>
+              </div>
+          </div>
+      `);
+
+      const form = document.getElementById('support-form-nav');
+      form.onsubmit = async (e) => {
+          e.preventDefault();
+          const desc = document.getElementById('support-desc-nav').value;
+          const userStr = localStorage.getItem("sc_user");
+          const user = userStr ? JSON.parse(userStr) : null;
+          
+          if(!user) return;
+
+          const res = await Support.create({
+              description: desc,
+              userId: user.id,
+              userRole: getRole()
+          });
+
+          if(res) {
+              showToast("Your ticket has been raised successfully!");
+              closeSupportModal();
+          }
+      };
+  }
+
+  function closeSupportModal() {
+      const modal = document.getElementById('support-modal');
+      if(modal) modal.remove();
+  }
+
+  // Unified Search Logic
+  const globalSearchInput = document.getElementById('global-search-input');
+  const globalSearchDropdown = document.getElementById('global-search-dropdown');
+  const searchResultsContent = document.getElementById('search-results-content');
+  let searchTimeout = null;
+
+  if (globalSearchInput) {
+      globalSearchInput.addEventListener('input', (e) => {
+          const query = e.target.value.trim();
+          clearTimeout(searchTimeout);
+          
+          if (query.length < 2) {
+              globalSearchDropdown.classList.add('hidden');
+              return;
+          }
+
+          searchTimeout = setTimeout(() => performSearch(query), 300);
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+          if (!document.getElementById('global-search-container').contains(e.target)) {
+              globalSearchDropdown.classList.add('hidden');
+          }
+      });
+  }
+
+  async function performSearch(query) {
+      globalSearchDropdown.classList.remove('hidden');
+      searchResultsContent.innerHTML = '<div class="p-4 text-center text-sm text-outline">Searching...</div>';
+      
+      try {
+          // Fire both API calls concurrently
+          const [moviesRes, theatresRes] = await Promise.all([
+              Movies.search(query),
+              Theatres.search(query)
+          ]);
+          
+          const movies = moviesRes?.content || moviesRes || [];
+          const theatres = theatresRes?.content || theatresRes || [];
+
+          if (movies.length === 0 && theatres.length === 0) {
+              searchResultsContent.innerHTML = '<div class="p-4 text-center text-sm text-outline">No results found</div>';
+              return;
+          }
+
+          let html = '';
+
+          // Render Movies
+          if (movies.length > 0) {
+              html += `<div class="bg-surface-container-lowest px-4 py-1.5 text-[10px] font-black tracking-widest uppercase text-primary border-b border-white/5 sticky top-0">Movies</div>`;
+              movies.slice(0, 5).forEach(m => {
+                  html += `
+                  <a href="/pages/customer/movie-details.html?id=${m.id}" class="flex items-center gap-3 p-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 block">
+                      <div class="w-10 h-10 rounded bg-surface-container overflow-hidden shrink-0">
+                          <img src="${(m.posterUrl && m.posterUrl !== 'null') ? m.posterUrl : 'https://via.placeholder.com/40'}" class="w-full h-full object-cover">
+                      </div>
+                      <div class="flex-1 min-w-0">
+                          <p class="text-sm font-bold text-white truncate">${m.title}</p>
+                          <p class="text-[10px] text-outline uppercase tracking-wider">${m.languageIds ? 'Multilingual' : 'N/A'}</p>
+                      </div>
+                  </a>`;
+              });
+          }
+
+          // Render Theatres
+          if (theatres.length > 0) {
+              html += `<div class="bg-surface-container-lowest px-4 py-1.5 text-[10px] font-black tracking-widest uppercase text-secondary border-y border-white/5 sticky top-0">Cinemas</div>`;
+              theatres.slice(0, 5).forEach(t => {
+                  html += `
+                  <a href="/pages/customer/theatre-details.html?id=${t.id}" class="flex items-center gap-3 p-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 block">
+                      <div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-secondary shrink-0 border border-white/5">
+                          <span class="material-symbols-outlined text-xl">theaters</span>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                          <p class="text-sm font-bold text-white truncate">${t.name}</p>
+                          <p class="text-[10px] text-outline truncate">${t.address || 'Address not listed'}</p>
+                      </div>
+                  </a>`;
+              });
+          }
+
+          searchResultsContent.innerHTML = html;
+      } catch (err) {
+          console.error(err);
+          searchResultsContent.innerHTML = '<div class="p-4 text-center text-sm text-error">Search failed.</div>';
+      }
+  }
+</script>

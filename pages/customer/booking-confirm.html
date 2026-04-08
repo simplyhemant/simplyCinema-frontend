@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Booking Confirmed | SimplyCinema</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#201f1f",
+            "background": "#131313",
+            "outline": "#968e9e",
+            "primary-fixed-dim": "#d6baff",
+            "on-background": "#e5e2e1",
+            "primary-container": "#6c3bb5",
+            "on-surface-variant": "#ccc3d4",
+            "surface-bright": "#3a3939",
+            "surface-container-highest": "#353534",
+            "surface-dim": "#131313",
+            "surface-container-lowest": "#0e0e0e",
+            "surface-variant": "#353534",
+            "surface-container-low": "#1c1b1b",
+            "surface-container-high": "#2a2a2a",
+            "primary": "#d6baff",
+            "error": "#ffb4ab",
+            "error-container": "#93000a"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .auteur-gradient { background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%); }
+    .confetti-overlay {
+        background-image: radial-gradient(circle, #6C3BB5 1px, transparent 1px);
+        background-size: 40px 40px;
+        opacity: 0.15;
+    }
+  </style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30 antialiased">
+<div id="navbar-placeholder"></div>
+
+<main class="pt-32 pb-20 px-4 md:px-8 max-w-5xl mx-auto">
+  <!-- Success Hero Section -->
+  <section class="text-center relative mb-16">
+    <div class="absolute inset-0 confetti-overlay pointer-events-none"></div>
+    <div class="mb-6 inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-500/20 text-green-400 border border-green-500/30 animate-[pulse_2s_infinite]">
+      <span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'wght' 600;">check_circle</span>
+    </div>
+    <h1 class="text-5xl font-headline font-bold text-white mb-4 tracking-tight">Booking Confirmed! 🎉</h1>
+    <p class="text-on-surface-variant max-w-lg mx-auto text-lg leading-relaxed">Your cinematic journey is ready. We've sent the confirmation details to your registered email and phone number.</p>
+  </section>
+
+  <!-- Digital Ticket Card -->
+  <div class="max-w-3xl mx-auto relative group">
+    <div class="flex flex-col md:flex-row bg-surface-container rounded-2xl overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.5)] border border-white/5">
+      <div class="w-full md:w-4 bg-primary-container h-4 md:h-auto"></div>
+      
+      <div class="flex-1 p-8 relative flex flex-col">
+        <div class="flex justify-between items-start mb-6 border-b border-white/10 pb-6">
+          <div>
+            <span class="text-xs uppercase tracking-widest text-primary mb-2 block" id="b-id">Booking ID: Loading...</span>
+            <h2 id="b-movie" class="text-3xl font-headline font-bold text-white leading-tight">...</h2>
+          </div>
+          <div class="text-right">
+            <span class="bg-surface-container-highest px-3 py-1 rounded-full text-xs font-bold text-white">CONFIRMED</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-y-6 gap-x-4 mb-4">
+          <div>
+            <p class="text-xs text-outline uppercase tracking-wider mb-1">Date & Time</p>
+            <p class="text-white font-medium" id="b-datetime">...</p>
+          </div>
+          <div>
+            <p class="text-xs text-outline uppercase tracking-wider mb-1">Amount Paid</p>
+            <p class="text-white font-medium" id="b-amount">...</p>
+          </div>
+          <div>
+            <p class="text-xs text-outline uppercase tracking-wider mb-1">Cinema</p>
+            <p class="text-white font-medium leading-tight" id="b-cinema">SimplyCinema Default Theatre</p>
+          </div>
+          <div>
+            <p class="text-xs text-outline uppercase tracking-wider mb-1">Seats</p>
+            <p class="text-white font-medium" id="b-seats">...</p>
+          </div>
+        </div>
+
+        <div class="relative h-px w-full border-t border-dashed border-outline-variant my-6"></div>
+
+        <div class="mt-auto pt-2 flex flex-col items-center justify-center">
+          <div class="bg-white p-2 mb-2 rounded-lg">
+            <img class="w-32 h-32 opacity-95" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=SIMPLYCINEMA" id="qr-code" alt="QR"/>
+          </div>
+          <p class="text-outline font-mono text-xs tracking-widest font-bold">SCAN AT ENTRANCE</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="grid grid-cols-1 md:grid-cols-2 max-w-sm mx-auto gap-4 mt-12">
+    <a href="../../pages/customer/home" class="flex flex-col items-center justify-center py-4 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all group border border-white/5 hover:border-primary/20">
+      <span class="text-sm font-medium text-white">Back to Home</span>
+    </a>
+    <a href="../../pages/customer/my-bookings" class="flex flex-col items-center justify-center py-4 rounded-xl auteur-gradient hover:shadow-[0_0_20px_rgba(108,59,181,0.5)] transition-all">
+      <span class="text-sm font-bold text-white">My Bookings</span>
+    </a>
+  </div>
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script>
+  injectComponent("#navbar-placeholder", "../../components/navbar.html");
+  injectComponent("#footer-placeholder", "../../components/footer.html");
+
+  document.addEventListener('DOMContentLoaded', () => {
+     requireAuth();
+
+     const finalBooking = JSON.parse(sessionStorage.getItem('sc_final_booking') || "{}");
+     if(!finalBooking.bookingId && !finalBooking.id) {
+         showToast("No recent bookings found. Redirecting...");
+         setTimeout(() => window.location.href="../../pages/customer/home", 2000);
+         return;
+     }
+
+     const bId = finalBooking.bookingId || finalBooking.id;
+     document.getElementById('b-id').innerText = `Booking ID: SC-${bId.toString().padStart(6,'0')}`;
+     
+     // Use the new flat DTO structure
+     document.getElementById('b-movie').innerText = finalBooking.movieTitle || 'Your Movie';
+     
+     const dateStr = finalBooking.showDate && finalBooking.showTime ? 
+        `${new Date(finalBooking.showDate).toLocaleDateString([], {weekday: 'short', month: 'short', day: 'numeric'})} at ${finalBooking.showTime}` 
+        : 'Unknown Time';
+     document.getElementById('b-datetime').innerText = dateStr;
+     document.getElementById('b-amount').innerText = `₹${finalBooking.finalAmount || finalBooking.totalAmount || 0}`;
+     document.getElementById('b-cinema').innerText = `${finalBooking.theatreName || 'Theatre'} (${finalBooking.cityName || 'City'})`;
+
+     const seatsStr = finalBooking.seatNumbers ? finalBooking.seatNumbers.join(', ') : 'Assigned Seats';
+     document.getElementById('b-seats').innerText = seatsStr;
+
+     document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=SC-${bId}`;
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Manage Screens | SimplyCinema Partner</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-container": "#201f1f", "background": "#131313", "outline": "#968e9e", "primary-container": "#6c3bb5", "surface-container-highest": "#353534", "surface-container-low": "#1c1b1b", "primary": "#d6baff", "error": "#ffb4ab" }, fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"] } } } }
+  </script>
+  <style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body overflow-x-hidden">
+
+<div id="admin-sidebar-placeholder"></div>
+<div id="admin-topbar-placeholder"></div>
+
+<main class="pl-64 pt-20 min-h-screen">
+  <div class="p-8 space-y-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+      <div>
+        <h1 class="font-headline text-3xl font-bold tracking-tight text-white mb-2">Theatre Screens</h1>
+        <div class="flex items-center gap-3">
+          <select id="theatre-selector" onchange="onTheatreChange()" class="bg-surface-container border border-white/10 rounded-lg text-sm text-white px-4 h-10 focus:ring-1 focus:ring-primary min-w-[200px]">
+            <option value="">Select a Theatre</option>
+          </select>
+          <p class="text-outline text-sm" id="theatre-subtitle">Select a theatre to manage its screens.</p>
+        </div>
+      </div>
+      <button onclick="openCreateModal()" id="add-screen-btn" disabled class="px-6 py-2.5 bg-primary text-background font-bold rounded-full hover:scale-105 transition-all flex items-center gap-2 shadow-xl opacity-50 cursor-not-allowed">
+        <span class="material-symbols-outlined text-xl">add</span> Add Screen
+      </button>
+    </div>
+
+    <div id="screens-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Loaded via API -->
+        <div class="col-span-full py-20 text-center text-outline bg-surface-container rounded-2xl border border-white/5">
+            Please select a theatre first.
+        </div>
+    </div>
+  </div>
+</main>
+
+<!-- Create/Edit Modal -->
+<div id="screen-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm hidden">
+    <div class="bg-surface-container border border-white/5 w-full max-w-md rounded-2xl p-8 shadow-2xl space-y-6">
+        <div class="flex justify-between items-start">
+            <h3 class="font-headline text-2xl font-bold text-white" id="modal-title">Add Screen</h3>
+            <button onclick="closeModal()" class="text-outline hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+
+        <form id="screen-form" class="space-y-4">
+            <input type="hidden" id="screen-id">
+            
+            <div>
+                <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Screen Name</label>
+                <input type="text" id="name" required placeholder="e.g. Screen 1 Platinum" class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary">
+            </div>
+
+            <div>
+                <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Screen Type</label>
+                <select id="screenType" required class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary">
+                    <option value="REGULAR">REGULAR</option>
+                    <option value="IMAX">IMAX</option>
+                    <option value="THREE_D">3D</option>
+                    <option value="FOUR_DX">4DX</option>
+                    <option value="DOLBY_ATMOS">DOLBY ATMOS</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Total Seating Capacity</label>
+                <input type="number" id="totalSeats" required min="1" placeholder="e.g. 150" class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary">
+                <p class="text-[9px] text-outline mt-2 italic px-1">Note: This will generate a default seating arrangement.</p>
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" class="w-full py-4 bg-primary text-background font-bold rounded-xl hover:brightness-110 transition-all shadow-lg uppercase tracking-widest">Save Screen</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+  injectComponent("#admin-sidebar-placeholder", "../../components/admin-sidebar.html");
+  injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
+
+  const modal = document.getElementById('screen-modal');
+  const form = document.getElementById('screen-form');
+  const theatreSelector = document.getElementById('theatre-selector');
+  const addBtn = document.getElementById('add-screen-btn');
+  const user = getSession();
+
+  document.addEventListener('DOMContentLoaded', async () => {
+      requireAuth(['THEATRE_OWNER']);
+      await loadMyTheatres();
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const theatreId = urlParams.get('theatreId');
+      if (theatreId) {
+          theatreSelector.value = theatreId;
+          onTheatreChange();
+      }
+  });
+
+  async function loadMyTheatres() {
+      try {
+          const theatres = await Theatres.getByOwner(user.id);
+          theatreSelector.innerHTML = '<option value="">Select a Theatre</option>' + 
+              theatres.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+      } catch(e) {
+          showToast("Failed to load your theatres", "error");
+      }
+  }
+
+  async function onTheatreChange() {
+      const theatreId = theatreSelector.value;
+      if (!theatreId) {
+          addBtn.disabled = true;
+          addBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          document.getElementById('screens-list').innerHTML = '<div class="col-span-full py-20 text-center text-outline">Please select a theatre first.</div>';
+          return;
+      }
+
+      addBtn.disabled = false;
+      addBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      fetchScreens(theatreId);
+  }
+
+  async function fetchScreens(theatreId) {
+      const container = document.getElementById('screens-list');
+      container.innerHTML = '<div class="col-span-full py-20 text-center text-outline">Fetching screens...</div>';
+      
+      try {
+          const res = await Screens.getByTheatre(theatreId);
+          if(!res || res.length === 0) {
+              container.innerHTML = '<div class="col-span-full py-20 text-center text-outline bg-surface-container rounded-2xl border border-white/5">No screens found for this theatre. Add one to get started.</div>';
+              return;
+          }
+          
+          container.innerHTML = '';
+          res.forEach(s => {
+              const card = document.createElement('div');
+              card.className = "bg-surface-container-low border border-white/5 rounded-2xl p-6 space-y-4 hover:border-primary/30 transition-all";
+              
+              const typeIcon = s.screenType === 'IMAX' ? 'auto_awesome' : 'tv';
+              
+              card.innerHTML = `
+                  <div class="flex justify-between items-start">
+                    <div class="p-3 bg-primary/10 rounded-xl">
+                        <span class="material-symbols-outlined text-primary text-3xl">${typeIcon}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick='openEditModal(${JSON.stringify(s).replace(/'/g, "&apos;")})' class="p-2 text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+                        <button onclick="deleteScreen(${s.id})" class="p-2 text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 class="font-headline text-lg font-bold text-white mb-1">${s.name}</h3>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-primary/10 text-primary text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">${s.screenType}</span>
+                        <span class="text-xs text-outline flex items-center gap-1"><span class="material-symbols-outlined text-xs">event_seat</span> ${s.totalSeats} Seats</span>
+                    </div>
+                  </div>
+                  <div class="pt-4 border-t border-white/5 flex items-center justify-between">
+                     <span class="text-[10px] uppercase font-bold ${s.isActive ? 'text-green-500' : 'text-error'}">${s.isActive ? 'Active' : 'Inactive'}</span>
+                     <button class="text-primary text-[10px] font-bold uppercase hover:underline">View Layout</button>
+                  </div>
+              `;
+              container.appendChild(card);
+          });
+      } catch(e) {
+          container.innerHTML = '<div class="col-span-full py-20 text-center text-error">Failed to load screens.</div>';
+      }
+  }
+
+  function openCreateModal() {
+      document.getElementById('modal-title').innerText = "Add Screen";
+      form.reset();
+      document.getElementById('screen-id').value = "";
+      modal.classList.remove('hidden');
+  }
+
+  function openEditModal(s) {
+      document.getElementById('modal-title').innerText = "Edit Screen";
+      document.getElementById('screen-id').value = s.id;
+      document.getElementById('name').value = s.name;
+      document.getElementById('screenType').value = s.screenType;
+      document.getElementById('totalSeats').value = s.totalSeats;
+      modal.classList.remove('hidden');
+  }
+
+  function closeModal() {
+      modal.classList.add('hidden');
+  }
+
+  form.onsubmit = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('screen-id').value;
+      const data = {
+          name: document.getElementById('name').value,
+          theatreId: Number(theatreSelector.value),
+          screenType: document.getElementById('screenType').value,
+          totalSeats: Number(document.getElementById('totalSeats').value),
+          isActive: true
+      };
+
+      try {
+          showLoader();
+          if(id) {
+              await Screens.update(id, data);
+              showToast("Screen updated successfully");
+          } else {
+              await Screens.create(data);
+              showToast("Screen added successfully");
+          }
+          closeModal();
+          fetchScreens(theatreSelector.value);
+      } catch(err) {
+          showToast(err.message || "Failed to save screen", "error");
+      } finally {
+          hideLoader();
+      }
+  };
+
+  async function deleteScreen(id) {
+      if(!confirm("Are you sure you want to remove this screen? This will also remove scheduled shows.")) return;
+      try {
+          showLoader();
+          await Screens.delete(id);
+          showToast("Screen removed");
+          fetchScreens(theatreSelector.value);
+      } catch(err) {
+          showToast("Failed to delete screen", "error");
+      } finally {
+          hideLoader();
+      }
+  }
+</script>
+</body>
+</html>

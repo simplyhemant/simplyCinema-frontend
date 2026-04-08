@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Checkout | SimplyCinema</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "tertiary": "#c6c4df",
+              "surface-container": "#201f1f",
+              "secondary-fixed": "#f0dbff",
+              "on-tertiary-container": "#cdcbe6",
+              "background": "#131313",
+              "on-secondary-container": "#d6a9ff",
+              "surface-container-highest": "#353534",
+              "on-error": "#690005",
+              "on-background": "#e5e2e1",
+              "on-primary-fixed": "#280057",
+              "primary": "#d6baff",
+              "secondary-container": "#6f00be",
+              "tertiary-fixed-dim": "#c6c4df",
+              "surface-variant": "#353534",
+              "surface-container-low": "#1c1b1b",
+              "secondary": "#ddb7ff",
+              "on-secondary-fixed-variant": "#6900b3",
+              "surface-tint": "#d6baff",
+              "primary-container": "#6c3bb5",
+              "primary-fixed-dim": "#d6baff",
+              "outline": "#968e9e",
+              "inverse-surface": "#e5e2e1",
+              "surface-dim": "#131313",
+              "tertiary-fixed": "#e2e0fc",
+              "primary-fixed": "#ecdcff",
+              "on-primary-fixed-variant": "#5a26a3",
+              "surface-container-lowest": "#0e0e0e",
+              "on-secondary": "#490080",
+              "on-primary": "#420089",
+              "inverse-on-surface": "#313030",
+              "tertiary-container": "#56556c",
+              "on-surface-variant": "#ccc3d4",
+              "error": "#ffb4ab",
+              "surface-container-high": "#2a2a2a",
+              "on-tertiary": "#2f2e43",
+              "on-tertiary-fixed-variant": "#45455b",
+              "on-tertiary-fixed": "#1a1a2e",
+              "error-container": "#93000a",
+              "secondary-fixed-dim": "#ddb7ff",
+              "inverse-primary": "#7343bc",
+              "on-secondary-fixed": "#2c0051",
+              "surface-bright": "#3a3939",
+              "on-primary-container": "#dcc4ff",
+              "surface": "#131313",
+              "on-surface": "#e5e2e1",
+              "outline-variant": "#4a4452"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .auteur-gradient {
+            background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%);
+        }
+        .lume-glow:hover {
+            box-shadow: 0 0 20px rgba(108, 59, 181, 0.5);
+        }
+        .glass-nav {
+            background: rgba(32, 31, 31, 0.6);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30">
+<!-- Header Suppression Rule Applied (Focused Transactional Journey) -->
+<!-- Content starts here -->
+<main class="min-h-screen pt-12 pb-24 px-6 md:px-12 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Left Column: Checkout Process -->
+<div class="lg:col-span-8 space-y-10">
+<!-- Branding & Timer Anchor -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="font-headline text-4xl font-bold tracking-tighter text-white">SimplyCinema</h1>
+<p class="text-on-surface-variant tracking-wide mt-2">Complete your cinematic journey</p>
+</div>
+<!-- Red Timer -->
+<div class="flex items-center gap-3 bg-error-container/20 px-4 py-2 rounded-full border border-error/20">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">timer</span>
+<span class="font-headline font-bold text-error tracking-widest">08:30</span>
+</div>
+</div>
+<!-- Progress Stepper (Step 2 Active) -->
+<nav class="flex items-center justify-between max-w-md">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+<span class="text-sm font-medium text-on-surface-variant">Details</span>
+</div>
+<div class="flex-1 h-[2px] mx-4 bg-primary-container"></div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold shadow-[0_0_15px_rgba(214,186,255,0.4)]">2</div>
+<span class="text-sm font-bold text-primary">Payment</span>
+</div>
+<div class="flex-1 h-[2px] mx-4 bg-surface-container-highest"></div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-outline flex items-center justify-center font-bold">3</div>
+<span class="text-sm font-medium text-outline">Confirm</span>
+</div>
+</nav>
+<!-- Payment Methods -->
+<section class="space-y-6">
+<h2 class="font-headline text-2xl font-semibold text-white">Payment Method</h2>
+<div class="space-y-4">
+<!-- UPI Tab (Collapsed) -->
+<div class="bg-surface-container-low p-6 rounded-xl cursor-pointer group transition-all duration-300">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+<span class="font-medium text-on-surface">UPI (GPay, PhonePe, etc.)</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary">expand_more</span>
+</div>
+</div>
+<!-- Credit/Debit Card Tab (Expanded) -->
+<div class="bg-surface-container border-2 border-primary/30 p-8 rounded-xl shadow-2xl scale-[1.01] transition-all">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">credit_card</span>
+<span class="font-bold text-lg text-white">Credit / Debit Card</span>
+</div>
+<div class="flex gap-2">
+<div class="w-8 h-5 bg-surface-container-highest rounded-sm opacity-60"></div>
+<div class="w-8 h-5 bg-surface-container-highest rounded-sm opacity-60"></div>
+<div class="w-8 h-5 bg-surface-container-highest rounded-sm opacity-60"></div>
+</div>
+</div>
+<!-- Card Form -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Card Number -->
+<div class="md:col-span-2 space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-outline">Card Number</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-3 text-lg font-headline tracking-widest transition-colors outline-none" placeholder="xxxx xxxx xxxx xxxx" type="text"/>
+<div class="absolute right-0 top-1/2 -translate-y-1/2">
+<span class="material-symbols-outlined text-outline">lock</span>
+</div>
+</div>
+</div>
+<!-- Expiry -->
+<div class="space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-outline">Expiry Date</label>
+<input class="w-full bg-surface-container-lowest border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-3 text-lg font-headline transition-colors outline-none" placeholder="MM / YY" type="text"/>
+</div>
+<!-- CVV -->
+<div class="space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-outline">CVV</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-3 text-lg font-headline transition-colors outline-none" placeholder="***" type="password"/>
+<span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-outline text-sm cursor-help">help</span>
+</div>
+</div>
+<!-- Cardholder Name -->
+<div class="md:col-span-2 space-y-2">
+<label class="text-xs font-bold uppercase tracking-widest text-outline">Cardholder Name</label>
+<input class="w-full bg-surface-container-lowest border-b border-outline-variant focus:border-primary focus:ring-0 px-0 py-3 text-lg font-headline transition-colors outline-none" placeholder="John Wick" type="text"/>
+</div>
+</div>
+<div class="mt-8 flex items-center gap-3">
+<input class="rounded bg-surface-container-lowest border-outline-variant text-primary focus:ring-primary" id="save-card" type="checkbox"/>
+<label class="text-sm text-on-surface-variant" for="save-card">Save this card securely for faster checkout</label>
+</div>
+</div>
+<!-- Net Banking (Collapsed) -->
+<div class="bg-surface-container-low p-6 rounded-xl cursor-pointer group transition-all duration-300">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">account_balance</span>
+<span class="font-medium text-on-surface">Net Banking</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Final Action (Mobile Only Hidden via Grid) -->
+<button class="auteur-gradient w-full py-5 rounded-full font-headline font-bold text-xl text-white shadow-xl lume-glow transition-transform active:scale-95 flex items-center justify-center gap-3">
+                Pay $42.50
+                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Right Column: Order Summary Sidebar -->
+<aside class="lg:col-span-4 space-y-6">
+<div class="bg-surface-container rounded-2xl overflow-hidden sticky top-12 shadow-2xl border border-outline-variant/10">
+<!-- Movie Backdrop Mini -->
+<div class="h-32 w-full relative">
+<img class="w-full h-full object-cover opacity-40" data-alt="cinematic close-up of film reel spinning with neon light highlights in a dark movie theater setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBV_EtaAld6fmQjDEsbZJbVflEBufhFBmWJCAAEVNTWkrjm0bszjQDTD1lG2pO6riPlDWQzfdLiTfhFWqXQWh6tsiBwf67YQQpNeNSWMV_h4wBN_WleYpTw5TSEzaOgS9P_ngJlbtcKYB2SgOYpidXwPGs4mVnlTOCkUf1JLoJSlgpqT7QvL4Pv4Eiaq-pvvA_vaiexqyErxxDaLhlTWcbjRRN1YsnQ-T1v3GuKrxuWPqtlI4Q4-IwHpPw3EgKUDYYkJJ19NXDqAw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container to-transparent"></div>
+</div>
+<div class="p-8 -mt-12 relative z-10 space-y-8">
+<!-- Movie Title Block -->
+<div>
+<span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary-container/20 px-2 py-1 rounded">Now Booking</span>
+<h3 class="font-headline text-2xl font-bold text-white mt-3">Dune: Part Two</h3>
+<p class="text-sm text-on-surface-variant mt-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                            IMAX Victoria, London
+                        </p>
+</div>
+<!-- Details Bento -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant/5">
+<p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Date &amp; Time</p>
+<p class="text-sm font-semibold text-on-surface mt-1">24 Oct • 19:30</p>
+</div>
+<div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant/5">
+<p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Seats</p>
+<p class="text-sm font-semibold text-on-surface mt-1">G12, G13, G14</p>
+</div>
+</div>
+<!-- Pricing Stack -->
+<div class="space-y-4 pt-4 border-t border-outline-variant/20">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Tickets (3x)</span>
+<span class="text-on-surface">$36.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Booking Fee</span>
+<span class="text-on-surface">$4.50</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Taxes (GST)</span>
+<span class="text-on-surface">$2.00</span>
+</div>
+<div class="flex justify-between items-end pt-4">
+<span class="font-headline text-lg font-bold text-white">Total Amount</span>
+<span class="font-headline text-3xl font-bold text-primary tracking-tighter">$42.50</span>
+</div>
+</div>
+<!-- Promo Code -->
+<div class="relative group">
+<input class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:border-primary outline-none transition-all" placeholder="Promo Code" type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 text-primary font-bold text-xs uppercase tracking-widest px-3 py-1 hover:bg-primary/10 rounded-lg">Apply</button>
+</div>
+<!-- Trust Badges -->
+<div class="flex items-center justify-center gap-6 opacity-40">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+</div>
+</div>
+<!-- Cancellation Policy Note -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10 text-[11px] text-on-surface-variant leading-relaxed">
+<span class="font-bold text-outline uppercase block mb-1">Cancellation Policy</span>
+                Tickets can be cancelled up to 2 hours before showtime. 10% cancellation charges apply. Refund will be processed within 5-7 working days.
+            </div>
+</aside>
+</main>
+<!-- Footer Rendering -->
+<footer class="bg-[#131313] w-full pt-16 pb-8 border-t border-outline-variant/10">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-12 max-w-7xl mx-auto">
+<div class="space-y-6">
+<h4 class="text-xl font-black text-white">SimplyCinema</h4>
+<p class="text-slate-500 text-sm leading-relaxed">The premier destination for cinema lovers. Curating the best film experiences across the globe with state-of-the-art technology and comfort.</p>
+</div>
+<div>
+<h5 class="text-violet-500 font-bold mb-6 text-sm uppercase tracking-widest">Navigation</h5>
+<ul class="space-y-4">
+<li><a class="text-slate-500 hover:text-violet-400 transition-transform hover:translate-x-1 inline-block text-sm" href="#">Movies &amp; Events</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 transition-transform hover:translate-x-1 inline-block text-sm" href="#">Our Cinemas</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 transition-transform hover:translate-x-1 inline-block text-sm" href="#">Help &amp; Support</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-violet-500 font-bold mb-6 text-sm uppercase tracking-widest">Legal</h5>
+<ul class="space-y-4">
+<li><a class="text-slate-500 hover:text-violet-400 transition-transform hover:translate-x-1 inline-block text-sm" href="#">Privacy Policy</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 transition-transform hover:translate-x-1 inline-block text-sm" href="#">Terms of Service</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 transition-transform hover:translate-x-1 inline-block text-sm" href="#">Cookie Policy</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-violet-500 font-bold mb-6 text-sm uppercase tracking-widest">Newsletter</h5>
+<div class="relative">
+<input class="w-full bg-surface-container-high border-none rounded-full px-5 py-3 text-sm focus:ring-2 focus:ring-violet-500 outline-none" placeholder="Enter your email" type="email"/>
+<button class="absolute right-1 top-1/2 -translate-y-1/2 bg-violet-500 text-white rounded-full p-2 hover:bg-violet-600 transition-all">
+<span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-12 pt-16 border-t border-outline-variant/10 mt-16 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-slate-500 text-sm">© 2024 SimplyCinema. All rights reserved.</p>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-slate-500 hover:text-white cursor-pointer transition-colors">brand_awareness</span>
+<span class="material-symbols-outlined text-slate-500 hover:text-white cursor-pointer transition-colors">public</span>
+<span class="material-symbols-outlined text-slate-500 hover:text-white cursor-pointer transition-colors">videocam</span>
+</div>
+</div>
+</footer>
+</body></html>

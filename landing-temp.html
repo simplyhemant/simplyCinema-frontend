@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SimplyCinema | Your Cinema. Simply Better.</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface-variant": "#ccc3d4",
+              "surface-container-highest": "#353534",
+              "tertiary-fixed-dim": "#c6c4df",
+              "secondary": "#ddb7ff",
+              "on-primary-container": "#dcc4ff",
+              "error-container": "#93000a",
+              "on-secondary-container": "#d6a9ff",
+              "on-surface": "#e5e2e1",
+              "tertiary-container": "#56556c",
+              "secondary-fixed-dim": "#ddb7ff",
+              "surface-container": "#201f1f",
+              "primary-fixed": "#ecdcff",
+              "on-secondary-fixed": "#2c0051",
+              "primary-container": "#6c3bb5",
+              "surface-variant": "#353534",
+              "on-primary-fixed-variant": "#5a26a3",
+              "on-background": "#e5e2e1",
+              "surface-container-lowest": "#0e0e0e",
+              "surface": "#131313",
+              "on-error-container": "#ffdad6",
+              "error": "#ffb4ab",
+              "surface-container-high": "#2a2a2a",
+              "on-secondary": "#490080",
+              "on-tertiary-fixed": "#1a1a2e",
+              "surface-bright": "#3a3939",
+              "inverse-primary": "#7343bc",
+              "on-primary": "#420089",
+              "surface-tint": "#d6baff",
+              "surface-dim": "#131313",
+              "on-tertiary-container": "#cdcbe6",
+              "on-error": "#690005",
+              "secondary-fixed": "#f0dbff",
+              "on-tertiary-fixed-variant": "#45455b",
+              "outline-variant": "#4a4452",
+              "inverse-surface": "#e5e2e1",
+              "primary": "#d6baff",
+              "on-secondary-fixed-variant": "#6900b3",
+              "outline": "#968e9e",
+              "on-primary-fixed": "#280057",
+              "background": "#131313",
+              "surface-container-low": "#1c1b1b",
+              "inverse-on-surface": "#313030",
+              "secondary-container": "#6f00be",
+              "primary-fixed-dim": "#d6baff",
+              "on-tertiary": "#2f2e43",
+              "tertiary": "#c6c4df",
+              "tertiary-fixed": "#e2e0fc"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .auteur-gradient {
+        background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%);
+      }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- Section 1: TopNavBar -->
+<header class="fixed top-0 w-full h-16 z-50 bg-violet-950/70 backdrop-blur-xl shadow-[0_0_20px_rgba(108,59,181,0.3)] font-['Space_Grotesk'] antialiased tracking-tight">
+<div class="flex justify-between items-center px-8 w-full max-w-screen-2xl mx-auto h-full">
+<!-- Left: Logo -->
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">movie</span>
+<h1 class="text-2xl font-bold text-white tracking-tighter">Simply<span class="text-primary-container">Cinema</span></h1>
+</div>
+<!-- City Selector -->
+<button class="hidden md:flex items-center gap-2 px-4 py-1.5 border border-primary-container rounded-full text-sm text-on-surface-variant hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>Mumbai</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+<!-- Center: Search & Links -->
+<div class="hidden lg:flex flex-1 max-w-xl mx-8 items-center gap-6">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-primary-container placeholder:text-outline transition-all" placeholder="Search for Movies..." type="text"/>
+</div>
+<nav class="flex items-center gap-6 whitespace-nowrap">
+<a class="text-violet-400 font-bold border-b-2 border-violet-500 pb-1" href="#">Movies</a>
+<a class="text-slate-300 hover:text-white transition-colors" href="#">Events</a>
+<a class="text-slate-300 hover:text-white transition-colors" href="#">Cinemas</a>
+<a class="text-slate-300 hover:text-white transition-colors" href="#">Support</a>
+</nav>
+</div>
+<!-- Right: Actions -->
+<div class="flex items-center gap-4">
+<button class="hidden sm:block px-6 py-2 border border-outline-variant text-primary font-medium hover:bg-white/5 transition-all scale-95 active:scale-90 rounded-full">Sign In</button>
+<button class="px-6 py-2 bg-primary-container text-on-primary-container font-bold shadow-[0_0_15px_rgba(108,59,181,0.4)] hover:shadow-[0_0_20px_rgba(108,59,181,0.6)] transition-all scale-95 active:scale-90 rounded-full">Register</button>
+</div>
+</div>
+</header>
+<main class="pt-16">
+<!-- Section 2: Hero Carousel -->
+<section class="relative h-[480px] w-full overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Epic cinematic movie poster featuring Kalki 2898 AD with futuristic warriors in a post-apocalyptic desert landscape under dramatic orange and purple sky" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBR3epy35BI-TlSrRF2pLdNzqAYd4mUJUzIjJZNzD_iGym33_Yt6lNMJZDJhWXxgxJMKAz8xpP3DM18PjY-OvWWUGicHNCUEazHz_8bxlOILvUlRETGmIJc3EcYvH9T1drDfQwnqyzJZnA5tPgvqxXMuYS0XU74jIiSrCTXw_XkWqNEZ82MXAMSY787-rAH26n0c9UVfaFDQ0bfTR2wrteVqj9Z7Ng-OrVg2aXbQ-9IfXOImeod6xFYCpENIjlL0QUTUCUbYJCodA')">
+<!-- Heavy Gradient Overlay -->
+<div class="absolute inset-0 bg-gradient-to-r from-surface via-surface/80 to-transparent"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"></div>
+</div>
+<div class="relative z-10 h-full max-w-screen-2xl mx-auto px-8 flex flex-col justify-center">
+<div class="max-w-2xl">
+<span class="inline-block px-3 py-1 bg-primary-container/30 backdrop-blur-md rounded-md text-primary-fixed text-xs font-bold tracking-widest uppercase mb-4">Trending Now</span>
+<h2 class="font-headline text-5xl md:text-7xl font-bold text-white mb-2 leading-tight">Kalki 2898 AD</h2>
+<div class="flex items-center gap-4 mb-8">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold">4.2/5</span>
+</div>
+<span class="text-outline-variant">|</span>
+<span class="text-on-surface-variant text-sm">12.4k ratings</span>
+<span class="text-outline-variant">|</span>
+<span class="text-on-surface-variant text-sm">Action, Sci-Fi</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-8 py-3.5 bg-primary-container text-on-primary-container rounded-full font-bold flex items-center gap-2 hover:shadow-[0_0_20px_rgba(108,59,181,0.5)] transition-all group">
+                            Book Tickets
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<button class="px-8 py-3.5 border border-outline text-white rounded-full font-bold flex items-center gap-2 hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                            Watch Trailer
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Quick Filter Tabs -->
+<section class="mt-8 px-8 max-w-screen-2xl mx-auto">
+<div class="flex flex-col gap-6">
+<!-- Categories -->
+<div class="flex items-center gap-8 overflow-x-auto hide-scrollbar border-b border-outline-variant/10 pb-4">
+<button class="text-primary font-bold whitespace-nowrap border-b-2 border-primary pb-3 -mb-[13px]">Movies</button>
+<button class="text-outline hover:text-white transition-colors whitespace-nowrap pb-3">Events</button>
+<button class="text-outline hover:text-white transition-colors whitespace-nowrap pb-3">Plays</button>
+<button class="text-outline hover:text-white transition-colors whitespace-nowrap pb-3">Sports</button>
+<button class="text-outline hover:text-white transition-colors whitespace-nowrap pb-3">Concerts</button>
+</div>
+<!-- Genre Chips -->
+<div class="flex items-center gap-3 overflow-x-auto hide-scrollbar">
+<button class="px-5 py-2 bg-primary-container text-on-primary-container rounded-full text-sm font-medium">All Genres</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:text-white rounded-full text-sm font-medium transition-colors">Action</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:text-white rounded-full text-sm font-medium transition-colors">Comedy</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:text-white rounded-full text-sm font-medium transition-colors">Drama</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:text-white rounded-full text-sm font-medium transition-colors">Horror</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:text-white rounded-full text-sm font-medium transition-colors">Sci-Fi</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:text-white rounded-full text-sm font-medium transition-colors">Thriller</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface-variant hover:text-white rounded-full text-sm font-medium transition-colors">Animation</button>
+</div>
+</div>
+</section>
+<!-- Section 4: Now Showing -->
+<section class="mt-16 px-8 max-w-screen-2xl mx-auto">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h3 class="font-headline text-3xl font-bold text-white tracking-tight">Now Showing</h3>
+<p class="text-outline text-sm mt-1">Experience the latest blockbusters on the big screen.</p>
+</div>
+<button class="text-primary text-sm font-bold flex items-center gap-1 hover:underline">View All <span class="material-symbols-outlined text-sm">chevron_right</span></button>
+</div>
+<div class="flex gap-6 overflow-x-auto hide-scrollbar pb-8">
+<!-- Movie Card 1 -->
+<div class="flex-shrink-0 w-[200px] group cursor-pointer">
+<div class="aspect-[2/3] w-full rounded-xl overflow-hidden mb-4 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(108,59,181,0.4)] transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="Action-packed movie poster for Pushpa 2 featuring an intense male lead with rugged features against a fiery red background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsxoFlMOJ-_4_4x9Ep0BkoM7Q6yEaTr-yIqyikF5PzgXl-KRfcfBC0UiOp5Lcu1GL1DicDDWW7UzNrSZdjRYYYlsqWjQaA-fcz3FNROUeQD3FQwO7TVGV3NYYNU-Ztaqxfh791u-7aVVDJNuqpXLhy6wAixf3H9aC7N0W2bIauOlu3mwyVA_xDVEPxVW2Be6d1opyuO0o1Rt-pIaOorxWH7U8R8T_pXBZfPbO8Fz0i0ul6OghVsfJwSKmv0OBjXHu2Vb-TNmlNfw"/>
+</div>
+<h4 class="font-semibold text-white truncate">Pushpa 2: The Rule</h4>
+<p class="text-outline text-sm">Action/Drama</p>
+</div>
+<!-- Movie Card 2 -->
+<div class="flex-shrink-0 w-[200px] group cursor-pointer">
+<div class="aspect-[2/3] w-full rounded-xl overflow-hidden mb-4 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(108,59,181,0.4)] transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="Heroic movie poster for Singham Again showing a powerful police officer in front of a dramatic explosion with debris in the air" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2hL1ht59hnaaAetxTHCYy74UUL587Yc4kbo2gsSPkQV10fpPjolmze2Fl6WkRJx2hRdneKEDcW72QA7jE62HPjfjN1I_pKLW66C5HArRtirCe3B6_cXdyfSdCqkZigyZpx_XrVmVhEQIx41LGmP1LmJqX_iglKSIOuGid9qs1kgmH7uBR0xTMrIQP8VU6E74bPOR6kvWFhr5cPAuMGn6zNnMRSaCW5u5A9nRNQV8eqg3aAfxZhkOtcbVv6dB4oHiVirDJdkVA8w"/>
+</div>
+<h4 class="font-semibold text-white truncate">Singham Again</h4>
+<p class="text-outline text-sm">Action/Police</p>
+</div>
+<!-- Movie Card 3 -->
+<div class="flex-shrink-0 w-[200px] group cursor-pointer">
+<div class="aspect-[2/3] w-full rounded-xl overflow-hidden mb-4 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(108,59,181,0.4)] transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="Historical epic movie poster for Gladiator II featuring a gladiator in an arena with dramatic sunlight and dust particles" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTklybwL0isFSoSsSqUSMP10Lhoq1WOeOynxUv8EkbPyLl1sQtmY0NcBY4NO6diaRU-g6LAA7cclULypL6aHhkEQHaMPgxDkORWKbyOe6ZHf5k_KEtBsFypvlpvFBjmC-9wbJZRn0B-kASWh8D9PxHFvlMMBCyBF5A5ec3ZkzKZ7Jm8ZbZqxXsc9IAT0Y9kyqF08H8VLiaNjFQqUHdfFtjxwkkzSoJUEKAkqKWPLFDx9mr5ks56pKOC533YCrnjyE5S6VpDOD2pw"/>
+</div>
+<h4 class="font-semibold text-white truncate">Gladiator II</h4>
+<p class="text-outline text-sm">History/Drama</p>
+</div>
+<!-- Movie Card 4 -->
+<div class="flex-shrink-0 w-[200px] group cursor-pointer">
+<div class="aspect-[2/3] w-full rounded-xl overflow-hidden mb-4 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(108,59,181,0.4)] transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="Vibrant animated movie poster for Moana 2 featuring characters on a boat in a tropical blue ocean with a colorful sunset" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfRDtedKX-pZEH9kjFAt4dOnXl6Z2Cbcc3AEin_ShKB5l0pAxWsVIs-ujIKCQ4iV8lrYdR9dEv5f5X1M0w4iDReCthNHhlv1ugJxELnP3K6xnoNEluQ-Yb4FHWGbiaANGIial1T3HZBvwVw4hJE6DabkH0Vr9DZRSU8CsPHIxuLVUiU3HAZSBoyLmTSOPIt_ETHwfQP01m_q4nL9_zDQP2Nnhavi66IDKiNpdMxSN4UDEhsHfE5GBC8VmA7Jn_szkOYa2Rozy6rw"/>
+</div>
+<h4 class="font-semibold text-white truncate">Moana 2</h4>
+<p class="text-outline text-sm">Animation/Adventure</p>
+</div>
+<!-- Movie Card 5 -->
+<div class="flex-shrink-0 w-[200px] group cursor-pointer">
+<div class="aspect-[2/3] w-full rounded-xl overflow-hidden mb-4 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(108,59,181,0.4)] transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="Fantasy movie poster for Wicked featuring two witches in a vibrant emerald green setting with magical sparks and a dark sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOBXidUdGQdimOoTgLjTfEsCNKISS0hwT3g-W1U5oIfApAxqips5vs_STGFWR4uEb0TUrUijUCxNZDKsg0PpCWqbmHHUBYFM3-_S2QBOdYcP4Vwq2dwtQpUUHXh50GoXcX_0S-2FBsHLJin8arMBqWcyrwHhyiwO91aS3nKHAvchY0FH1WQMztK55BNbIWNk5m1KCk8K4907CmupjeBtxQ2QP5h9sk73S8G3W-atm4YhuBTXsEMNXkm4-rs7OxUxgSP2w5VXYasw"/>
+</div>
+<h4 class="font-semibold text-white truncate">Wicked</h4>
+<p class="text-outline text-sm">Fantasy/Musical</p>
+</div>
+<!-- Movie Card 6 -->
+<div class="flex-shrink-0 w-[200px] group cursor-pointer">
+<div class="aspect-[2/3] w-full rounded-xl overflow-hidden mb-4 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(108,59,181,0.4)] transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="Stunning wildlife movie poster for Mufasa The Lion King featuring a majestic lion overlooking a lush African savanna at sunrise" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCH9ymWPC3jSlZy1z2-sH--G3XhKN-mNbj5gQXI4sdmwwbhqiLwKrCOY4VmxswehMoAEpRfhmjaHsyp2-MyZs0Nw5gszecojadhq_h5lS0m4NpTSEigK49RnBGD55l1XNJO3zsDxVhKUxAgiADpyxaa0oLiSSfJgm5f3OLondqVv2r9DhGPfcxjb0hOH_iqOJ5gXjWFF03CNQAxb1cbbv5rLJaKd3btL7VZ8lTR9k0MRLrGyUyp2Oit-3BUC3o-0qjyYg30IlkMbw"/>
+</div>
+<h4 class="font-semibold text-white truncate">Mufasa: The Lion King</h4>
+<p class="text-outline text-sm">Adventure/Drama</p>
+</div>
+</div>
+</section>
+<!-- Section 5: Coming Soon -->
+<section class="mt-8 px-8 max-w-screen-2xl mx-auto">
+<h3 class="font-headline text-2xl font-bold text-white tracking-tight mb-8">Coming Soon</h3>
+<div class="flex gap-6 overflow-x-auto hide-scrollbar pb-4">
+<div class="flex-shrink-0 w-[160px] relative">
+<div class="aspect-[2/3] w-full rounded-lg overflow-hidden grayscale opacity-40">
+<img class="w-full h-full object-cover" data-alt="Cinematic space movie poster featuring an astronaut in a dark nebula with stars and glowing dust" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0n3C482cG7_YpryTSPc0gjNUCdfKWb1NO4KxaHA-iT1fG6MKRV5TUd6d6-0j1gBZfQN-zBU0QMIHhXdrWW8riipMq1BrYXl-C3_TZe6BjrxCWSzucfupvlsc6F8-q9ojgtOyrA1GFFswmaMmNU_leGjCqgi-d_DAjEqdyJr-s0hMf4SDTi0r0QLjupKdHSJUK4vr1Tz4rp7iDfozTk783WYtgNUh3zp3XOCiQBffGbysQO6UakESE9J8SrQtbTNqoIWmwPBIHxA"/>
+</div>
+<div class="absolute inset-0 flex flex-col items-center justify-center p-2 text-center">
+<span class="bg-primary-container text-[10px] font-black tracking-widest px-2 py-1 rounded mb-2">COMING SOON</span>
+<p class="text-white text-xs font-bold">Releasing Dec 25</p>
+</div>
+<h4 class="mt-3 text-sm font-medium text-outline truncate">Starfall Echoes</h4>
+</div>
+<!-- Repeat for other coming soon -->
+<div class="flex-shrink-0 w-[160px] relative">
+<div class="aspect-[2/3] w-full rounded-lg overflow-hidden grayscale opacity-40">
+<img class="w-full h-full object-cover" data-alt="Noir style detective movie poster with a silhouette in the rain under a dim streetlamp" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ0iFJ3MZtAh94Ft3TePYeZwU3gQ5FmUxjoviSXluU_ws-tyHFibk532ztA9I931UNIao7zqeNJiqw_wG-GK0wNlVRaSHgDIQdZSmTjTcgGBVZYzlB55klRNuUpF2L1EO6R9STkKyw379I8lydECo2aQl6JEH7nAH8uG0nL9JEk8ccVvrMmuDfpeVm3KlGj_Ps5uITn9f8bX_UrZB_Xa-lpzHobI6-A6AheiPai0HROzuZcXkILXvrFiLA3p2tl24sglXsrnpRVw"/>
+</div>
+<div class="absolute inset-0 flex flex-col items-center justify-center p-2 text-center">
+<span class="bg-primary-container text-[10px] font-black tracking-widest px-2 py-1 rounded mb-2">COMING SOON</span>
+<p class="text-white text-xs font-bold">Releasing Jan 12</p>
+</div>
+<h4 class="mt-3 text-sm font-medium text-outline truncate">Shadow Protocol</h4>
+</div>
+<div class="flex-shrink-0 w-[160px] relative">
+<div class="aspect-[2/3] w-full rounded-lg overflow-hidden grayscale opacity-40">
+<img class="w-full h-full object-cover" data-alt="Romantic drama movie poster featuring a couple in a soft-lit vintage library with warm orange tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiRpnLgs-QW5g5-nPVonQZvtx47sXesR0q0OusAz4Acjpc0uYgG71PL4_rY1ASRW-2cOTMK_QBDLNXCpH0crUum6HY8FaVo28aiyIMpmFcrDncFzrMZzctcvcmCMjh7yewYrCdkoanrpv5VAgIwe8N5Rw8BMWRNuQOviH-GGkSlJ_Bq59rasiIz0-eHjZLqzT0aQYKZEj-7k0VjV9CBANRPhmwzDCxz1ppxgvN-HE2SiKAUr07LYpHFpOkhTK3Jt4E6j02ryG8DA"/>
+</div>
+<div class="absolute inset-0 flex flex-col items-center justify-center p-2 text-center">
+<span class="bg-primary-container text-[10px] font-black tracking-widest px-2 py-1 rounded mb-2">COMING SOON</span>
+<p class="text-white text-xs font-bold">Releasing Jan 20</p>
+</div>
+<h4 class="mt-3 text-sm font-medium text-outline truncate">Eternal Bloom</h4>
+</div>
+</div>
+</section>
+<!-- Section 6: Book By Cinema Chain -->
+<section class="mt-20 py-12 bg-surface-container-low">
+<div class="px-8 max-w-screen-2xl mx-auto">
+<h4 class="text-outline text-xs font-black uppercase tracking-[0.2em] text-center mb-10">Trusted Cinema Partners</h4>
+<div class="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+<span class="text-2xl font-black text-white">PVR</span>
+<span class="text-2xl font-black text-white italic">INOX</span>
+<span class="text-2xl font-black text-white">Cinépolis</span>
+<span class="text-2xl font-black text-white tracking-widest">MIRAJ</span>
+<span class="text-2xl font-black text-white uppercase">Carnival</span>
+</div>
+</div>
+</section>
+<!-- Section 7: Premiere Promotional Banner -->
+<section class="mt-20 px-8 max-w-screen-2xl mx-auto">
+<div class="relative auteur-gradient rounded-2xl overflow-hidden p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-12">
+<div class="relative z-10 flex-1">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-secondary text-4xl" style="font-variation-settings: 'FILL' 1;">movie_filter</span>
+<h2 class="font-headline text-3xl md:text-4xl font-bold text-white">SimplyCinema <span class="text-secondary italic">Premieres</span></h2>
+</div>
+<p class="text-on-primary-container text-lg mb-8 max-w-lg">Watch world-class cinema from the comfort of your home. New releases every Friday.</p>
+<button class="px-8 py-3 bg-white text-surface-container font-bold rounded-full hover:bg-secondary transition-colors">Browse Premieres</button>
+</div>
+<div class="relative flex-1 w-full max-w-sm flex justify-center">
+<!-- Overlapping posters mockup -->
+<div class="relative h-64 w-44 rounded-lg shadow-2xl overflow-hidden rotate-[-6deg] z-20 border-2 border-white/10 translate-x-12 translate-y-4">
+<img class="w-full h-full object-cover" data-alt="Artistic movie poster featuring an abstract face in shades of deep blue and gold with a grainy texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXpylKSGCNcsOYNDzglxCwn1Ai9v2bi0Ja9mawNZx_lI0ZgYO1CnOPanGU0zmm0_D6GUVAVg-0x-JjfgAuJKe_5wHHmEypF2TQ5Av9NHk8Gd-BpJfC9_7OIwpg2STb1L5YsEq-1TGrJUeCfp0Z5eRjCFOnEDP_YKfTsDQ_Sx1FpYdGMAZ4--d_rllkDGcekAhOKEFgks1_WJTXefpAig4NnOqO9vuyj41WE7CgULrJK1YbP-jiP24o2rku3Sw0qz6CrgoWZ1WJBA"/>
+</div>
+<div class="relative h-64 w-44 rounded-lg shadow-2xl overflow-hidden rotate-[6deg] z-10 border-2 border-white/10 -translate-x-12">
+<img class="w-full h-full object-cover" data-alt="Futuristic cyberpunk movie poster showing neon-lit city streets with raining digital code effects" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsLwJB2LLUkjYS4lSLylNqFXHfrpIBYG9Bx8rasXdHormv-tfWBk8ecIgckuKmTcMH-fiEI4McfY0yJ_RWSqoWiMdB0QgOoRljQryBSyhkRkb3bAgg3ZVNq3e3_eOHHQdae1SDfr_PPMh3XV-eIy72mE4H-K2Nm9AFBCJDvOQ49K6e9FNe0an9iJSwQH3cZ3800ZL4B6lpWpwYTFbGd-6ceCm7rxyxTy2_vS1DNwCE7K4TxGFwEcLBKY9atjLEYTwABRFLUU9TYg"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 8: Events in Mumbai Grid -->
+<section class="mt-20 px-8 max-w-screen-2xl mx-auto">
+<div class="flex justify-between items-end mb-8">
+<h3 class="font-headline text-3xl font-bold text-white tracking-tight">Events in Mumbai</h3>
+<button class="text-primary text-sm font-bold flex items-center gap-1 hover:underline">See More Events</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Event Card 1 -->
+<div class="bg-surface-container rounded-xl overflow-hidden group cursor-pointer border border-white/5 hover:border-primary/20 transition-all">
+<div class="aspect-video w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Live stand-up comedy event banner showing a performer on a stage with a microphone and bright spotlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLKMrTwwP5Ad7BTWFvKwzAXG15JzidjsUexAYqHym4qlpYKxse_RJxNk_gvREQ3NXK1bxbuYEsNBOoE1Ie9x0gApebIeVU55Kmgu0qSjn5-zvUB9rei-2SM4oF1XzFOTcPlHcENDrWmVbt1u1AWuKxHr-wLnPObpsuaPIVk8Lwyowus3i4ssk1iODCqnSY8MeuMpeELn7__cQR11T-Mh6F5qHIHqWoYNNYpk2Yh07au94z37Pqd8CQweRnuP7aHrw9EELxIS5MQw"/>
+</div>
+<div class="p-4">
+<h5 class="text-white font-bold mb-1 group-hover:text-primary transition-colors">Laughter Riot: Standup Night</h5>
+<p class="text-outline text-xs mb-3">Canvas Laugh Club, Mumbai</p>
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-green-400">Starting ₹ 499</span>
+<span class="text-[10px] text-outline-variant px-2 py-0.5 rounded bg-white/5 uppercase font-bold">Comedy</span>
+</div>
+</div>
+</div>
+<!-- Event Card 2 -->
+<div class="bg-surface-container rounded-xl overflow-hidden group cursor-pointer border border-white/5 hover:border-primary/20 transition-all">
+<div class="aspect-video w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="High-energy music concert banner featuring a large crowd at night with colorful laser lights and stage smoke" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo_b42_crAGSHISSzPCy3Nsq3bfOOYkDHdhz-pSrP5UsinPMgxmIfrLM1taUXigRSV7RTZ7jHOIoLgrGUx159WIvN6lZaTnCs8rgm-blZbut9Q3im8vTiY_1I1N7Jk9eZbyYDCFtTILMCDu1nHmfdWgNF3KJbBy3O6J5C7TtoPrtF9FTPhduazWMqCTW0EFlZoAN7yJMo8Re2ROMlz7uUE7Fbm3zkLT1OiIH1RESn9FCSACc3BJ8IYYHww7jMdPX_iZkFDl--OaA"/>
+</div>
+<div class="p-4">
+<h5 class="text-white font-bold mb-1 group-hover:text-primary transition-colors">Neon Beats: EDM Festival</h5>
+<p class="text-outline text-xs mb-3">Jio World Garden, Mumbai</p>
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-green-400">Starting ₹ 1,299</span>
+<span class="text-[10px] text-outline-variant px-2 py-0.5 rounded bg-white/5 uppercase font-bold">Music</span>
+</div>
+</div>
+</div>
+<!-- Event Card 3 -->
+<div class="bg-surface-container rounded-xl overflow-hidden group cursor-pointer border border-white/5 hover:border-primary/20 transition-all">
+<div class="aspect-video w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Creative pottery workshop banner showing hands shaping clay on a wheel with soft natural lighting in a studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwpVafWRbGdoDt6p790YiF5L5Lycj2fGBGQn2pvOVCqcDZaVMRU8hV8Kw722zVRYXUK5QHA3iFXbArxmu-7EjAQRGzPBIRLaAc6o7hztGiuNvN0XXUZbhcVUVc0ZsF9CwaXA2nFzoAVQLTcuBFcymtkD7BALu2jPCmWACwffsz3JQQaBlx3IivLaHzsC32gwMTIAcNqZQr1lOynYd_9Tl63xGkLocly9NXiC48p2i4xBW7X-t7qGI3mFVnipxJ4xxOYzIppdMnxg"/>
+</div>
+<div class="p-4">
+<h5 class="text-white font-bold mb-1 group-hover:text-primary transition-colors">Clay &amp; Chill: Pottery Workshop</h5>
+<p class="text-outline text-xs mb-3">The Art Hub, Mumbai</p>
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-green-400">Starting ₹ 850</span>
+<span class="text-[10px] text-outline-variant px-2 py-0.5 rounded bg-white/5 uppercase font-bold">Workshop</span>
+</div>
+</div>
+</div>
+<!-- Event Card 4 -->
+<div class="bg-surface-container rounded-xl overflow-hidden group cursor-pointer border border-white/5 hover:border-primary/20 transition-all">
+<div class="aspect-video w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Dramatic theater play banner showing actors in period costumes on a classic stage with velvet curtains" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgVeEVup68CYZv0QXR6AFnSZIEpcqmtIfsdC6Iu0vSgUzlZwwKeidu9oCgh9Tu3lI958jUnRghbAdiazW_H3QYSIra_WPuhJ20XTNwadZDYqiVd6ZmrXC2DkWf9bFft1zSNFDl8NL4m4G4EFWAm_-dCdMNz_Tvfe_mvK5IcajX8V8130VAZZFTCrio2mbYezsjvi3gJgDMgWsOQ1sYFLrZCge_ASvZHFW2cBr-_Gk58Qqg0QjqkSyhEaEK3jDVsAB6hDEmVd42NQ"/>
+</div>
+<div class="p-4">
+<h5 class="text-white font-bold mb-1 group-hover:text-primary transition-colors">The Shakespeare Project</h5>
+<p class="text-outline text-xs mb-3">Prithvi Theatre, Mumbai</p>
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-green-400">Starting ₹ 350</span>
+<span class="text-[10px] text-outline-variant px-2 py-0.5 rounded bg-white/5 uppercase font-bold">Plays</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 9: App Download Banner -->
+<section class="mt-32 mb-20 px-8 max-w-screen-2xl mx-auto">
+<div class="bg-surface-container-high rounded-[2rem] overflow-hidden flex flex-col md:flex-row items-center">
+<div class="p-8 md:p-16 flex-1">
+<h2 class="font-headline text-4xl font-bold text-white mb-6">Cinema in Your Pocket</h2>
+<p class="text-on-surface-variant mb-10 text-lg">Download the SimplyCinema app for exclusive offers, lightning-fast booking, and paperless entry.</p>
+<ul class="space-y-4 mb-10">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-on-surface">One-click ticket cancellation &amp; refunds</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-on-surface">Interactive 3D seat selection maps</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-on-surface">Early access to premier event tickets</span>
+</li>
+</ul>
+<div class="flex flex-wrap gap-4">
+<div class="bg-surface-container-lowest px-6 py-3 rounded-xl border border-white/10 flex items-center gap-3 cursor-pointer hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-3xl">phone_iphone</span>
+<div>
+<p class="text-[10px] uppercase font-bold text-outline">Download on the</p>
+<p class="text-lg font-bold text-white">App Store</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest px-6 py-3 rounded-xl border border-white/10 flex items-center gap-3 cursor-pointer hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-3xl">play_store_installed</span>
+<div>
+<p class="text-[10px] uppercase font-bold text-outline">Get it on</p>
+<p class="text-lg font-bold text-white">Google Play</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex-1 relative w-full h-full flex justify-center items-end bg-gradient-to-t from-primary-container/20 to-transparent">
+<div class="relative w-64 h-[500px] mt-12 mb-[-50px] bg-black rounded-[3rem] border-8 border-surface-container-highest shadow-2xl overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="High-fidelity mobile app UI showing a dark mode movie seat selection screen with glowing purple indicators and a curved screen visual" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB2qb6Y5FSPGftx7boxRhEywKBqjHjbWcZy9-fV4wdnQxVZTTJTYx4UyREgIYqiLatIbr0j6cUQdE1QiQOJZs_Ht7v49dtay3CXSyokCsweNhSdMV9RocFkPPPr1EAJHBRhzJxtuZ3OP6i8s7aOFIPThm8m4yhBN9q7xkA44QkMHW6TnF8fU_4Pyf_PYLVJB1j720Qi7kRBPjuSljs5wxtjFEE26msVkntfeDd3-3bcasTIw_XNh2XEz4knmeieFP_ONREY8lvHuQ')">
+<!-- Glow effects -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-primary/20 blur-[100px] rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Section 10: Footer -->
+<footer class="bg-[#131313] w-full pt-16 pb-8 font-['Inter'] text-sm tracking-wide border-t border-white/5">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-12 max-w-7xl mx-auto">
+<!-- Brand Column -->
+<div class="col-span-1 md:col-span-1">
+<h3 class="text-xl font-black text-white mb-6">SimplyCinema</h3>
+<p class="text-slate-500 mb-8 leading-relaxed">SimplyCinema is your one-stop destination for all your movie and event ticket bookings across India.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-500 hover:text-primary hover:bg-white/10 transition-all" href="#"><span class="material-symbols-outlined text-lg">public</span></a>
+<a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-500 hover:text-primary hover:bg-white/10 transition-all" href="#"><span class="material-symbols-outlined text-lg">share</span></a>
+<a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-500 hover:text-primary hover:bg-white/10 transition-all" href="#"><span class="material-symbols-outlined text-lg">chat_bubble</span></a>
+</div>
+</div>
+<!-- Links Columns -->
+<div>
+<h4 class="text-white font-semibold mb-6">Discover</h4>
+<ul class="space-y-4">
+<li><a class="text-slate-500 hover:text-violet-400 hover:translate-x-1 transition-transform duration-200 inline-block" href="#">Movies &amp; Events</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 hover:translate-x-1 transition-transform duration-200 inline-block" href="#">Our Cinemas</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 hover:translate-x-1 transition-transform duration-200 inline-block" href="#">Corporate Bookings</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 hover:translate-x-1 transition-transform duration-200 inline-block" href="#">List Your Show</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white font-semibold mb-6">Support</h4>
+<ul class="space-y-4">
+<li><a class="text-slate-500 hover:text-violet-400 hover:translate-x-1 transition-transform duration-200 inline-block" href="#">Help &amp; Support</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 hover:translate-x-1 transition-transform duration-200 inline-block" href="#">Privacy Policy</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 hover:translate-x-1 transition-transform duration-200 inline-block" href="#">Terms of Service</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 hover:translate-x-1 transition-transform duration-200 inline-block" href="#">FAQs</a></li>
+</ul>
+</div>
+<!-- Newsletter/Payment -->
+<div>
+<h4 class="text-white font-semibold mb-6">Secure Payments</h4>
+<div class="flex flex-wrap gap-4 mb-8">
+<span class="material-symbols-outlined text-slate-600 text-4xl">credit_card</span>
+<span class="material-symbols-outlined text-slate-600 text-4xl">payments</span>
+<span class="material-symbols-outlined text-slate-600 text-4xl">account_balance</span>
+</div>
+<p class="text-slate-500 text-xs mb-4 uppercase font-bold tracking-widest">Subscribe to Offers</p>
+<div class="flex gap-2">
+<input class="bg-surface-container-lowest border-white/5 rounded-lg text-xs w-full focus:ring-primary focus:border-primary" placeholder="Your email" type="email"/>
+<button class="bg-primary text-on-secondary px-4 py-2 rounded-lg font-bold"><span class="material-symbols-outlined text-sm">send</span></button>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-12 mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+<p class="text-slate-500 text-xs">© 2024 SimplyCinema. All rights reserved.</p>
+<div class="flex items-center gap-2">
+<span class="text-slate-500 text-[10px] uppercase font-bold">Made with</span>
+<span class="material-symbols-outlined text-error text-sm" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="text-slate-500 text-[10px] uppercase font-bold">for Movie Lovers</span>
+</div>
+</div>
+</footer>
+<!-- FAB Button for Mobile (Suppress on non-mobile) -->
+<button class="md:hidden fixed bottom-8 right-8 w-14 h-14 bg-primary-container text-on-primary-container rounded-full shadow-2xl flex items-center justify-center z-50 transition-transform active:scale-90">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_activity</span>
+</button>
+</body></html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SimplyCinema - Seat Selection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "on-secondary": "#490080",
+                "on-secondary-fixed-variant": "#6900b3",
+                "tertiary-container": "#56556c",
+                "surface-container-low": "#1c1b1b",
+                "tertiary": "#c6c4df",
+                "secondary-fixed": "#f0dbff",
+                "tertiary-fixed-dim": "#c6c4df",
+                "surface-variant": "#353534",
+                "surface-dim": "#131313",
+                "primary-fixed": "#ecdcff",
+                "on-primary": "#420089",
+                "tertiary-fixed": "#e2e0fc",
+                "on-tertiary-fixed": "#1a1a2e",
+                "surface-tint": "#d6baff",
+                "outline-variant": "#4a4452",
+                "inverse-surface": "#e5e2e1",
+                "surface-container-lowest": "#0e0e0e",
+                "surface-bright": "#3a3939",
+                "inverse-primary": "#7343bc",
+                "on-primary-container": "#dcc4ff",
+                "error-container": "#93000a",
+                "on-primary-fixed": "#280057",
+                "on-error-container": "#ffdad6",
+                "background": "#0d0d0d",
+                "surface": "#131313",
+                "primary-fixed-dim": "#d6baff",
+                "primary-container": "#6c3bb5",
+                "surface-container": "#201f1f",
+                "on-tertiary-container": "#cdcbe6",
+                "on-background": "#e5e2e1",
+                "surface-container-high": "#2a2a2a",
+                "on-surface": "#e5e2e1",
+                "on-secondary-container": "#d6a9ff",
+                "on-tertiary": "#2f2e43",
+                "surface-container-highest": "#353534",
+                "secondary-fixed-dim": "#ddb7ff",
+                "secondary-container": "#6f00be",
+                "error": "#ffb4ab",
+                "secondary": "#ddb7ff",
+                "on-primary-fixed-variant": "#5a26a3",
+                "outline": "#968e9e",
+                "on-surface-variant": "#ccc3d4",
+                "primary": "#d6baff",
+                "inverse-on-surface": "#313030",
+                "on-tertiary-fixed-variant": "#45455b",
+                "on-secondary-fixed": "#2c0051",
+                "on-error": "#690005"
+              },
+              fontFamily: {
+                "headline": ["Space Grotesk"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .seat-map-grid {
+            perspective: 1000px;
+        }
+        .curved-screen {
+            box-shadow: 0 -15px 40px -10px rgba(108, 59, 181, 0.4);
+            transform: rotateX(-10deg);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-[#0d0d0d] text-on-background font-body selection:bg-primary/30 min-h-screen">
+<!-- Top Navigation (Shell Component: TopNavBar) -->
+<nav class="fixed top-0 w-full z-50 bg-neutral-950/70 backdrop-blur-xl shadow-2xl shadow-violet-900/20 flex justify-between items-center px-8 py-4 w-full">
+<div class="text-2xl font-bold tracking-tighter text-white font-headline">Auteur Cinema</div>
+<div class="hidden md:flex items-center gap-8">
+<div class="flex items-center gap-6">
+<a class="text-neutral-400 hover:text-neutral-200 transition-colors font-headline" href="#">Movies</a>
+<a class="text-neutral-400 hover:text-neutral-200 transition-colors font-headline" href="#">Cinemas</a>
+<a class="text-neutral-400 hover:text-neutral-200 transition-colors font-headline" href="#">Offers</a>
+<a class="text-neutral-400 hover:text-neutral-200 transition-colors font-headline" href="#">Events</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center bg-error-container/20 text-error px-4 py-1.5 rounded-full border border-error/20 font-headline font-bold text-sm">
+<span class="material-symbols-outlined text-sm mr-2" style="font-variation-settings: 'FILL' 1;">timer</span>
+                09:42
+            </div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all cursor-pointer">person</span>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-12 px-8 max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-12">
+<!-- Left Panel: Seat Selection Area -->
+<section class="flex flex-col items-center">
+<!-- Screen Area -->
+<div class="w-full max-w-4xl mb-24 relative">
+<div class="h-2 w-full bg-gradient-to-r from-transparent via-violet-500 to-transparent rounded-full curved-screen opacity-80"></div>
+<div class="mt-4 text-center">
+<span class="text-[10px] uppercase tracking-[0.4em] text-neutral-500 font-medium">Digital Projection Surface</span>
+</div>
+<!-- Ambient Glow on Floor -->
+<div class="absolute -bottom-16 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-violet-600/5 blur-[80px] pointer-events-none"></div>
+</div>
+<!-- Seat Legend -->
+<div class="flex flex-wrap justify-center gap-6 mb-16 px-6 py-4 bg-surface-container-low/50 rounded-2xl">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-surface-variant"></div>
+<span class="text-xs text-neutral-400 font-medium">Available</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-violet-500 shadow-[0_0_10px_rgba(108,59,181,0.6)]"></div>
+<span class="text-xs text-neutral-400 font-medium">Selected</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-neutral-500">lock</span>
+</div>
+<span class="text-xs text-neutral-400 font-medium">Locked</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-neutral-800 opacity-40"></div>
+<span class="text-xs text-neutral-400 font-medium">Booked</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm border border-amber-500/50 bg-amber-500/10"></div>
+<span class="text-xs text-neutral-400 font-medium">Premium</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm border border-violet-400/50 bg-violet-400/10"></div>
+<span class="text-xs text-neutral-400 font-medium">Recliner</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-8 h-4 rounded-sm border border-pink-500/30 bg-pink-500/5"></div>
+<span class="text-xs text-neutral-400 font-medium">Couple</span>
+</div>
+</div>
+<!-- Seat Grid Container -->
+<div class="seat-map-grid w-full flex flex-col items-center gap-8 overflow-x-auto no-scrollbar pb-8">
+<!-- Zone: Recliner (Rows A-B) -->
+<div class="space-y-3">
+<div class="text-[10px] text-violet-400 tracking-widest uppercase text-center mb-4 font-bold">Zone: Recliner Luxury</div>
+<div class="flex flex-col gap-3">
+<!-- Row A -->
+<div class="flex items-center gap-4">
+<span class="text-[10px] text-neutral-600 w-4">A</span>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+<div class="w-8"></div> <!-- Aisle -->
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+<div class="w-8"></div> <!-- Aisle -->
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+</div>
+</div>
+<!-- Row B -->
+<div class="flex items-center gap-4">
+<span class="text-[10px] text-neutral-600 w-4">B</span>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+<button class="w-8 h-8 rounded-md bg-neutral-800/40 cursor-not-allowed pointer-events-none"></button>
+<div class="w-8"></div> <!-- Aisle -->
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+<div class="w-8"></div> <!-- Aisle -->
+<button class="w-8 h-8 rounded-md bg-neutral-800/40 cursor-not-allowed pointer-events-none"></button>
+<button class="w-8 h-8 rounded-md bg-violet-400/10 border border-violet-400/30 hover:bg-violet-400/20 transition-all"></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Zone: Premium (Rows C-F) -->
+<div class="space-y-2">
+<div class="text-[10px] text-amber-500 tracking-widest uppercase text-center mb-4 font-bold">Zone: Premium Circle</div>
+<div class="flex flex-col gap-2">
+<!-- Rows C to F Loop simulation -->
+<div class="flex items-center gap-4">
+<span class="text-[10px] text-neutral-600 w-4">C</span>
+<div class="flex gap-2">
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<div class="w-8"></div>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<div class="w-8"></div>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-[10px] text-neutral-600 w-4">D</span>
+<div class="flex gap-2">
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<div class="w-8"></div>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm bg-neutral-800/40 pointer-events-none opacity-50"></button>
+<button class="w-7 h-7 rounded-sm bg-neutral-800/40 pointer-events-none opacity-50"></button>
+<button class="w-7 h-7 rounded-sm bg-neutral-800/40 pointer-events-none opacity-50"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<div class="w-8"></div>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+<button class="w-7 h-7 rounded-sm border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/20 transition-all"></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Zone: Standard (Rows G-M) -->
+<div class="space-y-2">
+<div class="text-[10px] text-neutral-500 tracking-widest uppercase text-center mb-4 font-bold">Zone: Standard View</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-4">
+<span class="text-[10px] text-neutral-600 w-4">G</span>
+<div class="flex gap-1.5">
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<div class="w-8"></div>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<div class="w-8"></div>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+</div>
+</div>
+<!-- Row H -->
+<div class="flex items-center gap-4">
+<span class="text-[10px] text-neutral-600 w-4">H</span>
+<div class="flex gap-1.5">
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<div class="w-8"></div>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<div class="w-8"></div>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+<button class="w-6 h-6 rounded-sm bg-surface-container-high hover:bg-surface-bright transition-all"></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Panel: Booking Summary Sidebar (Shell Component: SideNavBar) -->
+<aside class="hidden lg:flex flex-col w-80 p-6 gap-4 sticky top-24 h-[calc(100vh-6rem)] rounded-2xl tonal-shift bg-neutral-800/40 shadow-xl font-headline">
+<div class="mb-6">
+<h2 class="text-violet-400 font-bold text-xl">Booking Progress</h2>
+<p class="text-neutral-500 text-sm">The Batman • IMAX 2D</p>
+</div>
+<!-- Progress Stepper -->
+<div class="flex flex-col gap-2 mb-8">
+<div class="text-white bg-violet-600 rounded-xl px-4 py-3 shadow-[0_0_20px_rgba(108,59,181,0.4)] flex items-center gap-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_seat</span>
+<span>Select Seats</span>
+</div>
+<div class="text-neutral-500 px-4 py-3 flex items-center gap-3 hover:bg-neutral-800 transition-all rounded-xl cursor-not-allowed">
+<span class="material-symbols-outlined">fastfood</span>
+<span>Add Snacks</span>
+</div>
+<div class="text-neutral-500 px-4 py-3 flex items-center gap-3 hover:bg-neutral-800 transition-all rounded-xl cursor-not-allowed">
+<span class="material-symbols-outlined">payments</span>
+<span>Payment</span>
+</div>
+</div>
+<!-- Empty State Selection Summary -->
+<div class="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-neutral-700/50 rounded-2xl p-6 text-center">
+<div class="w-16 h-16 bg-neutral-800/50 rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-neutral-600 text-3xl">chair_alt</span>
+</div>
+<h3 class="text-neutral-400 font-medium mb-1">No seats selected</h3>
+<p class="text-neutral-600 text-xs">Tap on available seats to add them to your booking.</p>
+</div>
+<!-- Total and CTA (Inactive State) -->
+<div class="mt-auto pt-6 border-t border-neutral-700/30">
+<div class="flex justify-between items-center mb-4">
+<span class="text-neutral-500 text-sm">Estimated Total</span>
+<span class="text-white font-bold text-lg">$0.00</span>
+</div>
+<button class="w-full py-4 bg-neutral-800 text-neutral-500 font-bold rounded-xl cursor-not-allowed opacity-50 transition-all">
+                    View Summary
+                </button>
+</div>
+</aside>
+</main>
+<!-- Bottom Nav Bar (Mobile View) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 md:hidden bg-neutral-950/80 backdrop-blur-2xl shadow-[0_-10px_30px_rgba(108,59,181,0.15)] z-50">
+<div class="flex flex-col items-center justify-center text-neutral-500 hover:text-violet-300 transition-all">
+<span class="material-symbols-outlined">movie_filter</span>
+<span class="font-body text-[10px] uppercase tracking-widest mt-1">Explore</span>
+</div>
+<div class="flex flex-col items-center justify-center text-neutral-500 hover:text-violet-300 transition-all">
+<span class="material-symbols-outlined">search</span>
+<span class="font-body text-[10px] uppercase tracking-widest mt-1">Search</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-violet-600/20 text-violet-400 rounded-full px-5 py-2 shadow-[0_0_15px_rgba(108,59,181,0.3)] transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
+<span class="font-body text-[10px] uppercase tracking-widest mt-1">Bookings</span>
+</div>
+<div class="flex flex-col items-center justify-center text-neutral-500 hover:text-violet-300 transition-all">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-body text-[10px] uppercase tracking-widest mt-1">Profile</span>
+</div>
+</nav>
+<!-- Background Decorative Elements -->
+<div class="fixed inset-0 pointer-events-none -z-10">
+<div class="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-900/10 blur-[150px] rounded-full"></div>
+<div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary-container/5 blur-[120px] rounded-full"></div>
+</div>
+</body></html>

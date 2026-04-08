@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>SimplyCinema - Seat Selection</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#201f1f",
+            "background": "#0d0d0d",
+            "outline": "#968e9e",
+            "primary-fixed-dim": "#d6baff",
+            "on-background": "#e5e2e1",
+            "primary-container": "#6c3bb5",
+            "on-surface-variant": "#ccc3d4",
+            "surface-bright": "#3a3939",
+            "on-primary": "#420089",
+            "surface-tint": "#d6baff",
+            "surface-container-highest": "#353534",
+            "surface-dim": "#131313",
+            "surface-container-lowest": "#0e0e0e",
+            "surface-variant": "#353534",
+            "surface-container-low": "#1c1b1b",
+            "surface-container-high": "#2a2a2a",
+            "primary": "#d6baff",
+            "error": "#ffb4ab"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .seat-map-grid { perspective: 1000px; }
+    .curved-screen { box-shadow: 0 -15px 40px -10px rgba(108, 59, 181, 0.4); transform: rotateX(-10deg); }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .seat-btn { width: 32px; height: 32px; border-radius: 6px; transition: all 0.2s; font-size: 10px; font-weight: bold; }
+    .seat-available { background: rgba(108, 59, 181, 0.1); border: 1px solid rgba(108, 59, 181, 0.3); color: #d6baff; }
+    .seat-available:hover { background: rgba(108, 59, 181, 0.3); }
+    .seat-selected { background: #8b5cf6; border: 1px solid #a78bfa; color: white; box-shadow: 0 0 10px rgba(139, 92, 246, 0.6); }
+    .seat-booked { background: #3f3f46; opacity: 0.5; cursor: not-allowed; border: 1px solid #52525b; }
+  </style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30 min-h-screen">
+
+<div id="navbar-placeholder"></div>
+
+<main class="pt-[80px] pb-12 px-8 max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-12">
+  
+  <!-- Left Panel: Seat Selection Area -->
+  <section class="flex flex-col items-center w-full">
+    
+    <!-- Show Summary Header -->
+    <div class="w-full max-w-4xl mb-8 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-surface-container-low p-6 rounded-2xl border border-white/5 shadow-lg" id="show-selector-container">
+      <div>
+        <h2 id="movie-title-display" class="font-headline text-3xl font-black text-white mb-2 tracking-tight">Loading...</h2>
+        <div class="flex items-center gap-2 text-on-surface-variant text-sm">
+             <span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+             <span id="theatre-name-display" class="font-medium text-white/90">Theatre Name</span>
+        </div>
+      </div>
+      <div class="flex flex-col items-end gap-1 px-5 py-3 bg-surface-container-highest/50 rounded-xl border border-white/5">
+        <span class="text-[10px] uppercase font-bold text-outline tracking-wider">Showtime</span>
+        <span id="show-time-display" class="text-xl font-bold text-primary font-headline">--:--</span>
+        <span id="show-date-display" class="text-xs text-white/60 font-medium">--</span>
+      </div>
+    </div>
+
+    <!-- Screen Area -->
+    <div class="w-full max-w-4xl mb-16 relative">
+      <div class="h-2 w-full bg-gradient-to-r from-transparent via-violet-500 to-transparent rounded-full curved-screen opacity-80"></div>
+      <div class="mt-4 text-center">
+        <span class="text-[10px] uppercase tracking-[0.4em] text-neutral-500 font-medium font-headline">Digital Projection Surface</span>
+      </div>
+      <div class="absolute -bottom-16 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-violet-600/5 blur-[80px] pointer-events-none"></div>
+    </div>
+
+    <!-- Seat Legend -->
+    <div class="flex flex-wrap justify-center gap-6 mb-12 px-6 py-4 bg-surface-container-low/50 rounded-2xl border border-white/5">
+      <div class="flex items-center gap-2">
+        <div class="seat-btn seat-available w-6 h-6 flex items-center justify-center border-none"></div>
+        <span class="text-xs text-neutral-400 font-medium">Available</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="seat-btn seat-selected w-6 h-6 flex items-center justify-center border-none"></div>
+        <span class="text-xs text-neutral-400 font-medium">Selected</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="seat-btn seat-booked w-6 h-6 flex items-center justify-center border-none"></div>
+        <span class="text-xs text-neutral-400 font-medium">Booked</span>
+      </div>
+    </div>
+
+    <!-- Seat Grid Container -->
+    <div id="seat-map-grid" class="seat-map-grid w-full flex flex-col items-center gap-4 overflow-x-auto hide-scrollbar pb-8 min-h-[400px]">
+      <div class="text-white text-center mt-20"><div class="full-screen-loader" style="position:static;width:24px;height:24px;margin: 0 auto 10px auto;"></div> Loading seats...</div>
+    </div>
+  </section>
+
+  <!-- Right Panel: Booking Summary Sidebar -->
+  <aside class="hidden lg:flex flex-col w-full p-6 gap-4 sticky top-24 h-[calc(100vh-6rem)] rounded-2xl bg-surface-container-high shadow-xl font-headline border border-white/5">
+    <div class="mb-4">
+      <h2 class="text-primary font-bold text-xl mb-1">Booking Summary</h2>
+      <p id="summary-show-info" class="text-outline text-sm">No show selected</p>
+    </div>
+
+    <div id="summary-empty-state" class="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-2xl p-6 text-center">
+      <div class="w-16 h-16 bg-surface-container rounded-full flex items-center justify-center mb-4 text-outline border border-white/5">
+        <span class="material-symbols-outlined text-3xl">chair_alt</span>
+      </div>
+      <h3 class="text-on-surface-variant font-medium mb-1 tracking-wide">No seats selected</h3>
+      <p class="text-outline text-xs leading-relaxed max-w-[200px]">Tap on available seats in the map to add them.</p>
+    </div>
+
+    <div id="summary-filled-state" class="flex-grow flex flex-col hidden overflow-y-auto hide-scrollbar">
+      <h4 class="text-on-surface text-sm font-bold mb-3 border-b border-white/10 pb-2">Selected Seats</h4>
+      <div id="selected-seats-list" class="space-y-2 mb-4">
+        <!-- populated via js -->
+      </div>
+    </div>
+
+    <!-- Total and CTA -->
+    <div class="mt-auto pt-4 border-t border-white/10">
+      <div class="flex justify-between items-center mb-6">
+        <span class="text-on-surface-variant text-sm font-medium">Estimated Total</span>
+        <span id="summary-total-price" class="text-white font-bold text-2xl tracking-tight">₹0.00</span>
+      </div>
+      <button id="btn-proceed" disabled class="w-full py-4 text-white font-bold rounded-xl transition-all shadow-lg bg-surface-container text-outline cursor-not-allowed">
+        Proceed to Payment
+      </button>
+    </div>
+  </aside>
+</main>
+
+<!-- Mobile Bottom Action -->
+<div id="mobile-bottom-action" class="lg:hidden fixed bottom-0 left-0 w-full bg-surface-container-highest p-4 border-t border-white/10 flex justify-between items-center z-50">
+  <div>
+    <p class="text-[10px] text-outline uppercase tracking-widest font-bold mb-0.5">Total</p>
+    <p id="mobile-total-price" class="text-xl font-bold font-headline text-white leading-none">₹0.00</p>
+  </div>
+  <button id="btn-proceed-mobile" disabled class="px-8 py-3 bg-surface-container text-outline font-bold rounded-xl font-headline transition-all cursor-not-allowed">
+    Proceed
+  </button>
+</div>
+
+<script>
+  injectComponent("#navbar-placeholder", "../../components/navbar.html");
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const movieId = urlParams.get('movieId');
+  let currentShowId = urlParams.get('showId');
+
+  let bookingContext = null;
+  let allSeats = [];
+  let selectedSeatIds = new Set();
+  const MAX_SEATS = 10;
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    requireAuth();
+
+    try {
+      bookingContext = JSON.parse(sessionStorage.getItem('sc_booking') || "{}");
+    } catch(e){}
+    
+    if(bookingContext.title) {
+       document.getElementById('movie-title-display').innerText = bookingContext.title;
+    }
+
+    if(!currentShowId) {
+       showToast("Invalid booking session. No show selected.", "error");
+       setTimeout(() => window.location.href='/pages/customer/home', 2000);
+       return;
+    }
+
+    // 1. Fetch Show Details directly
+    await loadShowDetails(currentShowId);
+  });
+
+  async function loadShowDetails(showId) {
+    try {
+        const showObj = await Shows.getById(showId);
+        
+        if (!showObj) {
+            throw new Error("Show not found");
+        }
+        
+        // Try getting Theatre for the show via the screenId
+        // In a perfect world, ShowDto would have theatre details. As a fallback we search Theatres
+        let theatreName = "Selected Cinema";
+        let cityName = JSON.parse(localStorage.getItem('sc_city'))?.cityName || "Active City";
+        try {
+            // we could do a manual fetch, or just keep it simple
+            const dbTheatres = await Theatres.getAll(); 
+            const parentT = dbTheatres.find(t => t.screens && t.screens.some(s => s.id === showObj.screenId));
+            if(parentT) {
+                theatreName = parentT.name;
+            }
+        } catch(e) {}
+
+        const parsedDate = new Date(`1970-01-01T${showObj.showTime}`);
+        const showTimeFormat = isNaN(parsedDate) ? showObj.showTime : parsedDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        const dateObj = new Date(showObj.showDate);
+        const dateFormat = isNaN(dateObj) ? showObj.showDate : dateObj.toLocaleDateString([], {weekday: 'short', month: 'short', day: 'numeric'});
+
+        // Update UI
+        document.getElementById('theatre-name-display').innerText = `${theatreName} • Screen ${showObj.screenId}`;
+        document.getElementById('show-time-display').innerText = showTimeFormat;
+        document.getElementById('show-date-display').innerText = dateFormat;
+        document.getElementById('summary-show-info').innerText = `${dateFormat} • Screen ${showObj.screenId}`;
+
+        // Fetch Seats
+        await fetchAndRenderSeats(showId);
+
+    } catch(err) {
+        console.error(err);
+        showToast("Failed to load show details", "error");
+        document.getElementById('seat-map-grid').innerHTML = '<div class="text-error mt-10">Show details unavailable.</div>';
+    }
+  }
+
+  async function fetchAndRenderSeats(showId) {
+    selectedSeatIds.clear();
+    updateSummary();
+
+    const gridEl = document.getElementById('seat-map-grid');
+    gridEl.innerHTML = '<div class="text-white text-center mt-20"><div class="full-screen-loader" style="position:static;width:24px;height:24px;margin: 0 auto 10px auto;"></div> Loading seats...</div>';
+
+    try {
+      const seats = await Shows.getSeats(showId);
+      if(!seats || seats.length === 0) {
+         renderFallbackGrid();
+         startPollingLockedSeats();
+         return;
+      }
+      allSeats = seats;
+      renderRealGrid(seats);
+      startPollingLockedSeats();
+    } catch(err) {
+      gridEl.innerHTML = '<div class="text-error mt-10">Failed to load seats map.</div>';
+    }
+  }
+
+  function renderRealGrid(seats) {
+     const gridEl = document.getElementById('seat-map-grid');
+     gridEl.innerHTML = '';
+
+     // Group by row
+     const rowMap = {};
+     seats.forEach(s => {
+        const row = s.rowNumber || s.seatRow || s.row || 'A';
+        if(!rowMap[row]) rowMap[row] = [];
+        rowMap[row].push(s);
+     });
+
+     Object.keys(rowMap).sort().forEach(rowName => {
+        const rowSeats = rowMap[rowName].sort((a,b) => (a.seatNumber||0) - (b.seatNumber||0));
+        
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'flex items-center gap-4';
+        
+        const rowLabel = document.createElement('span');
+        rowLabel.className = 'text-xs text-outline w-4 font-bold';
+        rowLabel.innerText = rowName;
+        rowDiv.appendChild(rowLabel);
+
+        const seatsDiv = document.createElement('div');
+        seatsDiv.className = 'flex gap-2';
+        
+        rowSeats.forEach((seat, idx) => {
+           // Aisle logic (gap every 4 seats for aesthetic, just optional)
+           if(idx === 4 || idx === 12) {
+              const aisle = document.createElement('div');
+              aisle.className = 'w-6';
+              seatsDiv.appendChild(aisle);
+           }
+
+           const btn = document.createElement('button');
+           btn.className = `seat-btn ${seat.status === 'AVAILABLE' ? 'seat-available' : 'seat-booked'}`;
+           btn.innerText = seat.seatColumn || seat.seatNumber || (idx+1);
+           btn.dataset.seatId = seat.id;
+           
+           if(seat.status === 'AVAILABLE') {
+              btn.onclick = () => toggleSeatSelection(seat.id, btn);
+           } else {
+              btn.disabled = true;
+           }
+
+           seatsDiv.appendChild(btn);
+        });
+
+        rowDiv.appendChild(seatsDiv);
+        gridEl.appendChild(rowDiv);
+     });
+  }
+
+  // Backup mock grid if API returns empty array for a show
+  function renderFallbackGrid() {
+      allSeats = [];
+      const gridEl = document.getElementById('seat-map-grid');
+      gridEl.innerHTML = '';
+      const rows = "ABCDEFGHIJ".split('');
+      
+      let seatIdCounter = 1;
+      rows.forEach(row => {
+          const rowDiv = document.createElement('div');
+          rowDiv.className = 'flex items-center gap-4';
+          
+          const rowLabel = document.createElement('span');
+          rowLabel.className = 'text-[10px] text-outline w-4 font-bold';
+          rowLabel.innerText = row;
+          rowDiv.appendChild(rowLabel);
+
+          const seatsDiv = document.createElement('div');
+          seatsDiv.className = 'flex gap-2';
+
+          for(let i=1; i<=10; i++) {
+              if(i === 3 || i === 9) {
+                  const aisle = document.createElement('div');
+                  aisle.className = 'w-4 md:w-8';
+                  seatsDiv.appendChild(aisle);
+              }
+
+              const seat = {
+                  id: seatIdCounter++,
+                  seatRow: row,
+                  seatNumber: i,
+                  status: Math.random() > 0.8 ? 'BOOKED' : 'AVAILABLE',
+                  price: row < 'E' ? 150 : (row < 'I' ? 250 : 350), // Pricing tiers
+                  type: 'STANDARD'
+              };
+              allSeats.push(seat);
+
+              const btn = document.createElement('button');
+              btn.className = `seat-btn ${seat.status === 'AVAILABLE' ? 'seat-available' : 'seat-booked'}`;
+              btn.innerText = i;
+              
+              if(seat.status === 'AVAILABLE') {
+                 btn.onclick = () => toggleSeatSelection(seat.id, btn);
+              } else {
+                 btn.disabled = true;
+              }
+
+              seatsDiv.appendChild(btn);
+          }
+          rowDiv.appendChild(seatsDiv);
+          gridEl.appendChild(rowDiv);
+      });
+  }
+
+  function toggleSeatSelection(seatId, btnEl) {
+      if(selectedSeatIds.has(seatId)) {
+          selectedSeatIds.delete(seatId);
+          btnEl.classList.remove('seat-selected');
+          btnEl.classList.add('seat-available');
+      } else {
+          if(selectedSeatIds.size >= MAX_SEATS) {
+              showToast(`You can only select up to ${MAX_SEATS} seats`, "error");
+              return;
+          }
+          selectedSeatIds.add(seatId);
+          btnEl.classList.remove('seat-available');
+          btnEl.classList.add('seat-selected');
+      }
+      updateSummary();
+  }
+
+  function updateSummary() {
+      const emptyState = document.getElementById('summary-empty-state');
+      const filledState = document.getElementById('summary-filled-state');
+      const seatList = document.getElementById('selected-seats-list');
+      const totalEl = document.getElementById('summary-total-price');
+      const totalMobileEl = document.getElementById('mobile-total-price');
+      const proceedBtn = document.getElementById('btn-proceed');
+      const proceedMobileBtn = document.getElementById('btn-proceed-mobile');
+
+      if(selectedSeatIds.size === 0) {
+          emptyState.classList.remove('hidden');
+          filledState.classList.add('hidden');
+          totalEl.innerText = '₹0.00';
+          totalMobileEl.innerText = '₹0.00';
+          
+          proceedBtn.disabled = true;
+          proceedBtn.className = 'w-full py-4 text-white font-bold rounded-xl transition-all shadow-lg bg-surface-container text-outline cursor-not-allowed';
+          proceedMobileBtn.disabled = true;
+          proceedMobileBtn.className = 'px-8 py-3 bg-surface-container text-outline font-bold rounded-xl font-headline transition-all cursor-not-allowed';
+      } else {
+          emptyState.classList.add('hidden');
+          filledState.classList.remove('hidden');
+          
+          seatList.innerHTML = '';
+          let total = 0;
+          
+          selectedSeatIds.forEach(id => {
+              const seat = allSeats.find(s => s.id === id);
+              if(seat) {
+                  let p = seat.price || 150;
+                  total += p;
+                  const seatIdent = `${seat.rowNumber || seat.seatRow || seat.row || ''}${seat.seatNumber || seat.seatColumn || ''}`;
+                  
+                  seatList.innerHTML += `
+                     <div class="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
+                        <div class="flex items-center gap-3">
+                           <div class="w-8 h-8 rounded bg-primary-container/20 text-primary-fixed flex items-center justify-center text-xs font-bold border border-primary/20">${seatIdent}</div>
+                           <div>
+                              <p class="text-sm text-white font-medium capitalize">${seat.seatType || seat.type || 'Standard'}</p>
+                           </div>
+                        </div>
+                        <span class="text-sm font-bold text-white">₹ ${p}</span>
+                     </div>
+                  `;
+              }
+          });
+
+          totalEl.innerText = `₹ ${total}`;
+          totalMobileEl.innerText = `₹ ${total}`;
+
+          // Activate buttons
+          proceedBtn.disabled = false;
+          proceedBtn.className = 'w-full py-4 font-bold rounded-xl transition-all shadow-lg text-white hover:scale-105 active:scale-95 bg-primary-container hover:shadow-[0_0_20px_rgba(108,59,181,0.5)]';
+          
+          proceedMobileBtn.disabled = false;
+          proceedMobileBtn.className = 'px-8 py-3 font-bold rounded-xl font-headline transition-all text-white bg-primary-container hover:shadow-[0_0_20px_rgba(108,59,181,0.5)]';
+      }
+  }
+
+  const navigateToCheckout = () => {
+     if(selectedSeatIds.size === 0) return;
+     const selectedSeatsArr = Array.from(selectedSeatIds);
+     
+     // Save selection into booking session
+     const currentBooking = JSON.parse(sessionStorage.getItem('sc_booking') || "{}");
+     currentBooking.showId = currentShowId;
+     currentBooking.seatIds = selectedSeatsArr;
+     
+     let totalAmount = 0;
+     selectedSeatsArr.forEach(id => {
+        const s = allSeats.find(x => x.id === id);
+        if(s) totalAmount += (s.price || 150);
+     });
+     currentBooking.totalAmount = totalAmount;
+
+     sessionStorage.setItem('sc_booking', JSON.stringify(currentBooking));
+     window.location.href = '/pages/customer/checkout';
+  };
+
+  document.getElementById('btn-proceed').addEventListener('click', navigateToCheckout);
+  document.getElementById('btn-proceed-mobile').addEventListener('click', navigateToCheckout);
+
+  let pollInterval = null;
+  function startPollingLockedSeats() {
+      if(pollInterval) clearInterval(pollInterval);
+      pollLockedSeats();
+      pollInterval = setInterval(pollLockedSeats, 5000);
+  }
+
+  async function pollLockedSeats() {
+      if(!currentShowId) return;
+      try {
+          const lockedStringIds = await Bookings.getLockedSeats(currentShowId);
+          // convert strings to numbers
+          const lockedIds = lockedStringIds.map(x => parseInt(x));
+          
+          const allButtons = document.querySelectorAll('.seat-btn');
+          allButtons.forEach(btn => {
+              const sid = parseInt(btn.dataset.seatId);
+              if(!sid) return;
+
+              // If it's naturally available in DB but locked in Redis:
+              const seatObj = allSeats.find(s => s.id === sid);
+              if(seatObj && seatObj.status === 'AVAILABLE') {
+                  const isLocked = lockedIds.includes(sid);
+                  
+                  if(isLocked) {
+                      // someone else locked it
+                      btn.classList.remove('seat-available', 'seat-selected');
+                      btn.classList.add('seat-booked');
+                      btn.disabled = true;
+                      
+                      // Auto-deselect if we had it selected
+                      if(selectedSeatIds.has(sid)) {
+                          selectedSeatIds.delete(sid);
+                          updateSummary();
+                          showToast("A selected seat was just reserved by someone else.", "error");
+                      }
+                  } else {
+                      // Available and NOT locked
+                      btn.disabled = false;
+                      // if we happen to have this selected
+                      if(selectedSeatIds.has(sid)) {
+                          btn.classList.remove('seat-booked', 'seat-available');
+                          btn.classList.add('seat-selected');
+                      } else {
+                          btn.classList.remove('seat-booked', 'seat-selected');
+                          btn.classList.add('seat-available');
+                      }
+                  }
+              }
+          });
+      } catch(e) {}
+  }
+</script>
+
+</body>
+</html>

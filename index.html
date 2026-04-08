@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>SimplyCinema - Book Movie Tickets</title>
+  <meta name="description"
+    content="Book movie tickets, watch trailers, and explore cinemas near you. SimplyCinema — your one-stop movie experience." />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#201f1f", "background": "#131313", "outline": "#968e9e",
+            "on-tertiary-fixed": "#1a1a2e", "on-error": "#690005", "primary-fixed-dim": "#d6baff",
+            "on-background": "#e5e2e1", "error": "#ffb4ab", "secondary-fixed-dim": "#ddb7ff",
+            "primary-container": "#6c3bb5", "on-surface-variant": "#ccc3d4", "surface-bright": "#3a3939",
+            "on-primary": "#420089", "surface-tint": "#d6baff", "on-secondary": "#490080",
+            "tertiary-fixed": "#e2e0fc", "surface-container-highest": "#353534",
+            "inverse-primary": "#7343bc", "secondary-container": "#6f00be",
+            "inverse-on-surface": "#313030", "on-error-container": "#ffdad6",
+            "surface-dim": "#131313", "surface-container-lowest": "#0e0e0e",
+            "tertiary": "#c6c4df", "tertiary-container": "#56556c", "surface": "#131313",
+            "on-tertiary": "#2f2e43", "on-tertiary-fixed-variant": "#45455b",
+            "surface-variant": "#353534", "outline-variant": "#4a4452",
+            "on-tertiary-container": "#cdcbe6", "on-primary-fixed-variant": "#5a26a3",
+            "surface-container-low": "#1c1b1b", "on-surface": "#e5e2e1",
+            "primary-fixed": "#ecdcff", "on-primary-container": "#dcc4ff",
+            "error-container": "#93000a", "surface-container-high": "#2a2a2a",
+            "on-primary-fixed": "#280057", "on-secondary-fixed-variant": "#6900b3",
+            "primary": "#d6baff", "on-secondary-fixed": "#2c0051",
+            "secondary-fixed": "#f0dbff", "inverse-surface": "#e5e2e1",
+            "tertiary-fixed-dim": "#c6c4df", "secondary": "#ddb7ff",
+            "on-secondary-container": "#d6a9ff"
+          },
+          fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"], "label": ["Inter"] },
+          borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .auteur-gradient {
+      background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%);
+    }
+
+    .glass-effect {
+      background: rgba(53, 53, 52, 0.6);
+      backdrop-filter: blur(20px);
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .slider-container {
+      scroll-behavior: smooth;
+    }
+
+    .slider-container::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/api.js"></script>
+</head>
+
+<body class="bg-background text-on-background font-body selection:bg-primary/30 min-h-screen">
+
+  <div id="navbar-placeholder"></div>
+
+  <main class="pt-16">
+    <!-- ═══════════════════ HERO BANNER ═══════════════════ -->
+    <section id="hero-section" class="relative h-[520px] w-full overflow-hidden">
+      <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-700"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-surface via-surface/80 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"></div>
+      <div class="relative z-10 h-full max-w-screen-2xl mx-auto px-8 flex flex-col justify-center">
+        <div class="max-w-2xl">
+          <span
+            class="inline-block px-3 py-1 bg-primary-container/30 backdrop-blur-md rounded-md text-primary-fixed text-xs font-bold tracking-widest uppercase mb-4">🔥
+            Trending Now</span>
+          <h2 id="hero-title" class="font-headline text-5xl md:text-7xl font-bold text-white mb-2 leading-tight">
+            Loading...</h2>
+          <div id="hero-meta" class="flex items-center gap-4 mb-4 text-on-surface-variant text-sm"></div>
+          <p id="hero-desc" class="text-on-surface-variant text-sm mb-8 max-w-lg line-clamp-3"></p>
+          <div class="flex items-center gap-4">
+            <button id="hero-book-btn"
+              class="px-8 py-3.5 bg-primary-container text-on-primary-container rounded-full font-bold flex items-center gap-2 hover:shadow-[0_0_20px_rgba(108,59,181,0.5)] transition-all group">
+              Book Tickets
+              <span
+                class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
+            <button id="hero-trailer-btn"
+              class="px-8 py-3.5 border border-outline text-white rounded-full font-bold flex items-center gap-2 hover:bg-white/10 transition-all">
+              <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+              Watch Trailer
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Hero Dots -->
+      <div id="hero-dots" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2"></div>
+    </section>
+
+    <!-- ═══════════════════ CATEGORY TABS ═══════════════════ -->
+    <section class="mt-8 px-8 max-w-screen-2xl mx-auto">
+      <div class="flex items-center gap-8 overflow-x-auto hide-scrollbar border-b border-outline-variant/10 pb-4">
+        <button class="cat-tab text-primary font-bold whitespace-nowrap border-b-2 border-primary pb-3 -mb-[13px]"
+          data-tab="movies">Movies</button>
+        <button class="cat-tab text-outline hover:text-white transition-colors whitespace-nowrap pb-3"
+          data-tab="events">Events</button>
+        <button class="cat-tab text-outline hover:text-white transition-colors whitespace-nowrap pb-3"
+          data-tab="plays">Plays</button>
+        <button class="cat-tab text-outline hover:text-white transition-colors whitespace-nowrap pb-3"
+          data-tab="sports">Sports</button>
+      </div>
+    </section>
+
+    <!-- ═══════════════════ MOVIES TAB CONTENT ═══════════════════ -->
+    <div id="tab-movies" class="tab-content">
+      <!-- Now Showing Slider -->
+      <section class="mt-10 px-8 max-w-screen-2xl mx-auto">
+        <div class="flex justify-between items-end mb-6">
+          <div>
+            <h3 class="font-headline text-3xl font-bold text-white tracking-tight">Now Showing</h3>
+            <p class="text-outline text-sm mt-1">Experience the latest blockbusters on the big screen.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="scrollSlider('now-showing-slider', -300)"
+              class="w-9 h-9 rounded-full bg-surface-container-high border border-white/10 flex items-center justify-center text-white hover:bg-primary-container transition-all"><span
+                class="material-symbols-outlined text-lg">chevron_left</span></button>
+            <button onclick="scrollSlider('now-showing-slider', 300)"
+              class="w-9 h-9 rounded-full bg-surface-container-high border border-white/10 flex items-center justify-center text-white hover:bg-primary-container transition-all"><span
+                class="material-symbols-outlined text-lg">chevron_right</span></button>
+            <a href="pages/customer/home.html"
+              class="text-primary text-sm font-bold flex items-center gap-1 hover:underline ml-4">View All <span
+                class="material-symbols-outlined text-sm">chevron_right</span></a>
+          </div>
+        </div>
+        <div id="now-showing-slider"
+          class="slider-container flex gap-5 overflow-x-auto pb-6 hide-scrollbar min-h-[320px]">
+          <!-- Populated via JS -->
+        </div>
+      </section>
+
+      <!-- Coming Soon Slider -->
+      <section class="mt-8 px-8 max-w-screen-2xl mx-auto pb-12">
+        <div class="flex justify-between items-end mb-6">
+          <div>
+            <h3 class="font-headline text-3xl font-bold text-white tracking-tight">Coming Soon</h3>
+            <p class="text-outline text-sm mt-1">Get ready for the next wave of cinema magic.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="scrollSlider('coming-soon-slider', -300)"
+              class="w-9 h-9 rounded-full bg-surface-container-high border border-white/10 flex items-center justify-center text-white hover:bg-primary-container transition-all"><span
+                class="material-symbols-outlined text-lg">chevron_left</span></button>
+            <button onclick="scrollSlider('coming-soon-slider', 300)"
+              class="w-9 h-9 rounded-full bg-surface-container-high border border-white/10 flex items-center justify-center text-white hover:bg-primary-container transition-all"><span
+                class="material-symbols-outlined text-lg">chevron_right</span></button>
+          </div>
+        </div>
+        <div id="coming-soon-slider"
+          class="slider-container flex gap-5 overflow-x-auto pb-6 hide-scrollbar min-h-[320px]">
+          <!-- Populated via JS -->
+        </div>
+      </section>
+    </div>
+
+    <!-- ═══════════════════ EVENTS TAB ═══════════════════ -->
+    <div id="tab-events" class="tab-content hidden">
+      <section class="mt-10 px-8 max-w-screen-2xl mx-auto pb-16">
+        <div class="flex flex-col items-center justify-center py-24 text-center">
+          <div class="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center mb-6">
+            <span class="material-symbols-outlined text-5xl text-outline">celebration</span>
+          </div>
+          <h3 class="font-headline text-3xl font-bold text-white mb-3">Live Events</h3>
+          <p class="text-outline text-sm max-w-md mb-8">Concerts, Stand-up Comedy, Festivals and more — coming soon to
+            SimplyCinema. Stay tuned for exciting live events near you!</p>
+          <div class="flex gap-3 flex-wrap justify-center">
+            <div
+              class="px-5 py-3 bg-surface-container-high rounded-xl border border-white/5 text-on-surface-variant text-sm flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary text-lg">music_note</span>Concerts</div>
+            <div
+              class="px-5 py-3 bg-surface-container-high rounded-xl border border-white/5 text-on-surface-variant text-sm flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-lg">mic</span>Comedy Shows</div>
+            <div
+              class="px-5 py-3 bg-surface-container-high rounded-xl border border-white/5 text-on-surface-variant text-sm flex items-center gap-2">
+              <span class="material-symbols-outlined text-tertiary text-lg">festival</span>Festivals</div>
+          </div>
+          <p class="text-primary text-xs font-bold uppercase tracking-widest mt-8">No events available yet</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ═══════════════════ PLAYS TAB ═══════════════════ -->
+    <div id="tab-plays" class="tab-content hidden">
+      <section class="mt-10 px-8 max-w-screen-2xl mx-auto pb-16">
+        <div class="flex flex-col items-center justify-center py-24 text-center">
+          <div class="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center mb-6">
+            <span class="material-symbols-outlined text-5xl text-outline">theater_comedy</span>
+          </div>
+          <h3 class="font-headline text-3xl font-bold text-white mb-3">Theatre & Plays</h3>
+          <p class="text-outline text-sm max-w-md mb-8">Experience the magic of live theatre. Drama, musicals, and stage
+            performances will be listed here soon.</p>
+          <p class="text-primary text-xs font-bold uppercase tracking-widest">No plays available yet</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ═══════════════════ SPORTS TAB ═══════════════════ -->
+    <div id="tab-sports" class="tab-content hidden">
+      <section class="mt-10 px-8 max-w-screen-2xl mx-auto pb-16">
+        <div class="flex flex-col items-center justify-center py-24 text-center">
+          <div class="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center mb-6">
+            <span class="material-symbols-outlined text-5xl text-outline">sports_cricket</span>
+          </div>
+          <h3 class="font-headline text-3xl font-bold text-white mb-3">Sports Events</h3>
+          <p class="text-outline text-sm max-w-md mb-8">Cricket, Football, Kabaddi and more — book live sports event
+            tickets right here. Coming soon!</p>
+          <p class="text-primary text-xs font-bold uppercase tracking-widest">No sports events available yet</p>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <!-- ═══════════════════ Trailer Modal ═══════════════════ -->
+  <div id="trailer-modal" class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center hidden">
+    <div class="relative w-full max-w-4xl mx-4">
+      <button onclick="closeTrailer()" class="absolute -top-12 right-0 text-white hover:text-primary"><span
+          class="material-symbols-outlined text-3xl">close</span></button>
+      <div class="aspect-video bg-black rounded-xl overflow-hidden">
+        <iframe id="trailer-iframe" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media"
+          allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    injectComponent("#navbar-placeholder", "components/navbar.html");
+    injectComponent("#footer-placeholder", "components/footer.html");
+
+    // ─── Slider scroll helper ───
+    function scrollSlider(id, delta) {
+      document.getElementById(id).scrollBy({ left: delta, behavior: 'smooth' });
+    }
+
+    // ─── Category Tabs ───
+    document.querySelectorAll('.cat-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.cat-tab').forEach(b => {
+          b.className = 'cat-tab text-outline hover:text-white transition-colors whitespace-nowrap pb-3';
+        });
+        btn.className = 'cat-tab text-primary font-bold whitespace-nowrap border-b-2 border-primary pb-3 -mb-[13px]';
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+        document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+      });
+    });
+
+    // ─── Hero Banner (auto-rotate featured movies) ───
+    let heroMovies = [];
+    let heroIndex = 0;
+    let heroInterval = null;
+
+    function setHero(movie) {
+      const bg = document.getElementById('hero-bg');
+      const banner = movie.bannerUrl || movie.posterUrl;
+      if (banner) bg.style.backgroundImage = `url('${banner}')`;
+
+      document.getElementById('hero-title').textContent = movie.title;
+      document.getElementById('hero-desc').textContent = movie.description || '';
+
+      const duration = movie.durationMinutes ? `${Math.floor(movie.durationMinutes / 60)}h ${movie.durationMinutes % 60}m` : '';
+      const rating = movie.rating || 'UA';
+      document.getElementById('hero-meta').innerHTML = `
+      <span class="px-2 py-0.5 rounded border border-outline text-xs font-bold">${rating}</span>
+      ${duration ? `<span>${duration}</span>` : ''}
+      ${movie.averageRating ? `<span class="flex items-center gap-1 text-secondary"><span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1">star</span>${movie.averageRating.toFixed(1)}</span>` : ''}
+    `;
+
+      // Book button
+      document.getElementById('hero-book-btn').onclick = () => {
+        sessionStorage.setItem('sc_booking', JSON.stringify({ movieId: movie.id, title: movie.title, posterUrl: movie.posterUrl }));
+        window.location.href = `pages/customer/movie-details.html?id=${movie.id}`;
+      };
+
+      // Trailer button
+      const trailerBtn = document.getElementById('hero-trailer-btn');
+      if (movie.trailerUrl) {
+        trailerBtn.style.display = 'flex';
+        trailerBtn.onclick = () => openTrailer(movie.trailerUrl);
+      } else {
+        trailerBtn.style.display = 'none';
+      }
+
+      // Update dots
+      document.querySelectorAll('.hero-dot').forEach((dot, i) => {
+        dot.className = `hero-dot w-2 h-2 rounded-full cursor-pointer transition-all ${i === heroIndex ? 'bg-primary w-6' : 'bg-white/30 hover:bg-white/50'}`;
+      });
+    }
+
+    function nextHero() {
+      heroIndex = (heroIndex + 1) % heroMovies.length;
+      setHero(heroMovies[heroIndex]);
+    }
+
+    // ─── Trailer Modal ───
+    function openTrailer(url) {
+      let embedUrl = url;
+      const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+      if (ytMatch) embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+      document.getElementById('trailer-iframe').src = embedUrl;
+      document.getElementById('trailer-modal').classList.remove('hidden');
+    }
+    function closeTrailer() {
+      document.getElementById('trailer-iframe').src = '';
+      document.getElementById('trailer-modal').classList.add('hidden');
+    }
+    document.getElementById('trailer-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeTrailer();
+    });
+
+    // ─── Movie Card Renderer ───
+    function renderMovieCard(movie, isUpcoming = false) {
+      const div = document.createElement('div');
+      div.className = 'flex-shrink-0 w-[175px] group cursor-pointer';
+      div.onclick = () => {
+        sessionStorage.setItem('sc_booking', JSON.stringify({ movieId: movie.id, title: movie.title, posterUrl: movie.posterUrl }));
+        window.location.href = `pages/customer/movie-details.html?id=${movie.id}`;
+      };
+      const posterUrl = movie.posterUrl && movie.posterUrl !== 'null' ? movie.posterUrl : 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=300&auto=format&fit=crop';
+      div.innerHTML = `
+      <div class="aspect-[2/3] w-full rounded-xl overflow-hidden mb-3 group-hover:scale-105 group-hover:shadow-[0_0_25px_rgba(108,59,181,0.5)] transition-all duration-300 relative border border-white/5">
+        <img class="w-full h-full object-cover" src="${posterUrl}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/175x260?text=No+Poster'"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+        ${isUpcoming ? `<div class="absolute top-2 right-2"><span class="px-2 py-0.5 rounded-full bg-primary-container/90 backdrop-blur-md text-[7px] font-black text-on-primary-container uppercase tracking-wider">Coming Soon</span></div>` : ''}
+        <div class="absolute top-2 left-2">
+          <span class="px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[8px] font-black text-primary uppercase">${movie.rating || 'UA'}</span>
+        </div>
+        <div class="absolute bottom-0 left-0 w-full p-2.5">
+          <h4 class="font-bold text-white text-xs leading-tight line-clamp-2 drop-shadow-lg">${movie.title}</h4>
+          <div class="flex items-center justify-between text-[7px] font-black text-outline uppercase tracking-[0.1em] mt-1">
+            <span>${movie.durationMinutes || 0}m</span>
+            <div class="flex items-center gap-0.5 text-secondary">
+              <span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1">star</span>
+              <span class="text-white">${movie.averageRating ? movie.averageRating.toFixed(1) : '0.0'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+      return div;
+    }
+
+    // ─── Load Data ───
+    async function loadHomePage() {
+      const nowContainer = document.getElementById('now-showing-slider');
+      const soonContainer = document.getElementById('coming-soon-slider');
+
+      nowContainer.innerHTML = '<div class="text-white flex items-center gap-2 py-10"><div class="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> Loading...</div>';
+      soonContainer.innerHTML = '<div class="text-white flex items-center gap-2 py-10"><div class="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> Loading...</div>';
+
+      try {
+        const [nowShowing, upcoming] = await Promise.all([
+          Movies.getNowShowing(),
+          Movies.getUpcoming()
+        ]);
+
+        // Hero Banner — use first 5 now-showing movies
+        heroMovies = (nowShowing || []).slice(0, 5);
+        if (heroMovies.length > 0) {
+          const dotsContainer = document.getElementById('hero-dots');
+          dotsContainer.innerHTML = heroMovies.map((_, i) => `<div class="hero-dot w-2 h-2 rounded-full cursor-pointer transition-all ${i === 0 ? 'bg-primary w-6' : 'bg-white/30 hover:bg-white/50'}" onclick="heroIndex=${i};setHero(heroMovies[${i}])"></div>`).join('');
+          setHero(heroMovies[0]);
+          heroInterval = setInterval(nextHero, 5000);
+        }
+
+        // Now Showing Slider
+        nowContainer.innerHTML = '';
+        if (!nowShowing || nowShowing.length === 0) {
+          nowContainer.innerHTML = '<div class="text-outline py-10">No movies currently showing.</div>';
+        } else {
+          nowShowing.forEach(m => nowContainer.appendChild(renderMovieCard(m, false)));
+        }
+
+        // Coming Soon Slider
+        soonContainer.innerHTML = '';
+        if (!upcoming || upcoming.length === 0) {
+          soonContainer.innerHTML = '<div class="text-outline py-10">No upcoming movies yet.</div>';
+        } else {
+          upcoming.forEach(m => soonContainer.appendChild(renderMovieCard(m, true)));
+        }
+
+      } catch (err) {
+        nowContainer.innerHTML = '<div class="text-error py-10">Failed to load movies. Is the backend running?</div>';
+        soonContainer.innerHTML = '';
+      }
+    }
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadHomePage();
+      // Check for ?tab= URL param to auto-switch tabs
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab) {
+        const tabBtn = document.querySelector(`.cat-tab[data-tab="${tab}"]`);
+        if (tabBtn) tabBtn.click();
+      }
+    });
+    window.addEventListener('cityChanged', loadHomePage);
+  </script>
+
+</body>
+
+</html>

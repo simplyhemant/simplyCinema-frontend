@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>City Management | SimplyCinema Admin</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: { extend: { colors: {
+        "surface-container": "#201f1f", "background": "#131313", "outline": "#968e9e",
+        "outline-variant": "#4a4452", "primary-fixed-dim": "#d6baff", "on-background": "#e5e2e1",
+        "primary-container": "#6c3bb5", "surface-container-highest": "#353534",
+        "surface-container-lowest": "#0e0e0e", "surface-container-low": "#1c1b1b",
+        "primary": "#d6baff", "error": "#ffb4ab", "secondary": "#ddb7ff"
+      }, fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"] } } }
+    }
+  </script>
+  <style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body">
+
+<div id="admin-sidebar-placeholder"></div>
+<div id="admin-topbar-placeholder"></div>
+
+<main class="pl-64 pt-20 min-h-screen">
+  <div class="p-8 space-y-8">
+    <div class="flex justify-between items-end">
+      <div>
+        <h1 class="font-headline text-3xl font-bold tracking-tight text-white mb-2">City Management</h1>
+        <p class="text-outline text-sm">Manage cities where SimplyCinema operates.</p>
+      </div>
+      <div id="add-city-btn-container">
+         <button onclick="openModal()" class="px-5 py-2.5 rounded-full bg-primary-container text-white shadow-lg font-medium text-sm transition-all flex items-center gap-2 hover:scale-105">
+            <span class="material-symbols-outlined text-[16px]">add</span> Add City
+         </button>
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="relative group max-w-md">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+        <input type="text" id="city-search" placeholder="Search for cities..." 
+               class="w-full bg-surface-container-low border border-white/5 rounded-full py-3 pl-12 pr-6 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"
+               oninput="filterCities(this.value)">
+    </div>
+
+    <div class="bg-surface-container-low rounded-xl border border-white/5 overflow-hidden">
+        <div class="p-6 border-b border-white/5 bg-surface-container-lowest uppercase tracking-widest text-[10px] text-outline font-bold grid grid-cols-12 gap-4">
+            <div class="col-span-4">City Name</div>
+            <div class="col-span-3">State</div>
+            <div class="col-span-3">Country</div>
+            <div class="col-span-2 text-right action-col">Actions</div>
+        </div>
+        <div id="data-list" class="divide-y divide-white/5"></div>
+    </div>
+  </div>
+</main>
+
+<!-- Create/Edit Modal -->
+<div id="city-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm hidden">
+    <div class="bg-surface-container border border-white/5 w-full max-w-md rounded-2xl p-8 shadow-2xl space-y-6">
+        <div class="flex justify-between items-start">
+            <h3 class="font-headline text-2xl font-bold text-white" id="modal-title">Add City</h3>
+            <button onclick="closeModal()" class="text-outline hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+
+        <form id="city-form" class="space-y-4">
+            <input type="hidden" id="city-id">
+            
+            <div>
+                <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">City Name</label>
+                <input type="text" id="name" required placeholder="e.g. Mumbai" class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary">
+            </div>
+
+            <div>
+                <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">State</label>
+                <input type="text" id="state" required placeholder="e.g. Maharashtra" class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary">
+            </div>
+
+            <div>
+                <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Country</label>
+                <input type="text" id="country" required placeholder="e.g. India" class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary">
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" id="save-city-btn" class="w-full py-4 bg-primary text-background font-bold rounded-xl hover:brightness-110 transition-all shadow-lg uppercase tracking-widest">Save City</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+  injectComponent("#admin-sidebar-placeholder", "../../components/admin-sidebar.html");
+  injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
+
+  const modal = document.getElementById('city-modal');
+  const form = document.getElementById('city-form');
+
+  document.addEventListener('DOMContentLoaded', async () => {
+      const role = getRole();
+      requireAuth(['ADMIN', 'THEATRE_OWNER']);
+      
+      const btnContainer = document.getElementById('add-city-btn-container');
+
+      if (role === 'THEATRE_OWNER') {
+          btnContainer.innerHTML = `
+             <button onclick="openModal()" class="px-5 py-2.5 rounded-full bg-secondary text-background shadow-lg font-bold text-sm transition-all flex items-center gap-2 hover:scale-105">
+                <span class="material-symbols-outlined text-[16px]">mail</span> Request New City
+             </button>
+          `;
+          document.querySelectorAll('.action-col').forEach(el => el.classList.add('hidden'));
+      }
+      
+      loadCities();
+  });
+
+  let allCities = [];
+
+  async function loadCities() {
+      const container = document.getElementById('data-list');
+      container.innerHTML = '<div class="p-8 text-center text-outline">Loading cities...</div>';
+
+      try {
+          allCities = await Cities.getAll();
+          displayCities(allCities);
+      } catch(e) {
+          container.innerHTML = '<div class="p-8 text-center text-error">Failed to fetch data.</div>';
+      }
+  }
+
+  function displayCities(cities) {
+      const container = document.getElementById('data-list');
+      const searchTerm = document.getElementById('city-search')?.value || '';
+
+      if(!cities || cities.length === 0) {
+          container.innerHTML = `
+              <div class="p-12 text-center space-y-4">
+                  <div class="w-16 h-16 bg-surface-container rounded-full flex items-center justify-center mx-auto text-outline">
+                      <span class="material-symbols-outlined text-3xl">location_off</span>
+                  </div>
+                  <div>
+                      <p class="text-white font-bold">City not found</p>
+                      <p class="text-outline text-sm">We couldn't find "${searchTerm}" in our records.</p>
+                  </div>
+                  <button onclick="requestCity('${searchTerm}')" class="px-6 py-2 bg-primary/10 text-primary border border-primary/20 rounded-full text-[10px] font-bold uppercase hover:bg-primary/20 transition-all">
+                      Request Admin to Add "${searchTerm}"
+                  </button>
+              </div>
+          `;
+          return;
+      }
+
+      container.innerHTML = '';
+      const role = getRole();
+      cities.forEach(c => {
+         const row = document.createElement('div');
+         row.className = 'p-6 grid grid-cols-12 gap-4 items-center hover:bg-surface-container transition-colors';
+         
+         let actionHtml = '';
+         if (role === 'ADMIN') {
+             actionHtml = `
+                <div class="col-span-2 text-right flex justify-end gap-3 action-col">
+                   <button onclick='openEditModal(${JSON.stringify(c)})' class="text-primary hover:text-white transition-colors"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                   <button class="text-error hover:text-red-400 transition-colors" onclick="deleteObj('${c.id}')"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                </div>
+             `;
+         } else {
+             row.classList.replace('grid-cols-12', 'grid-cols-10');
+         }
+
+         row.innerHTML = `
+            <div class="col-span-4 font-bold text-sm text-white truncate">${c.name}</div>
+            <div class="col-span-3 text-sm text-outline">${c.state}</div>
+            <div class="col-span-3 text-sm text-outline">${c.country}</div>
+            ${actionHtml}
+         `;
+         container.appendChild(row);
+      });
+  }
+
+  function filterCities(term) {
+      if(!term) {
+          displayCities(allCities);
+          return;
+      }
+      const filtered = allCities.filter(c => 
+          c.name.toLowerCase().includes(term.toLowerCase()) ||
+          c.state.toLowerCase().includes(term.toLowerCase())
+      );
+      displayCities(filtered);
+  }
+
+  async function requestCity(name) {
+      if(!name) return;
+      
+      const userStr = localStorage.getItem("sc_user");
+      const user = userStr ? JSON.parse(userStr) : null;
+      if(!user) {
+          showToast("Please login first", "error");
+          return;
+      }
+
+      const state = document.getElementById('state')?.value || "N/A";
+      const country = document.getElementById('country')?.value || "N/A";
+
+      const data = {
+          description: `City Request: ${name}, State: ${state}, Country: ${country}`,
+          userId: user.id,
+          userRole: getRole()
+      };
+
+      const res = await Support.create(data);
+      if(res) {
+          showToast("Request submitted to Admin successfully");
+          if(typeof closeModal === 'function') closeModal();
+      }
+  }
+
+  function openModal() {
+      const role = getRole();
+      const modalTitle = document.getElementById('modal-title');
+      const saveBtn = document.getElementById('save-city-btn');
+      
+      if (role === 'THEATRE_OWNER') {
+          modalTitle.innerText = "Request New City";
+          saveBtn.innerText = "Send Request";
+      } else {
+          modalTitle.innerText = "Add City";
+          saveBtn.innerText = "Save City";
+      }
+
+      form.reset();
+      document.getElementById('city-id').value = "";
+      modal.classList.remove('hidden');
+  }
+
+  function openEditModal(c) {
+      document.getElementById('modal-title').innerText = "Edit City";
+      document.getElementById('city-id').value = c.id;
+      document.getElementById('name').value = c.name;
+      document.getElementById('state').value = c.state;
+      document.getElementById('country').value = c.country;
+      modal.classList.remove('hidden');
+  }
+
+  function closeModal() {
+      modal.classList.add('hidden');
+  }
+
+  form.onsubmit = async (e) => {
+      e.preventDefault();
+      const role = getRole();
+      const id = document.getElementById('city-id').value;
+      const cityName = document.getElementById('name').value;
+
+      if (role === 'THEATRE_OWNER') {
+          requestCity(cityName);
+          closeModal();
+          return;
+      }
+
+      const data = {
+          name: cityName,
+          state: document.getElementById('state').value,
+          country: document.getElementById('country').value,
+          isActive: true
+      };
+
+      try {
+          if(id) {
+              await Cities.update(id, data);
+              showToast("City updated successfully");
+          } else {
+              await Cities.create(data);
+              showToast("City added successfully");
+          }
+          closeModal();
+          loadCities();
+      } catch(err) {
+          showToast("Failed to save city", "error");
+      }
+  };
+
+  async function deleteObj(id) {
+     if(!confirm("Delete this city?")) return;
+     try {
+         await Cities.delete(id);
+         showToast("Deleted successfully");
+         loadCities();
+     } catch(e){}
+  }
+</script>
+</body>
+</html>

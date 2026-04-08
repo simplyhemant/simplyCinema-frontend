@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>SimplyCinema - Choose Showtime</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#201f1f",
+            "background": "#131313",
+            "outline": "#968e9e",
+            "primary-fixed-dim": "#d6baff",
+            "on-background": "#e5e2e1",
+            "primary-container": "#6c3bb5",
+            "on-surface-variant": "#ccc3d4",
+            "surface-bright": "#3a3939",
+            "on-primary": "#420089",
+            "surface-tint": "#d6baff",
+            "surface-container-highest": "#353534",
+            "surface-dim": "#131313",
+            "surface-container-lowest": "#0e0e0e",
+            "surface-variant": "#353534",
+            "surface-container-low": "#1c1b1b",
+            "surface-container-high": "#2a2a2a",
+            "primary": "#d6baff",
+            "error": "#ffb4ab"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .hero-gradient { background: linear-gradient(to top, #131313 0%, transparent 100%); }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col pt-16">
+
+<div id="navbar-placeholder"></div>
+
+<!-- Top header showing movie context -->
+<section class="relative h-[250px] w-full overflow-hidden shrink-0 border-b border-white/5">
+    <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-all opacity-50 blur-sm" style="background-image: url('https://via.placeholder.com/1920x1080?text=Backdrop')"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+    
+    <div class="absolute bottom-0 left-0 w-full px-8 pb-6 max-w-7xl mx-auto left-1/2 -translate-x-1/2 flex items-end gap-6">
+        <div class="w-[120px] aspect-[2/3] rounded-xl overflow-hidden shadow-2xl shrink-0 border border-white/10 relative -mb-4 z-10">
+            <img id="m-poster" class="w-full h-full object-cover" src="https://via.placeholder.com/120x180" alt="Poster">
+        </div>
+        <div class="pb-2">
+            <h1 id="m-title" class="text-3xl md:text-4xl font-black font-headline tracking-tighter text-white mb-2 shadow-black drop-shadow-md">Loading...</h1>
+            <p id="m-creators" class="text-sm font-medium text-white/50 mb-3 max-w-2xl line-clamp-1"></p>
+            <div class="flex flex-wrap items-center gap-4 text-xs font-bold text-white/70 tracking-wide uppercase">
+                <span id="m-rating" class="px-2 py-0.5 border border-white/20 rounded bg-white/5 backdrop-blur-sm">UA</span>
+                <span id="m-duration" class="px-2 py-0.5 bg-white/10 rounded backdrop-blur-sm shadow-md">--m</span>
+                <span id="m-languages" class="text-outline">Loading languages...</span>
+                <span id="m-selected-config" class="hidden px-3 py-0.5 bg-primary-container/20 border border-primary/50 text-primary-fixed rounded-full backdrop-blur-sm shadow-md tracking-[0.2em]"></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<main class="flex-1 w-full max-w-7xl mx-auto px-8 py-8 space-y-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h2 class="text-xl font-bold font-headline text-white mb-1">Select Theatre & Showtime</h2>
+            <p class="text-xs text-outline font-medium tracking-wide">Showing results for <span id="m-city-name" class="text-primary font-bold">your selected city</span></p>
+        </div>
+        <!-- Dynamic Date Filter -->
+        <div id="date-selector-container" class="flex gap-2 p-1 bg-surface-container-high rounded-lg border border-white/5 shadow-inner overflow-x-auto hide-scrollbar snap-x">
+            <!-- Dates generated by JS -->
+        </div>
+    </div>
+
+    <!-- Theatres List -->
+    <div id="theatres-container" class="space-y-6">
+        <div class="p-10 text-center text-outline">
+            <div class="full-screen-loader" style="position:static;width:24px;height:24px;margin:0 auto 10px auto;"></div>
+            Finding cinemas playing this movie...
+        </div>
+    </div>
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script>
+    injectComponent("#navbar-placeholder", "../../components/navbar.html");
+    injectComponent("#footer-placeholder", "../../components/footer.html");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const movieId = urlParams.get('movieId');
+    const selectedLang = urlParams.get('lang');
+    const selectedFormat = urlParams.get('format') || '2D';
+
+    // State
+    let cityId = null;
+    let selectedDate = '2026-04-15';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (!movieId) {
+            window.location.href = '/pages/customer/home';
+            return;
+        }
+
+        try {
+            const savedCity = JSON.parse(localStorage.getItem('sc_city'));
+            if(savedCity) {
+                cityId = savedCity.cityId;
+                document.getElementById('m-city-name').innerText = savedCity.cityName;
+            } else {
+                document.getElementById('m-city-name').innerText = "All Cities";
+            }
+        } catch(e) { }
+
+        // Fetch Movie Details for Header
+        try {
+            const movie = await Movies.getById(movieId);
+            if(movie) {
+                document.title = `${movie.title} Showtimes | SimplyCinema`;
+                document.getElementById('m-title').innerText = movie.title;
+                document.getElementById('m-duration').innerText = `${movie.durationMinutes || '--'}m`;
+                
+                const creators = [];
+                if(movie.leadActor) creators.push(movie.leadActor);
+                if(movie.cast && movie.cast.length > 0) creators.push(...movie.cast.slice(0, 2));
+                if(movie.crew && movie.crew.length > 0) creators.push(movie.crew[0]);
+                document.getElementById('m-creators').innerText = creators.length > 0 ? `Starring: ${creators.join(', ')}` : '';
+
+                const posterUrl = movie.posterUrl && movie.posterUrl !== 'null' ? movie.posterUrl : 'https://via.placeholder.com/120x180';
+                document.getElementById('m-poster').src = posterUrl;
+                document.getElementById('hero-bg').style.backgroundImage = `url('${movie.bannerUrl && movie.bannerUrl !== 'null' ? movie.bannerUrl : posterUrl}')`;
+
+                try {
+                    const langs = await Languages.getAll();
+                    if(movie.languageIds && langs) {
+                        const names = langs.filter(l => movie.languageIds.includes(l.id)).map(l => l.name);
+                        document.getElementById('m-languages').innerText = names.length ? names.join(', ') : 'Not Specified';
+                    }
+                } catch(e){}
+
+                <!-- Show selected config (Lang + Format) -->
+                if (selectedLang || (selectedFormat && selectedFormat !== '2D')) {
+                    const configSpan = document.getElementById('m-selected-config');
+                    let parts = [];
+                    if(selectedLang) parts.push(selectedLang);
+                    if(selectedFormat) parts.push(selectedFormat);
+                    
+                    if(parts.length > 0) {
+                        configSpan.innerText = parts.join(' • ');
+                        configSpan.classList.remove('hidden');
+                    }
+                }
+            }
+        } catch(e) { console.error('Error fetching movie:', e); }
+
+        generateDateSelector();
+        await loadShowsAndTheatres();
+    });
+
+    function generateDateSelector() {
+        const container = document.getElementById('date-selector-container');
+        container.innerHTML = '';
+        const today = new Date('2026-04-15');
+        
+        for(let i=0; i<10; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            const dateStr = date.toISOString().split('T')[0];
+            
+            const dayName = i === 0 ? 'START' : date.toLocaleDateString('en-US', { weekday: 'short' });
+            const dayNum = date.getDate();
+            const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+
+            const btn = document.createElement('button');
+            btn.className = `date-btn min-w-[65px] snap-center flex flex-col items-center justify-center py-2.5 px-3 rounded-xl transition-all duration-300 border ${selectedDate === dateStr ? 'bg-primary text-on-primary border-primary shadow-[0_0_20px_rgba(214,186,255,0.3)] scale-105' : 'bg-surface-container border-white/5 text-on-surface-variant hover:border-primary/50 hover:text-white'}`;
+            btn.innerHTML = `
+                <span class="text-[9px] uppercase tracking-[0.2em] font-black mb-1 opacity-70">${dayName}</span>
+                <span class="text-lg font-headline font-black leading-none">${dayNum}</span>
+                <span class="text-[10px] uppercase font-bold mt-1 opacity-60">${monthName}</span>
+            `;
+
+            btn.onclick = () => {
+                selectedDate = dateStr;
+                document.querySelectorAll('.date-btn').forEach(b => {
+                    b.className = 'date-btn min-w-[65px] snap-center flex flex-col items-center justify-center py-2.5 px-3 rounded-xl transition-all duration-300 border bg-surface-container border-white/5 text-on-surface-variant hover:border-primary/50 hover:text-white';
+                });
+                btn.className = 'date-btn min-w-[65px] snap-center flex flex-col items-center justify-center py-2.5 px-3 rounded-xl transition-all duration-300 border bg-primary text-on-primary border-primary shadow-[0_0_20px_rgba(214,186,255,0.3)] scale-105';
+                loadShowsAndTheatres();
+            };
+            container.appendChild(btn);
+        }
+    }
+
+    async function loadShowsAndTheatres() {
+        const container = document.getElementById('theatres-container');
+        
+        try {
+            // Fetch all theatres in city (or all if no city)
+            let theatres = [];
+            if(cityId) {
+                theatres = await Theatres.getByCity(cityId);
+            } else {
+                theatres = await Theatres.getAll(); 
+            }
+
+            if(!theatres || theatres.length === 0) {
+                container.innerHTML = '<div class="p-10 text-center text-outline bg-surface-container rounded-xl border border-white/5">No cinemas found in this location. Please select a different city.</div>';
+                return;
+            }
+
+          // Create lookup map of screenId -> theatre details
+            const screenToTheatreMap = {};
+            // Fetch all screens for these theatres in parallel since API doesn't embed them
+            try {
+                const screenResults = await Promise.all(theatres.map(t => Screens.getByTheatre(t.id)));
+                theatres.forEach((t, i) => {
+                    const screens = screenResults[i];
+                    if(screens && Array.isArray(screens)) {
+                        screens.forEach(s => {
+                            screenToTheatreMap[s.id] = t;
+                        });
+                    }
+                });
+                
+                // Debugging show filtering
+                const shows = await Shows.getByMovie(movieId);
+                theatres.forEach(t => {
+                    const filteredShows = shows.filter(show => {
+                        const dateMatch = show.showDate === selectedDate;
+                        const theatreMatch = screenToTheatreMap[show.screenId] && screenToTheatreMap[show.screenId].id === parseInt(t.id);
+                        
+                        if (!dateMatch || !theatreMatch) {
+                            console.log(`DEBUG: Filtered out show ${show.id} for theatre ${t.name}: dateMatch=${dateMatch}, theatreMatch=${theatreMatch}`);
+                        }
+                        
+                        return dateMatch && theatreMatch;
+                    });
+                    
+                    console.log(`DEBUG: Found ${filteredShows.length} filtered shows for theatre ${t.name}`);
+                });
+            } catch(e) {
+                console.error("Screen mapping failed:", e);
+            }
+
+            // Fetch shows for movie
+            const shows = await Shows.getByMovie(movieId);
+            
+            if(!shows || shows.length === 0) {
+                container.innerHTML = '<div class="p-10 text-center text-outline bg-surface-container rounded-xl border border-white/5">This movie currently has no scheduled shows.</div>';
+                return;
+            }
+
+            // Group shows by Theatre ID using the screen map, filtering by selectedDate
+            const theatreShows = {};
+            let hasShowsToday = false;
+
+            shows.forEach(show => {
+                if(show.showDate !== selectedDate) return; 
+                if(show.status === 'CANCELLED') return;
+
+                // 2. Apply Language and Format (ScreenType) filtering
+                // If show has explicit language, filter by it. 
+                // If not, we don't block it unless we're sure it's wrong (to avoid empty screens for legacy data)
+                if (selectedLang && show.language && show.language !== selectedLang) return;
+                
+                // Same for screenType/format
+                if (selectedFormat && show.screenType && show.screenType !== selectedFormat) {
+                    // Special case: if user selected 2D but show is null/Standard, allow it
+                    const isBasic = (selectedFormat === '2D' || selectedFormat === 'Standard');
+                    if (!(isBasic && (!show.screenType || show.screenType === 'REGULAR'))) {
+                        return;
+                    }
+                }
+
+                const theatre = screenToTheatreMap[show.screenId];
+                if(theatre) { 
+                   if(!theatreShows[theatre.id]) {
+                       theatreShows[theatre.id] = { theatre, shows: [] };
+                   }
+                   theatreShows[theatre.id].shows.push(show);
+                   hasShowsToday = true;
+                }
+            });
+
+            if(!hasShowsToday) {
+                container.innerHTML = '<div class="p-10 text-center text-outline bg-surface-container rounded-xl border border-white/5">No shows scheduled for today in nearby cinemas. Try selecting a different date.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            
+            // Sort shows by time within each theatre and then render
+            Object.values(theatreShows).forEach(group => {
+                const sortedShows = group.shows.sort((a,b) => a.showTime.localeCompare(b.showTime));
+                
+                const card = document.createElement('div');
+                card.className = 'bg-surface-container-low border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-colors shadow-lg';
+                
+                let timesHtml = sortedShows.map(s => {
+                    const t = new Date(s.startTime || ('1970-01-01T' + s.showTime)).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true});
+                    const langCode = s.language ? s.language.substring(0, 3) : '';
+                    const fmt = s.screenType || '2D';
+                    const badge = langCode ? `${langCode} • ${fmt}` : fmt;
+                    
+                    return `
+                        <button onclick="bookShow(${s.id})" class="px-6 py-3 rounded-xl border border-white/10 text-sm font-black text-white hover:bg-primary hover:text-on-primary hover:border-primary transition-all duration-500 hover:shadow-[0_0_25px_rgba(214,186,255,0.4)] hover:-translate-y-1 relative group flex flex-col items-center min-w-[100px]">
+                            <span class="tracking-tight text-base">${t}</span>
+                            <span class="text-[9px] text-outline group-hover:text-on-primary/80 uppercase mt-1 tracking-[0.2em] font-black">${badge}</span>
+                        </button>
+                    `;
+                }).join('');
+
+                card.innerHTML = `
+                    <div class="relative h-32 w-full overflow-hidden">
+                        <img src="${group.theatre.imageUrl || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=800'}" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" alt="${group.theatre.name}">
+                        <div class="absolute inset-0 bg-gradient-to-t from-surface-container-low via-surface-container-low/40 to-transparent"></div>
+                        <div class="absolute bottom-4 left-8">
+                             <h3 class="text-2xl text-white font-black font-headline tracking-tighter drop-shadow-lg">${group.theatre.name}</h3>
+                             <p class="text-xs text-white/70 font-bold uppercase tracking-widest line-clamp-1">${group.theatre.address || 'Address not listed'}</p>
+                        </div>
+                    </div>
+                    <div class="px-8 py-6 bg-surface-container-highest/20 border-b border-white/5 flex flex-col md:flex-row justify-between md:items-center gap-6">
+                        <div class="flex items-center gap-4 px-4 py-2 bg-black/20 rounded-full border border-white/5">
+                            <span class="material-symbols-outlined text-primary text-xl" title="Parking">local_parking</span>
+                            <span class="material-symbols-outlined text-primary text-xl" title="Cafeteria">icecream</span>
+                            <span class="material-symbols-outlined text-primary text-xl" title="M-Ticket">confirmation_number</span>
+                            <span class="material-symbols-outlined text-primary text-xl" title="Wheelchair">accessible</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs text-white/40 font-bold tracking-widest uppercase">
+                            <span class="material-symbols-outlined text-[16px] text-green-500">check_circle</span>
+                            <span>Sanitized & Safe</span>
+                        </div>
+                    </div>
+                    <div class="px-8 py-8">
+                       <div class="flex flex-wrap items-center gap-5">
+                           ${timesHtml}
+                       </div>
+                       <div class="mt-8 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-outline/40">
+                           <div class="w-2 h-2 rounded-full bg-green-500/50 shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
+                           Available
+                           <div class="w-2 h-2 rounded-full bg-orange-500/50 ml-4 shadow-[0_0_8px_rgba(249,115,22,0.4)]"></div>
+                           Filling Fast
+                       </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+        } catch (err) {
+            console.error(err);
+            container.innerHTML = '<div class="p-10 text-center text-error bg-error/10 rounded-xl border border-error/20">Failed to load showtimes. Server might be down.</div>';
+        }
+    }
+
+    function bookShow(showId) {
+        window.location.href = `/pages/customer/seat-selection?showId=${showId}`;
+    }
+</script>
+</body>
+</html>

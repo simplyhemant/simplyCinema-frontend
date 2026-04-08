@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Shows Management | SimplyCinema Admin</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-container": "#201f1f", "background": "#131313", "outline": "#968e9e", "primary-container": "#6c3bb5", "surface-container-highest": "#353534", "surface-container-low": "#1c1b1b", "primary": "#d6baff" }, fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"] } } } }
+  </script>
+  <style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body">
+
+<div id="admin-sidebar-placeholder"></div>
+<div id="admin-topbar-placeholder"></div>
+
+<main class="pl-64 pt-20 min-h-screen flex flex-col items-center justify-center text-center">
+  <div class="max-w-md">
+    <span class="material-symbols-outlined text-6xl text-outline mb-6 border border-white/5 p-6 rounded-full bg-surface-container shadow-xl">manage_search</span>
+    <h2 class="font-headline text-2xl font-bold text-white mb-2">Global Shows Search</h2>
+    <p class="text-outline text-sm mb-6">Shows must be queried using specific city, movie, and date parameters via the frontend booking flow.</p>
+    <a href="/pages/admin/dashboard.html" class="px-6 py-3 rounded-full bg-primary-container text-white font-bold transition-all hover:scale-105 inline-block">Return to Dashboard</a>
+  </div>
+</main>
+
+<script>
+  injectComponent("#admin-sidebar-placeholder", "../../components/admin-sidebar.html");
+  injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
+
+  document.addEventListener('DOMContentLoaded', () => {
+      requireAuth(['ADMIN']);
+  });
+</script>
+</body>
+</html>

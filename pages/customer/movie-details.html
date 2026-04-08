@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>SimplyCinema - Movie Details</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#201f1f",
+            "background": "#131313",
+            "outline": "#968e9e",
+            "primary-fixed-dim": "#d6baff",
+            "on-background": "#e5e2e1",
+            "primary-container": "#6c3bb5",
+            "on-surface-variant": "#ccc3d4",
+            "surface-bright": "#3a3939",
+            "on-primary": "#420089",
+            "surface-tint": "#d6baff",
+            "surface-container-highest": "#353534",
+            "surface-dim": "#131313",
+            "surface-container-lowest": "#0e0e0e",
+            "surface-variant": "#353534",
+            "surface-container-low": "#1c1b1b",
+            "surface-container-high": "#2a2a2a",
+            "primary": "#d6baff"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .hero-gradient { background: linear-gradient(to top, #131313 0%, transparent 85%), linear-gradient(to right, #131313 0%, transparent 75%); }
+    .auteur-gradient { background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%); }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary-container min-h-screen">
+
+<div id="navbar-placeholder"></div>
+
+<main class="pt-[64px]">
+  <!-- Hero Backdrop -->
+  <section class="relative h-[650px] w-full overflow-hidden">
+    <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-1000 scale-105 group-hover:scale-100" style="background-image: url('https://via.placeholder.com/1920x1080?text=Cinematic+Backdrop')"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent"></div>
+    
+    <div class="absolute bottom-0 left-0 w-full px-8 pb-16 max-w-7xl mx-auto left-1/2 -translate-x-1/2">
+      <div class="flex flex-col md:flex-row gap-12 items-end">
+        <!-- Movie Poster Card -->
+        <div class="relative w-[280px] aspect-[2/3] rounded-3xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.8)] shrink-0 transform -mb-32 hidden md:block border border-white/10 group">
+          <div id="poster-loader" class="absolute inset-0 bg-surface-container-highest animate-pulse flex items-center justify-center">
+              <span class="material-symbols-outlined text-outline/20 text-4xl">movie</span>
+          </div>
+          <img id="m-poster" class="w-full h-full object-cover opacity-0 transition-opacity duration-500" src="" alt="Movie Poster" onload="this.classList.remove('opacity-0'); document.getElementById('poster-loader').remove();"/>
+          <div class="absolute top-6 -left-10 bg-primary px-12 py-1.5 -rotate-45 text-[10px] font-black tracking-[0.2em] shadow-xl text-background">TRENDING</div>
+        </div>
+        
+        <!-- Title & Meta -->
+        <div class="flex-1 space-y-6 pb-4">
+          <div id="m-genres-tags" class="flex flex-wrap gap-2">
+            <!-- Dynamic tags -->
+          </div>
+          
+          <h1 id="m-title" class="text-3xl md:text-5xl font-black font-headline tracking-tighter text-white leading-[0.9]">Loading...</h1>
+          
+          <div class="flex flex-wrap items-center gap-8 py-2">
+            <div class="flex items-center gap-3">
+              <div class="flex items-center gap-1.5 bg-secondary/10 px-3 py-1.5 rounded-full border border-secondary/20">
+                <span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span id="m-avg-rating" class="text-2xl font-black text-white leading-none">0.0</span>
+              </div>
+              <span class="text-[10px] font-bold text-outline uppercase tracking-widest">User Rating</span>
+            </div>
+            
+            <div class="h-8 w-px bg-white/10 hidden md:block"></div>
+            
+            <div class="flex items-center gap-6 text-sm font-bold text-white/70 tracking-wide">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-xl">schedule</span>
+                <span id="m-duration">--</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-xl">calendar_month</span>
+                <span id="m-release">--</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-4 pt-4">
+            <button id="book-btn" class="px-8 py-3.5 bg-primary text-background rounded-full font-black text-xs uppercase tracking-widest shadow-[0_20px_40px_rgba(214,186,255,0.2)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2">
+              <span class="material-symbols-outlined text-lg">confirmation_number</span>
+              Book Tickets
+            </button>
+            <button onclick="scrollToTrailer()" class="px-6 py-3.5 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-full font-bold text-xs uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2">
+              <span class="material-symbols-outlined text-lg">videocam</span>
+              Watch Trailer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navigation Tabs (Sticky) -->
+  <nav class="sticky top-[64px] z-40 bg-background/90 backdrop-blur-md border-b border-white/5 mt-24">
+    <div class="max-w-7xl mx-auto px-8">
+      <div class="flex gap-8">
+        <a class="py-5 text-sm font-bold tracking-widest text-primary border-b-2 border-primary uppercase" href="#">About</a>
+        <a class="py-5 text-sm font-bold tracking-widest text-white/40 hover:text-white transition-colors uppercase" href="#">Reviews</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Grid -->
+  <div class="max-w-7xl mx-auto px-8 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
+    <!-- Left Column (Main Content) -->
+    <div class="lg:col-span-8 space-y-12">
+      <!-- Synopsis -->
+      <section>
+        <h2 class="text-xs font-bold tracking-[0.3em] text-white/40 uppercase mb-6">Synopsis</h2>
+        <p id="m-synopsis" class="text-base leading-relaxed text-white/80 font-light">
+          Loading description...
+        </p>
+      </section>
+      
+      <!-- Trailer Section -->
+      <section id="trailer-section" class="hidden animate-in fade-in slide-in-from-bottom-8 duration-1000">
+        <h2 class="text-xs font-black tracking-[0.4em] text-primary uppercase mb-8 flex items-center gap-3">
+          <span class="w-8 h-px bg-primary/30"></span> 
+          Official Trailer
+        </h2>
+        <div id="trailer-container" class="w-full aspect-video rounded-[2rem] overflow-hidden shadow-2xl border border-white/5 bg-surface-container-lowest">
+            <!-- iframe injected via JS -->
+        </div>
+      </section>
+
+      <!-- Cast and Crew -->
+      <section class="space-y-10">
+        <h2 class="text-xs font-black tracking-[0.4em] text-primary uppercase flex items-center gap-3">
+          <span class="w-8 h-px bg-primary/30"></span> 
+          Starring & Crew
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="space-y-6">
+                <p class="text-[10px] font-black text-outline uppercase tracking-widest">Lead Actor</p>
+                <div class="flex items-center gap-5 group">
+                    <div class="w-20 h-20 rounded-full bg-surface-container-high border-2 border-primary/20 flex items-center justify-center text-primary group-hover:border-primary transition-all duration-500 overflow-hidden">
+                        <span class="material-symbols-outlined text-3xl">person</span>
+                    </div>
+                    <div>
+                        <p id="m-lead-actor" class="text-2xl font-bold text-white group-hover:text-primary transition-colors">--</p>
+                        <p class="text-xs text-outline font-medium tracking-wide">Principal Protagonist</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="space-y-6">
+                <p class="text-[10px] font-black text-outline uppercase tracking-widest">Director / Crew</p>
+                <div id="m-crew-list" class="flex flex-wrap gap-3">
+                    <!-- Crew chips -->
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <p class="text-[10px] font-black text-outline uppercase tracking-widest">Supporting Cast</p>
+            <div id="m-cast-list" class="flex flex-wrap gap-3">
+                <!-- Cast chips -->
+            </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Column (Sidebar) -->
+    <aside class="lg:col-span-4 space-y-8">
+      <!-- Movie Information -->
+      <div class="bg-surface-container-low rounded-xl p-8 space-y-8 border border-white/5 shadow-2xl relative overflow-hidden group">
+        <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-700"></div>
+        <h3 class="text-[10px] font-black tracking-[0.4em] text-primary uppercase">Movie Information</h3>
+        
+        <div class="space-y-6">
+          <div class="space-y-1">
+            <p class="text-[10px] font-bold text-outline uppercase tracking-widest">Available Languages</p>
+            <p id="m-languages" class="text-sm font-medium text-white italic">Loading...</p>
+          </div>
+          
+          <div class="space-y-1">
+            <p class="text-[10px] font-bold text-outline uppercase tracking-widest">Available Formats</p>
+            <p id="m-formats" class="text-sm font-medium text-white">2D, 3D, IMAX, 4DX, Dolby Atmos</p>
+          </div>
+
+          <div class="pt-4 border-t border-white/5 space-y-4">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-xl">verified_user</span>
+                <span class="text-xs font-medium text-on-surface-variant">SimplyCinema Verified Content</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="bg-gradient-to-br from-primary-container/20 to-surface-container-low rounded-xl p-8 border border-primary/10 text-center space-y-4">
+          <p class="text-xs font-medium text-on-surface-variant">Are you a fan of this movie?</p>
+          <div class="flex gap-2 justify-center">
+              <button class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10 transition-colors border border-white/10">
+                  <span class="material-symbols-outlined text-xl">favorite</span>
+              </button>
+              <button class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10 transition-colors border border-white/10">
+                  <span class="material-symbols-outlined text-xl">share</span>
+              </button>
+          </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Language & Format Selection Modal -->
+  <div id="booking-options-modal" class="hidden fixed inset-0 z-[100] flex flex-col items-center justify-end md:justify-center p-0 md:p-4 bg-black/80 backdrop-blur-md transition-all">
+      <div class="bg-surface-container w-full md:max-w-lg rounded-t-3xl md:rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col max-h-[90vh] overflow-hidden animate-[slideUp_0.3s_ease-out]">
+          
+          <div class="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-surface-container-low shrink-0">
+              <div>
+                  <h3 class="font-headline text-xl font-black text-white tracking-tight" id="modal-movie-title">Select Language & Format</h3>
+              </div>
+              <button onclick="closeBookingModal()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-outline hover:text-white hover:bg-white/10 transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">close</span>
+              </button>
+          </div>
+
+          <div class="p-6 overflow-y-auto space-y-8 flex-1">
+              <!-- Languages -->
+              <div class="space-y-4">
+                  <h4 class="text-xs font-black tracking-widest text-outline uppercase flex items-center gap-2">
+                     <span class="w-4 h-px bg-outline/30"></span> Language
+                  </h4>
+                  <div id="modal-languages-container" class="flex flex-wrap gap-3">
+                      <!-- Rendered via JS -->
+                  </div>
+              </div>
+
+              <!-- Formats -->
+              <div class="space-y-4">
+                  <h4 class="text-xs font-black tracking-widest text-outline uppercase flex items-center gap-2">
+                     <span class="w-4 h-px bg-outline/30"></span> Format
+                  </h4>
+                  <div id="modal-formats-container" class="flex flex-wrap gap-3">
+                      <!-- Rendered via JS -->
+                  </div>
+              </div>
+          </div>
+
+          <div class="p-4 bg-surface-container-highest/30 border-t border-white/5 shrink-0">
+              <button id="modal-proceed-btn" onclick="proceedToShowtimes()" class="w-full py-3 bg-primary-container text-white font-bold rounded-xl hover:shadow-[0_0_20px_rgba(108,59,181,0.5)] transition-all flex items-center justify-center gap-2">
+                  <span>View Showtimes</span>
+                  <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+          </div>
+      </div>
+  </div>
+
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script>
+  injectComponent("#navbar-placeholder", "../../components/navbar.html");
+  injectComponent("#footer-placeholder", "../../components/footer.html");
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const movieId = urlParams.get('id');
+    if(!movieId) {
+      window.location.href = '/pages/customer/home';
+      return;
+    }
+
+    try {
+      const loadEl = showLoader(); 
+      const movie = await Movies.getById(movieId);
+      if(loadEl) loadEl.remove();
+
+      if(!movie) {
+        showToast("Movie not found", "error");
+        return;
+      }
+
+      document.title = `${movie.title} | SimplyCinema`;
+      document.getElementById('m-title').innerText = movie.title;
+      
+      const hours = Math.floor(movie.durationMinutes / 60) || 0;
+      const mins = (movie.durationMinutes % 60) || 0;
+      document.getElementById('m-duration').innerText = `${hours}h ${mins}m`;
+      
+      const relDate = movie.releaseDate ? (Array.isArray(movie.releaseDate) ? movie.releaseDate[0] : new Date(movie.releaseDate).getFullYear()) : 'TBA';
+      document.getElementById('m-release').innerText = relDate;
+      document.getElementById('m-synopsis').innerText = movie.description || 'No description available.';
+      document.getElementById('m-avg-rating').innerText = movie.averageRating ? movie.averageRating.toFixed(1) : '0.0';
+      document.getElementById('m-lead-actor').innerText = movie.leadActor || 'N/A';
+
+      // Genres
+      const genreTags = document.getElementById('m-genres-tags');
+      const ratings = ['UA', '2D', '4K'];
+      genreTags.innerHTML = ratings.map(r => `<span class="px-3 py-1 bg-primary/20 backdrop-blur-md rounded text-[10px] font-black tracking-[0.2em] text-primary border border-primary/20 uppercase">${r}</span>`).join('') + 
+                           (movie.genres || []).map(g => `<span class="px-3 py-1 bg-white/5 backdrop-blur-md rounded text-[10px] font-black tracking-[0.2em] text-white/60 border border-white/5 uppercase">${g}</span>`).join('');
+
+      // Languages
+      try {
+          const languages = await Languages.getAll();
+          if (languages && movie.languageIds) {
+             const names = languages.filter(l => movie.languageIds.includes(l.id)).map(l => l.name);
+             document.getElementById('m-languages').innerText = names.length ? names.join(', ') : 'Not Specified';
+          } else {
+             document.getElementById('m-languages').innerText = 'Not Specified';
+          }
+      } catch (e) {
+          document.getElementById('m-languages').innerText = 'N/A';
+      }
+
+      // Cast & Crew
+      const castList = document.getElementById('m-cast-list');
+      const crewList = document.getElementById('m-crew-list');
+      
+      castList.innerHTML = (movie.cast || []).map(name => `<span class="px-4 py-2 bg-surface-container-high rounded-xl border border-white/5 text-sm font-medium text-white/80 transition-colors hover:border-primary/40">${name}</span>`).join('') || '<p class="text-outline text-xs">Not listed</p>';
+      crewList.innerHTML = (movie.crew || []).map(name => `<span class="px-4 py-2 bg-surface-container-high rounded-xl border border-white/5 text-sm font-medium text-white/80 transition-colors hover:border-primary/40">${name}</span>`).join('') || '<p class="text-outline text-xs">Not listed</p>';
+
+      // Images
+      const posterUrl = movie.posterUrl && movie.posterUrl !== 'null' ? movie.posterUrl : 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1000&auto=format&fit=crop';
+      const bannerUrl = movie.bannerUrl && movie.bannerUrl !== 'null' ? movie.bannerUrl : posterUrl;
+      
+      document.getElementById('m-poster').src = posterUrl;
+      const heroBg = document.getElementById('hero-bg');
+      heroBg.style.backgroundImage = `url('${bannerUrl}')`;
+      heroBg.classList.add('opacity-100');
+
+      // Trailer
+      if(movie.trailerUrl) {
+          let videoId = '';
+          if(movie.trailerUrl.includes('v=')) videoId = movie.trailerUrl.split('v=')[1].split('&')[0];
+          else if(movie.trailerUrl.includes('youtu.be/')) videoId = movie.trailerUrl.split('youtu.be/')[1].split('?')[0];
+          
+          if(videoId) {
+              document.getElementById('trailer-section').classList.remove('hidden');
+              document.getElementById('trailer-container').innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+          }
+      }
+
+      const bookBtn = document.getElementById('book-btn');
+      bookBtn.onclick = () => {
+         openBookingModal(movie);
+      };
+
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to load details", "error");
+    }
+  });
+
+  let selectedLang = null;
+  let selectedFormat = null;
+  let currentMovie = null;
+
+  async function openBookingModal(movie) {
+      currentMovie = movie;
+      const modal = document.getElementById('booking-options-modal');
+      const langContainer = document.getElementById('modal-languages-container');
+      const formatContainer = document.getElementById('modal-formats-container');
+      
+      // Reset state
+      selectedLang = null;
+      selectedFormat = null;
+      updateProceedBtn();
+
+      // Fetch Languages
+      langContainer.innerHTML = '<span class="text-xs text-outline">Loading...</span>';
+      try {
+          const allLangs = await Languages.getAll();
+          if(movie.languageIds && movie.languageIds.length > 0) {
+              const movieLangs = allLangs.filter(l => movie.languageIds.includes(l.id));
+              langContainer.innerHTML = movieLangs.map(l => 
+                  `<button onclick="selectLang('${l.name}')" id="lang-btn-${l.name}" class="px-5 py-2 rounded-full border border-white/10 text-sm font-semibold text-white/80 hover:border-primary/50 transition-colors bg-surface-container-high lang-btn">
+                      ${l.name}
+                  </button>`
+              ).join('');
+          } else {
+               langContainer.innerHTML = '<span class="text-xs text-outline italic">No specific languages found.</span>';
+          }
+      } catch(e) {
+          langContainer.innerHTML = '<span class="text-xs text-error">Failed to load languages.</span>';
+      }
+
+      // Render static formats (or fetch from Enum if API supported)
+      const formats = ['2D', '3D', 'IMAX 2D', 'IMAX 3D', '4DX', 'Dolby Atmos'];
+      formatContainer.innerHTML = formats.map(f => 
+          `<button onclick="selectFormat('${f}')" id="fmt-btn-${f.replace(/\s+/g, '')}" class="px-5 py-2 rounded-full border border-white/10 text-sm font-semibold text-white/80 hover:border-primary/50 transition-colors bg-surface-container-high fmt-btn">
+              ${f}
+          </button>`
+      ).join('');
+
+      // Auto-select 2D by default to save clicks if wanted, but forcing choice is safer.
+      
+      modal.classList.remove('hidden');
+  }
+
+  function selectLang(lang) {
+      console.log('Language selected:', lang);
+      selectedLang = lang;
+      document.querySelectorAll('.lang-btn').forEach(b => {
+          b.classList.remove('bg-primary-container', 'text-white', 'border-primary-container');
+          b.classList.add('bg-surface-container-high', 'text-white/80', 'border-white/10');
+      });
+      // Use escape for ID since language names might have spaces (though rare, good practice)
+      const btn = document.getElementById(`lang-btn-${lang}`);
+      if(btn) {
+          btn.classList.add('bg-primary-container', 'text-white', 'border-primary-container');
+          btn.classList.remove('bg-surface-container-high', 'text-white/80', 'border-white/10');
+      }
+      updateProceedBtn();
+  }
+
+  function selectFormat(fmt) {
+      console.log('Format selected:', fmt);
+      selectedFormat = fmt;
+      document.querySelectorAll('.fmt-btn').forEach(b => {
+          b.classList.remove('bg-primary-container', 'text-white', 'border-primary-container');
+          b.classList.add('bg-surface-container-high', 'text-white/80', 'border-white/10');
+      });
+      const btn = document.getElementById(`fmt-btn-${fmt.replace(/\s+/g, '')}`);
+      if(btn) {
+          btn.classList.add('bg-primary-container', 'text-white', 'border-primary-container');
+          btn.classList.remove('bg-surface-container-high', 'text-white/80', 'border-white/10');
+      }
+      updateProceedBtn();
+  }
+
+  function updateProceedBtn() {
+      const btn = document.getElementById('modal-proceed-btn');
+      // Always enabled but we log selections
+      console.log('Current selection state:', { selectedLang, selectedFormat });
+      btn.disabled = false;
+  }
+
+  function closeBookingModal() {
+      document.getElementById('booking-options-modal').classList.add('hidden');
+  }
+
+  function proceedToShowtimes() {
+      if(!currentMovie) return;
+      console.log('Proceeding with:', { selectedLang, selectedFormat });
+      sessionStorage.setItem('sc_booking', JSON.stringify({ 
+          movieId: currentMovie.id, 
+          title: currentMovie.title, 
+          posterUrl: currentMovie.posterUrl,
+          language: selectedLang || 'All Languages',
+          format: selectedFormat || 'Standard'
+      }));
+      const url = `/pages/customer/movie-shows?movieId=${currentMovie.id}&lang=${encodeURIComponent(selectedLang || '')}&format=${encodeURIComponent(selectedFormat || '')}`;
+      console.log('Redirecting to:', url);
+      window.location.href = url;
+  }
+
+  function scrollToTrailer() {
+      document.getElementById('trailer-section').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Animation for modal
+  const style = document.createElement('style');
+  style.innerHTML = `
+      @keyframes slideUp {
+          from { transform: translateY(100%); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+      }
+  `;
+  document.head.appendChild(style);
+</script>
+
+</body>
+</html>

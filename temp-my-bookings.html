@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Bookings | SimplyCinema</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "tertiary": "#c6c4df",
+              "surface-container": "#201f1f",
+              "secondary-fixed": "#f0dbff",
+              "on-tertiary-container": "#cdcbe6",
+              "background": "#131313",
+              "on-secondary-container": "#d6a9ff",
+              "surface-container-highest": "#353534",
+              "on-error": "#690005",
+              "on-background": "#e5e2e1",
+              "on-primary-fixed": "#280057",
+              "primary": "#d6baff",
+              "secondary-container": "#6f00be",
+              "tertiary-fixed-dim": "#c6c4df",
+              "surface-variant": "#353534",
+              "surface-container-low": "#1c1b1b",
+              "secondary": "#ddb7ff",
+              "on-secondary-fixed-variant": "#6900b3",
+              "surface-tint": "#d6baff",
+              "primary-container": "#6c3bb5",
+              "primary-fixed-dim": "#d6baff",
+              "outline": "#968e9e",
+              "inverse-surface": "#e5e2e1",
+              "surface-dim": "#131313",
+              "tertiary-fixed": "#e2e0fc",
+              "primary-fixed": "#ecdcff",
+              "on-primary-fixed-variant": "#5a26a3",
+              "surface-container-lowest": "#0e0e0e",
+              "on-secondary": "#490080",
+              "on-primary": "#420089",
+              "inverse-on-surface": "#313030",
+              "tertiary-container": "#56556c",
+              "on-surface-variant": "#ccc3d4",
+              "error": "#ffb4ab",
+              "surface-container-high": "#2a2a2a",
+              "on-tertiary": "#2f2e43",
+              "on-tertiary-fixed-variant": "#45455b",
+              "on-tertiary-fixed": "#1a1a2e",
+              "error-container": "#93000a",
+              "secondary-fixed-dim": "#ddb7ff",
+              "inverse-primary": "#7343bc",
+              "on-secondary-fixed": "#2c0051",
+              "surface-bright": "#3a3939",
+              "on-primary-container": "#dcc4ff",
+              "surface": "#131313",
+              "on-surface": "#e5e2e1",
+              "outline-variant": "#4a4452"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .auteur-gradient {
+        background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%);
+      }
+      .lume-glow:hover {
+        box-shadow: 0 0 20px rgba(108, 59, 181, 0.5);
+      }
+      .ghost-border {
+        outline: 1px solid rgba(74, 68, 82, 0.15);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased">
+<!-- Top Navigation Shell -->
+<nav class="fixed top-0 w-full h-16 z-50 bg-violet-950/70 backdrop-blur-xl shadow-[0_0_20px_rgba(108,59,181,0.3)]">
+<div class="flex justify-between items-center px-8 w-full max-w-screen-2xl mx-auto h-full font-['Space_Grotesk'] antialiased tracking-tight">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold text-white tracking-tighter">SimplyCinema</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-slate-300 hover:text-white transition-colors" href="#">Movies</a>
+<a class="text-slate-300 hover:text-white transition-colors" href="#">Events</a>
+<a class="text-slate-300 hover:text-white transition-colors" href="#">Cinemas</a>
+<a class="text-slate-300 hover:text-white transition-colors" href="#">Support</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-300 hover:bg-white/10 rounded-full transition-all">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 text-slate-300 hover:bg-white/10 rounded-full transition-all">
+<span class="material-symbols-outlined">location_on</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="close-up portrait of Arjun Kumar, a professional man with a friendly smile, studio lighting, warm skin tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeIDgVa2R1-_2GFZoOVtU0FQ93EGkxqGcFnm-tZ68S-VX5KzUJNM6XAHzHdulYIYmF1QnSVf_EGVnJQOi74V3UNETAttoniMyiXJnzgfoe4IrSNl1yh4BTJ_2RQKzxr9PPZ5KN-Hpczdff6_FmtBdKRasOQZ3-iVS91Ko0OVoIqclhPwLz47jWQl6Z4awygeqzvX8dRriB-pewzJdF_d7t7gY7qhTd5F7zH09nRHAWkVG7ZACF_oQ1nvC4RlQw5zqvXqxk_8_fTA"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-20 px-4 md:px-8 max-w-5xl mx-auto">
+<!-- Profile Header Section -->
+<header class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+<div class="flex items-center gap-6">
+<div class="relative group">
+<div class="w-24 h-24 md:w-32 md:h-32 rounded-xl overflow-hidden shadow-2xl transition-transform duration-300 group-hover:scale-105">
+<img class="w-full h-full object-cover" data-alt="portrait of a man in his early 30s with short dark hair and a neat beard, soft professional lighting, cinematic depth of field" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyMq5YWQIN62Nb-oeBeP1kwek_Pf2Idu1NacrDEFPzCccKEvayPUvgeBPQGFPAejSJwrWmQFo1xRoPHaUtOl_UFcCtFWt7Wocdxe6WgJofdwp4d1Sijxi_kqj9azDkS4u_AYkQxZNz9cs7j-aBCAs-5Yutb8q4kxkwGkW8WoCp9kJh1PRpy2LFwI6gLhnHgFB4aA4arzXGNOYOvSam2UxU6cQD5p6KuPobTnd7DhLTxfQg4AeSxnmFEgTZpOwQ0JDfj5XXkMuk8g"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-primary text-on-primary-fixed p-1.5 rounded-lg shadow-lg">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div>
+<h1 class="font-headline text-3xl md:text-4xl font-bold tracking-tight text-white mb-1">Arjun Kumar</h1>
+<p class="text-outline font-medium tracking-wide text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-xs">mail</span>
+                            arjun.k@simplycinema.com
+                        </p>
+</div>
+</div>
+<!-- Profile Stats Bento-ish Row -->
+<div class="grid grid-cols-3 gap-4 md:gap-8">
+<div class="text-center">
+<span class="block text-2xl font-bold text-primary font-headline">12</span>
+<span class="text-[10px] uppercase tracking-widest text-outline font-bold">Total Movies</span>
+</div>
+<div class="text-center">
+<span class="block text-2xl font-bold text-primary font-headline">2</span>
+<span class="text-[10px] uppercase tracking-widest text-outline font-bold">Upcoming</span>
+</div>
+<div class="text-center">
+<span class="block text-2xl font-bold text-primary font-headline">4.8k</span>
+<span class="text-[10px] uppercase tracking-widest text-outline font-bold">Points</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Filters Section -->
+<section class="mb-10 flex flex-wrap items-center gap-3">
+<button class="px-6 py-2.5 rounded-full text-sm font-semibold bg-primary-container text-on-primary-container shadow-[0_0_15px_rgba(108,59,181,0.3)] transition-all">
+                Upcoming
+            </button>
+<button class="px-6 py-2.5 rounded-full text-sm font-semibold bg-surface-container-high text-outline hover:text-on-surface transition-all ghost-border">
+                Completed
+            </button>
+<button class="px-6 py-2.5 rounded-full text-sm font-semibold bg-surface-container-high text-outline hover:text-on-surface transition-all ghost-border">
+                Cancelled
+            </button>
+</section>
+<!-- Bookings List -->
+<div class="space-y-8">
+<!-- Booking Card 1: Upcoming -->
+<div class="relative flex flex-col md:flex-row bg-surface-container rounded-xl overflow-hidden group transition-all duration-300 hover:translate-y-[-4px] hover:bg-surface-bright">
+<!-- Purple Gradient Accent Bar -->
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-primary to-secondary-container"></div>
+<div class="w-full md:w-48 h-64 md:h-auto shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="dramatic action movie poster visual featuring an epic sci-fi landscape with futuristic structures and a glowing horizon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3L_IeU5kiWuhc9-Q3t8kL25LWhWQSVYDR9WOtbmKqpicBAfJ-XmzI8o_qpu6KKxXoXm4NZCNNWsV5Uf1jthHUo0lpEvCDgKariZs4WYYGo39TyoRwFojYpyd5rLOVhmejlTzkhAHSz3Vo06yoO_ZnUZMqt2TAZafhPsX9uJBYS2JWESwvvFXx0Gp-AU18bXH7vwaTqKe4K7sgccduxVIr3tEn9m0BfanO8WaB1XjCnRCY5DfVjkV7q5aJ6tzys2WYsY49hCjWlA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container via-transparent to-transparent md:bg-gradient-to-r"></div>
+</div>
+<div class="p-6 md:p-8 flex flex-col justify-between flex-grow">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-black tracking-widest bg-emerald-500/10 text-emerald-400 mb-2 border border-emerald-500/20">
+                                UPCOMING
+                            </span>
+<h2 class="font-headline text-2xl font-bold text-white mb-1">Kalki 2898 AD</h2>
+<p class="text-outline text-sm">Telugu • 3D • Sci-Fi/Action</p>
+</div>
+<div class="text-right">
+<span class="block font-headline text-xl font-bold text-white">IMAX</span>
+<span class="text-xs text-outline font-medium">SCREEN 04</span>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-6 py-6 border-y border-outline-variant/10">
+<div>
+<span class="block text-[10px] uppercase tracking-tighter text-outline mb-1 font-bold">Date &amp; Time</span>
+<span class="block text-sm font-medium text-on-surface">Sun, 24 Nov • 10:15 PM</span>
+</div>
+<div>
+<span class="block text-[10px] uppercase tracking-tighter text-outline mb-1 font-bold">Seats</span>
+<span class="block text-sm font-medium text-on-surface">J14, J15 (Executive)</span>
+</div>
+<div class="col-span-2 md:col-span-1">
+<span class="block text-[10px] uppercase tracking-tighter text-outline mb-1 font-bold">Cinema</span>
+<span class="block text-sm font-medium text-on-surface">PVR Director's Cut, Delhi</span>
+</div>
+</div>
+<div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3 bg-primary/5 px-4 py-2 rounded-lg border border-primary/10">
+<span class="material-symbols-outlined text-primary text-xl">schedule</span>
+<span class="text-sm font-medium text-primary tracking-tight">Show in 2d 14h 22m</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-6 py-2.5 rounded-full text-sm font-bold bg-white/5 text-white hover:bg-white/10 transition-all">
+                                View Ticket
+                            </button>
+<button class="px-6 py-2.5 rounded-full text-sm font-bold auteur-gradient text-white shadow-lg lume-glow transition-all">
+                                Get Directions
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Booking Card 2: Completed -->
+<div class="relative flex flex-col md:flex-row bg-surface-container-low rounded-xl overflow-hidden group transition-all duration-300 hover:bg-surface-container">
+<!-- Faded Purple Accent -->
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-outline-variant/30"></div>
+<div class="w-full md:w-48 h-48 md:h-auto shrink-0 relative grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
+<img class="w-full h-full object-cover" data-alt="vibrant cinematic scene from a historical action drama with two men running through fire, epic golden lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1kkDUzx2UoROFiJROzH7tcLnC0KtIdrxPNIw7Myn25np-rfANVWCHSG8h3mK-HGucfuWfddfw8WH61buUYAW1vWtfyjgEWi4KLRMMHUWJvykmSV0ugbpi0CmOBEYKdKlq7VS9qDQLts4Z8fyJbNaOKgxnHfhMdoQtxRIX9tcqVAOEwi8ikOFmtqpFYtOlVwq3B2T6r79j9V-Wqeonf1yUQskEwBU6Mh1eqRDPkqQ-vCxjZpRwA6d4T2kTsmB0hrllFm-WIeg5sQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low via-transparent to-transparent"></div>
+</div>
+<div class="p-6 md:p-8 flex flex-col justify-between flex-grow">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-black tracking-widest bg-surface-variant text-outline mb-2 border border-outline-variant/20">
+                                COMPLETED
+                            </span>
+<h2 class="font-headline text-2xl font-bold text-on-surface-variant mb-1">RRR</h2>
+<p class="text-outline text-sm">Telugu • 2D • Action/Drama</p>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-6 py-6 border-y border-outline-variant/10">
+<div>
+<span class="block text-[10px] uppercase tracking-tighter text-outline mb-1 font-bold">Date</span>
+<span class="block text-sm font-medium text-outline">Sat, 12 Oct 2024</span>
+</div>
+<div>
+<span class="block text-[10px] uppercase tracking-tighter text-outline mb-1 font-bold">Seats</span>
+<span class="block text-sm font-medium text-outline">A1, A2</span>
+</div>
+<div class="col-span-2 md:col-span-1">
+<span class="block text-[10px] uppercase tracking-tighter text-outline mb-1 font-bold">Cinema</span>
+<span class="block text-sm font-medium text-outline">Cinepolis: Orion Mall</span>
+</div>
+</div>
+<div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-1 text-amber-500/80">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star_half</span>
+<span class="text-xs font-bold ml-2 tracking-widest uppercase">Rated 4.5</span>
+</div>
+<button class="px-8 py-2.5 rounded-full text-sm font-bold bg-surface-container-highest text-primary hover:text-white hover:bg-primary-container transition-all ghost-border">
+                            Book Again
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Section -->
+<footer class="bg-[#131313] w-full pt-16 pb-8 font-['Inter'] text-sm tracking-wide">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-12 max-w-7xl mx-auto">
+<div class="col-span-1 md:col-span-1">
+<span class="text-xl font-black text-white block mb-4">SimplyCinema</span>
+<p class="text-slate-500 leading-relaxed">Redefining the cinematic experience with curated content and seamless booking technology.</p>
+</div>
+<div>
+<h4 class="text-white font-semibold mb-6">Explore</h4>
+<ul class="space-y-4">
+<li><a class="text-slate-500 hover:text-violet-400 hover:translate-x-1 transition-transform block" href="#">Movies &amp; Events</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 hover:translate-x-1 transition-transform block" href="#">Our Cinemas</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white font-semibold mb-6">Support</h4>
+<ul class="space-y-4">
+<li><a class="text-slate-500 hover:text-violet-400 hover:translate-x-1 transition-transform block" href="#">Help &amp; Support</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 hover:translate-x-1 transition-transform block" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white font-semibold mb-6">Connect</h4>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-slate-400 hover:bg-primary-container hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-lg">public</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-slate-400 hover:bg-primary-container hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-lg">alternate_email</span>
+</a>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-12 mt-16 pt-8 border-t border-outline-variant/10 text-center">
+<p class="text-slate-500 text-xs">© 2024 SimplyCinema. All rights reserved.</p>
+</div>
+</footer>
+</body></html>

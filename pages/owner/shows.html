@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Schedule Shows | SimplyCinema Partner</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-container": "#201f1f", "background": "#131313", "outline": "#968e9e", "primary-container": "#6c3bb5", "surface-container-highest": "#353534", "surface-container-low": "#1c1b1b", "primary": "#d6baff", "error": "#ffb4ab" }, fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"] } } } }
+  </script>
+  <style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body overflow-x-hidden">
+
+<div id="admin-sidebar-placeholder"></div>
+<div id="admin-topbar-placeholder"></div>
+
+<main class="pl-64 pt-20 min-h-screen">
+  <div class="p-8 space-y-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+      <div>
+        <h1 class="font-headline text-3xl font-bold tracking-tight text-white mb-2">Schedule Shows</h1>
+        <div class="flex items-center gap-3">
+          <select id="theatre-selector" onchange="onTheatreChange()" class="bg-surface-container border border-white/10 rounded-lg text-sm text-white px-4 h-10 focus:ring-1 focus:ring-primary min-w-[200px]">
+            <option value="">Select a Theatre</option>
+          </select>
+          <p class="text-outline text-sm" id="theatre-subtitle">Select a theatre to manage movie screenings.</p>
+        </div>
+      </div>
+      <button onclick="openCreateModal()" id="add-show-btn" disabled class="px-6 py-2.5 bg-primary text-background font-bold rounded-full hover:scale-105 transition-all flex items-center gap-2 shadow-xl opacity-50 cursor-not-allowed">
+        <span class="material-symbols-outlined text-xl">event</span> New Show
+      </button>
+    </div>
+
+    <div class="bg-surface-container-low rounded-2xl border border-white/5 overflow-hidden">
+        <div class="grid grid-cols-12 gap-4 p-6 bg-surface-container-highest/30 border-b border-white/5 text-[10px] uppercase font-bold text-outline tracking-widest">
+            <div class="col-span-4">Movie & Screen</div>
+            <div class="col-span-3">Date & Time</div>
+            <div class="col-span-2">Pricing</div>
+            <div class="col-span-1">Status</div>
+            <div class="col-span-2 text-right">Actions</div>
+        </div>
+        <div id="shows-list" class="divide-y divide-white/5">
+            <div class="p-20 text-center text-outline">Please select a theatre first.</div>
+        </div>
+    </div>
+  </div>
+</main>
+
+<!-- Create/Edit Modal -->
+<div id="show-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm hidden">
+    <div class="bg-surface-container border border-white/5 w-full max-w-2xl rounded-2xl p-8 shadow-2xl space-y-6 overflow-y-auto max-h-[95vh]">
+        <div class="flex justify-between items-start">
+            <h3 class="font-headline text-2xl font-bold text-white" id="modal-title">Schedule New Show</h3>
+            <button onclick="closeModal()" class="text-outline hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+
+        <form id="show-form" class="grid grid-cols-2 gap-6">
+            <input type="hidden" id="show-id">
+            
+            <div class="col-span-2 md:col-span-1">
+                <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Select Movie</label>
+                <select id="movieId" required class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary"></select>
+            </div>
+
+            <div class="col-span-2 md:col-span-1">
+                <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Select Screen</label>
+                <select id="screenId" required class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary"></select>
+            </div>
+
+            <div class="col-span-2 md:col-span-1">
+                <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Show Date</label>
+                <input type="date" id="showDate" required class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary">
+            </div>
+
+            <div class="col-span-2 md:col-span-1">
+                <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Start Time</label>
+                <input type="time" id="showTime" required class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary">
+            </div>
+
+            <div class="col-span-2 border-t border-white/5 pt-4">
+                <h4 class="text-white font-bold text-sm mb-4">Pricing Configuration (INR)</h4>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-[9px] uppercase font-bold text-outline tracking-widest block mb-2">Regular</label>
+                        <input type="number" id="price-REGULAR" required value="250" class="w-full bg-surface-container-highest border-none rounded-lg h-10 px-3 text-white text-sm focus:ring-1 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="text-[9px] uppercase font-bold text-outline tracking-widest block mb-2">Premium</label>
+                        <input type="number" id="price-PREMIUM" required value="450" class="w-full bg-surface-container-highest border-none rounded-lg h-10 px-3 text-white text-sm focus:ring-1 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="text-[9px] uppercase font-bold text-outline tracking-widest block mb-2">VIP</label>
+                        <input type="number" id="price-VIP" required value="800" class="w-full bg-surface-container-highest border-none rounded-lg h-10 px-3 text-white text-sm focus:ring-1 focus:ring-primary">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-2 pt-4">
+                <button type="submit" class="w-full py-4 bg-primary text-background font-bold rounded-xl hover:brightness-110 transition-all shadow-lg uppercase tracking-widest">Confirm Schedule</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+  injectComponent("#admin-sidebar-placeholder", "../../components/admin-sidebar.html");
+  injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
+
+  const modal = document.getElementById('show-modal');
+  const form = document.getElementById('show-form');
+  const theatreSelector = document.getElementById('theatre-selector');
+  const addBtn = document.getElementById('add-show-btn');
+  const user = getSession();
+
+  let movies = [];
+  let currentTheatreScreens = [];
+
+  document.addEventListener('DOMContentLoaded', async () => {
+      requireAuth(['THEATRE_OWNER']);
+      await Promise.all([loadMyTheatres(), loadMovies()]);
+  });
+
+  async function loadMovies() {
+      try {
+          movies = await Movies.getAll(0, 100);
+          const select = document.getElementById('movieId');
+          select.innerHTML = movies.map(m => `<option value="${m.id}">${m.title} (${m.duration}m)</option>`).join('');
+      } catch(e) {}
+  }
+
+  async function loadMyTheatres() {
+      try {
+          const theatres = await Theatres.getByOwner(user.id);
+          theatreSelector.innerHTML = '<option value="">Select a Theatre</option>' + 
+              theatres.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+      } catch(e) {}
+  }
+
+  async function onTheatreChange() {
+      const theatreId = theatreSelector.value;
+      if (!theatreId) {
+          addBtn.disabled = true;
+          addBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          document.getElementById('shows-list').innerHTML = '<div class="p-20 text-center text-outline">Please select a theatre first.</div>';
+          return;
+      }
+
+      addBtn.disabled = false;
+      addBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      
+      try {
+          currentTheatreScreens = await Screens.getByTheatre(theatreId);
+          const screenSelect = document.getElementById('screenId');
+          screenSelect.innerHTML = currentTheatreScreens.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+          fetchShows(theatreId);
+      } catch(e) {}
+  }
+
+  async function fetchShows(theatreId) {
+      const container = document.getElementById('shows-list');
+      container.innerHTML = '<div class="p-20 text-center text-outline">Fetching shows...</div>';
+      
+      try {
+          const res = await Shows.getByTheatre(theatreId);
+          if(!res || res.length === 0) {
+              container.innerHTML = '<div class="p-20 text-center text-outline italic">No shows scheduled yet.</div>';
+              return;
+          }
+          
+          container.innerHTML = '';
+          res.forEach(s => {
+              const movie = movies.find(m => m.id === s.movieId) || { title: 'Unknown Movie' };
+              const screen = currentTheatreScreens.find(scr => scr.id === s.screenId) || { name: 'Unknown Screen' };
+              
+              const row = document.createElement('div');
+              row.className = "grid grid-cols-12 gap-4 p-6 items-center hover:bg-white/5 transition-colors";
+              row.innerHTML = `
+                  <div class="col-span-4 flex flex-col">
+                    <span class="text-white font-bold">${movie.title}</span>
+                    <span class="text-[10px] text-outline uppercase tracking-wider">${screen.name}</span>
+                  </div>
+                  <div class="col-span-3 flex flex-col">
+                    <span class="text-white text-sm">${s.showDate}</span>
+                    <span class="text-primary text-xs font-bold">${s.showTime}</span>
+                  </div>
+                  <div class="col-span-2 flex flex-col gap-1">
+                    <span class="text-xs text-white">Reg: ₹${s.seatPrices?.REGULAR || 0}</span>
+                    <span class="text-xs text-outline italic">VIP: ₹${s.seatPrices?.VIP || 0}</span>
+                  </div>
+                  <div class="col-span-1">
+                    <span class="px-2 py-0.5 bg-green-500/10 text-green-500 text-[9px] rounded font-bold uppercase">${s.status || 'UPCOMING'}</span>
+                  </div>
+                  <div class="col-span-2 text-right flex justify-end gap-2">
+                    <button onclick='openEditModal(${JSON.stringify(s).replace(/'/g, "&apos;")})' class="p-2 text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+                    <button onclick="deleteShow(${s.id})" class="p-2 text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+                  </div>
+              `;
+              container.appendChild(row);
+          });
+      } catch(e) {
+          container.innerHTML = '<div class="p-20 text-center text-error">Failed to load shows.</div>';
+      }
+  }
+
+  function openCreateModal() {
+      document.getElementById('modal-title').innerText = "Schedule New Show";
+      form.reset();
+      document.getElementById('show-id').value = "";
+      modal.classList.remove('hidden');
+  }
+
+  function openEditModal(s) {
+      document.getElementById('modal-title').innerText = "Edit Show Timing";
+      document.getElementById('show-id').value = s.id;
+      document.getElementById('movieId').value = s.movieId;
+      document.getElementById('screenId').value = s.screenId;
+      document.getElementById('showDate').value = s.showDate;
+      document.getElementById('showTime').value = s.showTime;
+      
+      document.getElementById('price-REGULAR').value = s.seatPrices?.REGULAR || 250;
+      document.getElementById('price-PREMIUM').value = s.seatPrices?.PREMIUM || 450;
+      document.getElementById('price-VIP').value = s.seatPrices?.VIP || 800;
+      
+      modal.classList.remove('hidden');
+  }
+
+  function closeModal() {
+      modal.classList.add('hidden');
+  }
+
+  form.onsubmit = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('show-id').value;
+      const data = {
+          movieId: Number(document.getElementById('movieId').value),
+          screenId: Number(document.getElementById('screenId').value),
+          showDate: document.getElementById('showDate').value,
+          showTime: document.getElementById('showTime').value,
+          status: "UPCOMING",
+          seatPrices: {
+              REGULAR: Number(document.getElementById('price-REGULAR').value),
+              PREMIUM: Number(document.getElementById('price-PREMIUM').value),
+              VIP: Number(document.getElementById('price-VIP').value)
+          }
+      };
+
+      try {
+          showLoader();
+          if(id) {
+              await Shows.update(id, data);
+              showToast("Show updated successfully");
+          } else {
+              await Shows.create(data);
+              showToast("Show scheduled successfully");
+          }
+          closeModal();
+          fetchShows(theatreSelector.value);
+      } catch(err) {
+          showToast(err.message || "Failed to save show", "error");
+      } finally {
+          hideLoader();
+      }
+  };
+
+  async function deleteShow(id) {
+      if(!confirm("Cancel this show? Note: This will affect active bookings.")) return;
+      try {
+          showLoader();
+          await Shows.delete(id);
+          showToast("Show cancelled");
+          fetchShows(theatreSelector.value);
+      } catch(err) {
+          showToast("Failed to delete", "error");
+      } finally {
+          hideLoader();
+      }
+  }
+</script>
+</body>
+</html>

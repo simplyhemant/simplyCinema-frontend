@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Account | SimplyCinema</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background":                "#131313",
+            "surface":                   "#131313",
+            "primary":                   "#d6baff",
+            "primary-container":         "#6c3bb5",
+            "on-surface":                "#e5e2e1",
+            "on-surface-variant":        "#ccc3d4",
+            "outline":                   "#968e9e",
+            "outline-variant":           "#4a4452",
+            "surface-container-low":     "#1c1b1b",
+            "surface-container":         "#201f1f",
+            "surface-container-high":    "#2a2a2a",
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body":     ["Inter"],
+          },
+          borderRadius: {
+            "DEFAULT": "1rem",
+            "lg":      "2rem",
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .auteur-gradient { background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%); }
+    .glass-effect { background: rgba(32, 31, 31, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); }
+    .lume-glow { box-shadow: 0 0 20px rgba(108, 59, 181, 0.3); }
+    input:disabled { opacity: 0.6; cursor: not-allowed; }
+  </style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/authGuard.js"></script>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col">
+
+<div id="navbar-placeholder"></div>
+
+<main class="flex-1 container mx-auto px-6 py-12 mt-16 max-w-4xl">
+  <header class="mb-12">
+    <h1 class="text-4xl font-headline font-bold text-white mb-2">Account Settings</h1>
+    <p class="text-on-surface-variant">Manage your profile and cinema preferences.</p>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- Sidebar -->
+    <aside class="space-y-4">
+      <nav class="flex flex-col gap-2">
+        <button class="flex items-center gap-3 px-6 py-4 rounded-xl bg-primary-container text-white font-semibold lume-glow">
+          <span class="material-symbols-outlined">person</span>
+          Profile Info
+        </button>
+        <button class="flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-surface-container-high text-on-surface-variant transition-all">
+          <span class="material-symbols-outlined">settings</span>
+          Preferences
+        </button>
+        <button onclick="logout()" class="flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-red-500/10 text-red-400 transition-all mt-4 border border-red-500/20">
+          <span class="material-symbols-outlined">logout</span>
+          Sign Out
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="md:col-span-2 space-y-8">
+      <!-- Profile Section -->
+      <section class="glass-effect p-8 rounded-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl -mr-16 -mt-16"></div>
+        
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-xl font-headline font-bold text-white">Personal Information</h2>
+          <button id="btn-edit" class="text-primary hover:text-white font-semibold transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">edit</span>
+            Edit Profile
+          </button>
+        </div>
+
+        <form id="profile-form" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-xs uppercase tracking-widest font-bold text-outline ml-1">First Name</label>
+              <input id="acc-firstname" disabled required class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-on-surface transition-all rounded-t-lg py-3 px-4" type="text" placeholder="First Name"/>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs uppercase tracking-widest font-bold text-outline ml-1">Last Name</label>
+              <input id="acc-lastname" disabled required class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-on-surface transition-all rounded-t-lg py-3 px-4" type="text" placeholder="Last Name"/>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-xs uppercase tracking-widest font-bold text-outline ml-1">Email Address</label>
+            <input id="acc-email" disabled required class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-on-surface transition-all rounded-t-lg py-3 px-4" type="email" placeholder="Email"/>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-xs uppercase tracking-widest font-bold text-outline ml-1">Phone Number</label>
+            <input id="acc-phone" disabled required class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-on-surface transition-all rounded-t-lg py-3 px-4" type="tel" placeholder="Phone"/>
+          </div>
+
+          <div id="save-actions" class="hidden pt-4 flex gap-4">
+            <button type="submit" class="flex-1 auteur-gradient py-3 rounded-full font-bold text-white lume-glow hover:scale-[1.02] active:scale-95 transition-all">
+              Save Changes
+            </button>
+            <button type="button" id="btn-cancel" class="flex-1 bg-surface-container-high py-3 rounded-full font-bold text-on-surface-variant hover:text-white transition-all">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Preferences Section -->
+      <section class="glass-effect p-8 rounded-2xl">
+        <h2 class="text-xl font-headline font-bold text-white mb-6">Cinema Preferences</h2>
+        <div class="space-y-6">
+          <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container">
+            <div class="flex items-center gap-4">
+              <span class="material-symbols-outlined text-primary">location_on</span>
+              <div>
+                <p class="font-bold text-white">Default City</p>
+                <p id="display-city" class="text-sm text-on-surface-variant">Mumbai</p>
+              </div>
+            </div>
+            <button class="text-primary font-semibold text-sm">Change</button>
+          </div>
+
+          <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container">
+            <div class="flex items-center gap-4">
+              <span class="material-symbols-outlined text-primary">language</span>
+              <div>
+                <p class="font-bold text-white">Preferred Language</p>
+                <p id="display-lang" class="text-sm text-on-surface-variant">English</p>
+              </div>
+            </div>
+            <button class="text-primary font-semibold text-sm">Change</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Danger Zone -->
+      <section class="p-8 rounded-2xl border border-red-500/10 bg-red-500/5">
+        <h2 class="text-xl font-headline font-bold text-red-400 mb-2">Danger Zone</h2>
+        <p class="text-sm text-red-400/60 mb-6">Once you delete your account, there is no going back. Please be certain.</p>
+        <button class="text-red-400 font-bold text-sm underline hover:text-red-300">Delete my account</button>
+      </section>
+    </div>
+  </div>
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script>
+  injectComponent("#navbar-placeholder", "../../components/navbar.html");
+  injectComponent("#footer-placeholder", "../../components/footer.html");
+
+  const form = document.getElementById('profile-form');
+  const inputs = form.querySelectorAll('input');
+  const btnEdit = document.getElementById('btn-edit');
+  const btnCancel = document.getElementById('btn-cancel');
+  const saveActions = document.getElementById('save-actions');
+
+  let originalData = {};
+
+  async function loadProfile() {
+    try {
+      showLoader();
+      const profile = await User.getProfile();
+      if (profile) {
+        originalData = profile;
+        document.getElementById('acc-firstname').value = profile.firstName || '';
+        document.getElementById('acc-lastname').value = profile.lastName || '';
+        document.getElementById('acc-email').value = profile.email || '';
+        document.getElementById('acc-phone').value = profile.phone || '';
+        document.getElementById('display-city').innerText = profile.preferredCityName || 'Not Set';
+        document.getElementById('display-lang').innerText = profile.preferredLanguage || 'English';
+      }
+    } finally {
+      hideLoader();
+    }
+  }
+
+  btnEdit.addEventListener('click', () => {
+    inputs.forEach(input => input.disabled = false);
+    btnEdit.classList.add('hidden');
+    saveActions.classList.remove('hidden');
+    document.getElementById('acc-firstname').focus();
+  });
+
+  btnCancel.addEventListener('click', () => {
+    inputs.forEach(input => {
+      input.disabled = true;
+      input.value = originalData[input.id.replace('acc-', '')] || '';
+    });
+    btnEdit.classList.remove('hidden');
+    saveActions.classList.add('hidden');
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const updatedData = {
+      firstName: document.getElementById('acc-firstname').value,
+      lastName: document.getElementById('acc-lastname').value,
+      email: document.getElementById('acc-email').value,
+      phone: document.getElementById('acc-phone').value,
+    };
+
+    try {
+      showLoader();
+      const res = await User.updateProfile(updatedData);
+      if (res) {
+        showToast("Profile updated successfully!", "success");
+        originalData = res;
+        inputs.forEach(input => input.disabled = true);
+        btnEdit.classList.remove('hidden');
+        saveActions.classList.add('hidden');
+      }
+    } finally {
+      hideLoader();
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', loadProfile);
+</script>
+</body>
+</html>

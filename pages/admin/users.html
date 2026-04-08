@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Users Management | SimplyCinema Admin</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#201f1f",
+            "background": "#131313",
+            "outline": "#968e9e",
+            "outline-variant": "#4a4452",
+            "primary-fixed-dim": "#d6baff",
+            "on-background": "#e5e2e1",
+            "primary-container": "#6c3bb5",
+            "on-surface-variant": "#ccc3d4",
+            "surface-bright": "#3a3939",
+            "surface-container-highest": "#353534",
+            "surface-dim": "#131313",
+            "surface-container-lowest": "#0e0e0e",
+            "surface-variant": "#353534",
+            "surface-container-low": "#1c1b1b",
+            "surface-container-high": "#2a2a2a",
+            "primary": "#d6baff",
+            "error": "#ffb4ab",
+            "secondary": "#ddb7ff"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #131313; }
+    ::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
+  </style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body overflow-x-hidden">
+
+<div id="admin-sidebar-placeholder"></div>
+<div id="admin-topbar-placeholder"></div>
+
+<main class="pl-64 pt-20 min-h-screen">
+  <div class="p-8 space-y-8">
+    <!-- Header -->
+    <div class="flex justify-between items-end">
+      <div>
+        <h1 class="font-headline text-3xl font-bold tracking-tight text-white mb-2">Users Management</h1>
+        <p class="text-outline text-sm">View and manage all registered platform users.</p>
+      </div>
+      <div class="flex gap-4">
+         <div id="user-stats" class="hidden md:flex gap-6 items-center px-6 py-2.5 rounded-2xl bg-surface-container-lowest border border-white/5">
+            <div class="text-center">
+                <span id="stat-total" class="block text-xl font-bold text-white leading-none">0</span>
+                <span class="text-[9px] uppercase tracking-widest text-outline font-bold">Total</span>
+            </div>
+            <div class="w-px h-8 bg-white/5"></div>
+            <div class="text-center">
+                <span id="stat-active" class="block text-xl font-bold text-green-500 leading-none">0</span>
+                <span class="text-[9px] uppercase tracking-widest text-outline font-bold">Active</span>
+            </div>
+            <div class="w-px h-8 bg-white/5"></div>
+            <div class="text-center">
+                <span id="stat-inactive" class="block text-xl font-bold text-error leading-none">0</span>
+                <span class="text-[9px] uppercase tracking-widest text-outline font-bold">Inactive</span>
+            </div>
+         </div>
+         <button onclick="fetchUsers()" class="px-5 py-2.5 rounded-full border border-white/10 text-white hover:bg-surface-container font-medium text-sm transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">refresh</span> Refresh
+         </button>
+      </div>
+    </div>
+
+    <div class="bg-surface-container-low rounded-xl border border-white/5 overflow-hidden">
+        <div class="p-6 border-b border-white/5 bg-surface-container-lowest uppercase tracking-widest text-[10px] text-outline font-bold grid grid-cols-12 gap-4">
+            <div class="col-span-3">User Details</div>
+            <div class="col-span-3">Email</div>
+            <div class="col-span-2 text-center">Status</div>
+            <div class="col-span-2">Role</div>
+            <div class="col-span-2 text-right">Actions</div>
+        </div>
+        
+        <div id="users-list" class="divide-y divide-white/5">
+            <!-- Populated via JS -->
+            <div class="p-8 text-center text-outline">Loading users...</div>
+        </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  injectComponent("#admin-sidebar-placeholder", "../../components/admin-sidebar.html");
+  injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
+
+  document.addEventListener('DOMContentLoaded', () => {
+      requireAuth(['ADMIN']);
+      fetchUsers();
+  });
+
+  async function fetchUsers() {
+      const container = document.getElementById('users-list');
+      container.innerHTML = '<div class="p-8 text-center"><div class="full-screen-loader" style="position:static;width:24px;height:24px;margin: 0 auto 10px auto;"></div><p class="text-outline text-sm">Fetching users...</p></div>';
+
+      try {
+          const users = await Admin.getUsers();
+          if(!users || users.length === 0) {
+             container.innerHTML = '<div class="p-8 text-center text-outline">No users found.</div>';
+             return;
+          }
+
+          container.innerHTML = '';
+          users.forEach(u => {
+             const row = document.createElement('div');
+             row.className = 'p-6 grid grid-cols-12 gap-4 items-center hover:bg-surface-container transition-colors';
+             
+             const roles = u.roles || [];
+             let roleBadge = '<span class="px-2 py-1 bg-surface-container-highest text-outline text-[10px] rounded border border-white/5 tracking-wider">CUSTOMER</span>';
+             
+             if (roles.includes('ROLE_ADMIN')) {
+                roleBadge = '<span class="px-2 py-1 bg-primary text-background font-bold text-[10px] rounded tracking-wider">ADMIN</span>';
+             } else if (roles.includes('ROLE_THEATRE_OWNER')) {
+                roleBadge = '<span class="px-2 py-1 bg-secondary text-background font-bold text-[10px] rounded tracking-wider">OWNER</span>';
+             }
+
+             const isStaff = roles.includes('ROLE_THEATRE_STAFF');
+             if (isStaff && !roles.includes('ROLE_THEATRE_OWNER')) {
+                roleBadge = '<span class="px-2 py-1 bg-tertiary text-background font-bold text-[10px] rounded tracking-wider">STAFF</span>';
+             }
+
+             const isActive = u.isActive !== false; // default true
+             const statusIndicator = isActive 
+                ? '<span class="px-3 py-1 bg-green-500/10 text-green-500 border border-green-500/20 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 w-fit mx-auto"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Active</span>'
+                : '<span class="px-3 py-1 bg-error/10 text-error border border-error/20 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 w-fit mx-auto"><span class="w-1.5 h-1.5 rounded-full bg-error"></span> Inactive</span>';
+
+             const statusSwitch = `
+                <div class="flex flex-col items-center gap-2">
+                    ${statusIndicator}
+                    <button onclick="toggleUserStatus('${u.id}', ${isActive})" 
+                            class="text-[9px] text-outline hover:text-white underline underline-offset-2 uppercase font-bold tracking-widest transition-colors">
+                        ${isActive ? 'Deactivate' : 'Activate'}
+                    </button>
+                </div>
+             `;
+
+             row.innerHTML = `
+                <div class="col-span-3 flex items-center gap-3">
+                   <div class="w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-xs uppercase shadow-lg">
+                      ${u.firstName ? u.firstName.charAt(0) : 'U'}
+                   </div>
+                   <span class="font-bold text-sm text-white">${u.firstName || ''} ${u.lastName || ''}</span>
+                </div>
+                <div class="col-span-3 text-sm text-outline">${u.email || 'N/A'}</div>
+                <div class="col-span-2">${statusSwitch}</div>
+                <div class="col-span-2">${roleBadge}</div>
+                <div class="col-span-2 text-right">
+                   <button onclick="openManageModal('${u.id}', '${u.firstName} ${u.lastName || ''}')" class="px-3 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-background transition-all text-[10px] font-bold border border-primary/20 uppercase tracking-wider">
+                      Manage
+                   </button>
+                </div>
+             `;
+             container.appendChild(row);
+          });
+
+          // ✅ Update Stats
+          const total = users.length;
+          const active = users.filter(u => u.isActive !== false).length;
+          const inactive = total - active;
+
+          document.getElementById('stat-total').innerText = total;
+          document.getElementById('stat-active').innerText = active;
+          document.getElementById('stat-inactive').innerText = inactive;
+          const statsEl = document.getElementById('user-stats');
+          if (statsEl) {
+              statsEl.classList.remove('hidden');
+              statsEl.classList.add('flex');
+          }
+
+      } catch(e) {
+          container.innerHTML = '<div class="p-8 text-center text-error">Failed to fetch users.</div>';
+      }
+  }
+
+  async function toggleUserStatus(userId, currentStatus) {
+      const newStatus = !currentStatus;
+      const action = newStatus ? "activate" : "deactivate";
+      
+      if(!confirm(`Are you sure you want to ${action} this user?`)) return;
+
+      try {
+          await Admin.toggleUserStatus(userId, newStatus);
+          showToast(`User ${action}d successfully`);
+          fetchUsers();
+      } catch(e) {
+          showToast(`Failed to ${action} user`, "error");
+      }
+  }
+
+  async function openManageModal(userId, fullName) {
+      let modal = document.getElementById('manage-modal');
+      if(!modal) {
+          modal = document.createElement('div');
+          modal.id = 'manage-modal';
+          modal.className = 'fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm hidden';
+          modal.innerHTML = `
+            <div class="bg-surface-container-low border border-white/5 w-full max-w-md rounded-2xl p-8 shadow-2xl space-y-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-headline text-xl font-bold text-white" id="modal-user-name">User Details</h3>
+                        <p class="text-xs text-outline mt-1" id="modal-user-id"></p>
+                    </div>
+                    <button onclick="closeModal()" class="text-outline hover:text-white"><span class="material-symbols-outlined">close</span></button>
+                </div>
+
+                <div class="space-y-4" id="modal-content">
+                    <!-- Loaded via API -->
+                </div>
+
+                <div class="pt-4 border-t border-white/5 space-y-4">
+                    <div>
+                        <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Assign New Role</label>
+                        <div class="flex gap-2">
+                            <select id="role-select" class="flex-grow bg-surface-container-highest border-none rounded-lg text-sm text-white focus:ring-1 focus:ring-primary h-10 px-3">
+                                <option value="ROLE_CUSTOMER">CUSTOMER</option>
+                                <option value="ROLE_THEATRE_OWNER">THEATRE_OWNER</option>
+                                <option value="ROLE_THEATRE_STAFF">THEATRE_STAFF</option>
+                                <option value="ROLE_ADMIN">ADMIN</option>
+                            </select>
+                            <button id="assign-btn" class="px-4 h-10 bg-primary text-background font-bold rounded-lg hover:scale-105 transition-all text-sm">Assign</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          `;
+          document.body.appendChild(modal);
+      }
+
+      modal.classList.remove('hidden');
+      document.getElementById('modal-user-name').innerText = fullName;
+      document.getElementById('modal-user-id').innerText = "ID: " + userId;
+      
+      const content = document.getElementById('modal-content');
+      content.innerHTML = '<div class="py-10 text-center"><div class="full-screen-loader" style="position:static;width:24px;height:24px;margin:auto;"></div></div>';
+
+      try {
+          const user = await Admin.getUserById(userId);
+          const roles = await Admin.getUserRoles(userId);
+
+          content.innerHTML = `
+            <div class="grid grid-cols-2 gap-4 text-xs">
+                <div>
+                    <span class="text-outline block mb-1">Email</span>
+                    <span class="text-white font-medium">${user.email || 'N/A'}</span>
+                </div>
+                <div>
+                    <span class="text-outline block mb-1">Phone</span>
+                    <span class="text-white font-medium">${user.phone || 'N/A'}</span>
+                </div>
+                <div class="col-span-2">
+                    <span class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Active Roles</span>
+                    <div class="space-y-2 mt-2">
+                        ${roles.length > 0 ? roles.map(r => `
+                            <div class="flex justify-between items-center bg-surface-container-highest p-3 rounded-xl border border-white/5 group hover:border-primary/20 transition-all">
+                                <div class="flex flex-col">
+                                    <span class="text-primary font-bold text-xs uppercase">${r.roleName.replace('ROLE_', '')}</span>
+                                    <span class="text-[9px] text-outline">Assigned: ${new Date(r.assignedAt).toLocaleDateString()}</span>
+                                </div>
+                                ${r.roleName !== 'ROLE_ADMIN' ? `
+                                    <button onclick="removeRole('${r.id}', '${userId}', '${r.roleName}')" 
+                                            class="p-2 rounded-lg text-outline hover:text-error hover:bg-error/10 transition-all opacity-0 group-hover:opacity-100"
+                                            title="Remove Role">
+                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `).join('') : '<p class="text-outline italic text-[10px] py-4 text-center">No active roles assigned.</p>'}
+                    </div>
+                </div>
+            </div>
+          `;
+
+          document.getElementById('assign-btn').onclick = () => assignNewRole(userId);
+
+      } catch(e) {
+          content.innerHTML = '<div class="text-error text-center py-4">Failed to load user details.</div>';
+      }
+  }
+
+  function closeModal() {
+      document.getElementById('manage-modal').classList.add('hidden');
+  }
+
+  async function assignNewRole(userId) {
+      const role = document.getElementById('role-select').value;
+      const btn = document.getElementById('assign-btn');
+      btn.innerText = "...";
+      btn.disabled = true;
+
+      try {
+          await Admin.assignRole(userId, role);
+          showToast("Role assigned successfully");
+          closeModal();
+          fetchUsers();
+      } catch(e) {
+          btn.innerText = "Assign";
+          btn.disabled = false;
+      }
+  }
+
+  async function removeRole(roleId, userId, roleName) {
+      const displayRole = roleName ? roleName.replace('ROLE_', '') : 'this';
+      if(!confirm(`Are you sure you want to remove the ${displayRole} role?`)) return;
+
+      try {
+          await Admin.deleteRole(roleId);
+          showToast(`Role ${displayRole} removed successfully`);
+          // Refresh the modal content
+          const fullName = document.getElementById('modal-user-name').innerText;
+          openManageModal(userId, fullName);
+          fetchUsers();
+      } catch(e) {
+          showToast("Failed to remove role", "error");
+      }
+  }
+</script>
+</script>
+</body>
+</html>

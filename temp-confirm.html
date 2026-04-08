@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Confirmed | SimplyCinema</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "tertiary": "#c6c4df",
+              "surface-container": "#201f1f",
+              "secondary-fixed": "#f0dbff",
+              "on-tertiary-container": "#cdcbe6",
+              "background": "#131313",
+              "on-secondary-container": "#d6a9ff",
+              "surface-container-highest": "#353534",
+              "on-error": "#690005",
+              "on-background": "#e5e2e1",
+              "on-primary-fixed": "#280057",
+              "primary": "#d6baff",
+              "secondary-container": "#6f00be",
+              "tertiary-fixed-dim": "#c6c4df",
+              "surface-variant": "#353534",
+              "surface-container-low": "#1c1b1b",
+              "secondary": "#ddb7ff",
+              "on-secondary-fixed-variant": "#6900b3",
+              "surface-tint": "#d6baff",
+              "primary-container": "#6c3bb5",
+              "primary-fixed-dim": "#d6baff",
+              "outline": "#968e9e",
+              "inverse-surface": "#e5e2e1",
+              "surface-dim": "#131313",
+              "tertiary-fixed": "#e2e0fc",
+              "primary-fixed": "#ecdcff",
+              "on-primary-fixed-variant": "#5a26a3",
+              "surface-container-lowest": "#0e0e0e",
+              "on-secondary": "#490080",
+              "on-primary": "#420089",
+              "inverse-on-surface": "#313030",
+              "tertiary-container": "#56556c",
+              "on-surface-variant": "#ccc3d4",
+              "error": "#ffb4ab",
+              "surface-container-high": "#2a2a2a",
+              "on-tertiary": "#2f2e43",
+              "on-tertiary-fixed-variant": "#45455b",
+              "on-tertiary-fixed": "#1a1a2e",
+              "error-container": "#93000a",
+              "secondary-fixed-dim": "#ddb7ff",
+              "inverse-primary": "#7343bc",
+              "on-secondary-fixed": "#2c0051",
+              "surface-bright": "#3a3939",
+              "on-primary-container": "#dcc4ff",
+              "surface": "#131313",
+              "on-surface": "#e5e2e1",
+              "outline-variant": "#4a4452"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .auteur-gradient {
+            background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%);
+        }
+        .ticket-tear {
+            background-image: radial-gradient(circle at 0 50%, transparent 12px, #201f1f 13px);
+            background-size: 100% 40px;
+        }
+        .confetti-overlay {
+            background-image: radial-gradient(circle, #6C3BB5 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.15;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30 antialiased">
+<!-- Top Navigation (Shared Component Shell) -->
+<nav class="fixed top-0 w-full h-16 z-50 bg-violet-950/70 backdrop-blur-xl shadow-[0_0_20px_rgba(108,59,181,0.3)]">
+<div class="flex justify-between items-center px-8 w-full max-w-screen-2xl mx-auto h-full font-['Space_Grotesk'] antialiased tracking-tight">
+<div class="text-2xl font-bold text-white tracking-tighter">SimplyCinema</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-slate-300 hover:text-white transition-colors" href="#">Movies</a>
+<a class="text-slate-300 hover:text-white transition-colors" href="#">Events</a>
+<a class="text-slate-300 hover:text-white transition-colors" href="#">Cinemas</a>
+<a class="text-slate-300 hover:text-white transition-colors" href="#">Support</a>
+</div>
+<div class="flex items-center space-x-6">
+<div class="flex items-center space-x-4 text-slate-300">
+<span class="material-symbols-outlined hover:text-white cursor-pointer transition-colors">location_on</span>
+<span class="material-symbols-outlined hover:text-white cursor-pointer transition-colors">search</span>
+</div>
+<div class="flex items-center space-x-2">
+<button class="px-5 py-2 rounded-full text-slate-300 hover:bg-white/10 transition-all duration-300 text-sm font-medium">Register</button>
+<button class="px-5 py-2 rounded-full bg-primary-container text-on-primary-container font-bold shadow-[0_0_20px_rgba(108,59,181,0.5)] hover:scale-105 active:scale-95 transition-all">Sign In</button>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-20 px-4 md:px-8 max-w-5xl mx-auto">
+<!-- Progress Stepper -->
+<div class="flex items-center justify-center mb-16 space-x-4">
+<div class="flex items-center">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container ring-4 ring-primary/20">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div class="w-16 h-1 bg-primary-container mx-2 rounded-full"></div>
+</div>
+<div class="flex items-center">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container ring-4 ring-primary/20">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div class="w-16 h-1 bg-primary-container mx-2 rounded-full"></div>
+</div>
+<div class="flex items-center">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container ring-4 ring-primary/20">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+</div>
+<!-- Success Hero Section -->
+<section class="text-center relative mb-16">
+<div class="absolute inset-0 confetti-overlay pointer-events-none"></div>
+<div class="mb-6 inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-500/20 text-green-400 border border-green-500/30 animate-pulse">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'wght' 600;">check_circle</span>
+</div>
+<h1 class="text-5xl font-headline font-bold text-white mb-4 tracking-tight">Booking Confirmed! 🎉</h1>
+<p class="text-on-surface-variant max-w-lg mx-auto text-lg leading-relaxed">Your cinematic journey is ready. We've sent the confirmation details to your registered email and phone number.</p>
+</section>
+<!-- Digital Ticket Card -->
+<div class="max-w-3xl mx-auto relative group">
+<div class="flex flex-col md:flex-row bg-surface-container rounded-2xl overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.5)] transform transition-transform group-hover:scale-[1.01] duration-500">
+<!-- Purple Accent Strip -->
+<div class="w-full md:w-4 bg-primary-container h-4 md:h-auto"></div>
+<div class="flex-1 flex flex-col md:flex-row">
+<!-- Movie Poster Side -->
+<div class="w-full md:w-64 relative">
+<img class="w-full h-full object-cover min-h-[350px] md:min-h-0" data-alt="Cinematic epic movie poster featuring futuristic silhouettes and cosmic nebulas in deep purple and gold tones with dramatic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlOyhC5tk9mt-u3l-jIXTjaAvZON2UCXVx0rqJ0HMK6mCtlEZ4CXun2XX-gl4xEe2uw9ztgNcvkaFWV5ZcEKcrd0a0fVptFBI5nQZPl1FLvYoN7Tlqm2H54Cu0u38bHfspH_0By044kR-BJm8wwT9GfB2MYrSf0fZZD3cOx63RUGy17_Qu1hbnrH7Yd3SwhFcVstOSU77R5cshuKscKWKJOU66i6Wvk91EHjfmM21iwQEqUA45Wy24j5dl-bBZZA7oDA8ZNvoiDQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container via-transparent to-transparent md:hidden"></div>
+</div>
+<!-- Details Side -->
+<div class="flex-1 p-8 relative flex flex-col">
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="text-xs font-label uppercase tracking-widest text-primary mb-2 block">Booking ID: BK789123</span>
+<h2 class="text-3xl font-headline font-bold text-white leading-tight">Kalki 2898 AD</h2>
+<p class="text-on-surface-variant text-sm mt-1">U/A • Telugu • 3D</p>
+</div>
+<div class="text-right">
+<span class="bg-surface-container-highest px-3 py-1 rounded-full text-xs font-bold text-on-surface">PREMIUM</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-6 gap-x-4 mb-8">
+<div>
+<p class="text-xs text-outline uppercase tracking-wider mb-1">Date</p>
+<p class="text-white font-medium">Sunday, 24 Oct</p>
+</div>
+<div>
+<p class="text-xs text-outline uppercase tracking-wider mb-1">Time</p>
+<p class="text-white font-medium">07:30 PM</p>
+</div>
+<div>
+<p class="text-xs text-outline uppercase tracking-wider mb-1">Cinema</p>
+<p class="text-white font-medium leading-tight">SimplyCinema IMAX, Downtown</p>
+</div>
+<div>
+<p class="text-xs text-outline uppercase tracking-wider mb-1">Seats</p>
+<p class="text-white font-medium">Executive J12, J13</p>
+</div>
+</div>
+<!-- Perforated Tear Line Visual -->
+<div class="relative h-px w-full border-t border-dashed border-outline-variant my-6">
+<div class="absolute -left-10 -top-3 w-6 h-6 rounded-full bg-background"></div>
+<div class="absolute -right-10 -top-3 w-6 h-6 rounded-full bg-background"></div>
+</div>
+<!-- QR Code Section -->
+<div class="mt-auto pt-4 flex flex-col items-center justify-center bg-white p-6 rounded-xl">
+<div class="bg-white p-2 mb-2">
+<img class="w-32 h-32 opacity-90" data-alt="Digital black and white QR code on a plain white background for mobile ticket scanning" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChvflBH4dR69-gtZlyFv8FxJBxFprhxqb8qDFwpFu_tFMLHXiT7_25_r0Tu9rL_4VWh1XrWoyBq62DJ0Z0PStYFXYa08Z1AEARcT5Gqv6m8X6RHsJGbwNpWIh76XNSxAWWrvwK6gETHoE_8A8Uq-xVKW9k59pvUvsfpittCqrAmlrd6nxrgtDCjtg7ciRMR_wdDwqpKZUaynOAfd98nYu4OTRmqbgwwzqV1nAAI62bfR2WKzazsOQYonq-8o9TSz_GAyQ8PyHjTA"/>
+</div>
+<p class="text-slate-900 font-mono text-xs tracking-widest font-bold">SCAN AT ENTRANCE</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+<button class="flex flex-col items-center justify-center p-4 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-all group/btn border border-transparent hover:border-primary/20">
+<span class="material-symbols-outlined text-primary mb-2 group-hover/btn:scale-110 transition-transform">download</span>
+<span class="text-sm font-medium text-on-surface">Download</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-all group/btn border border-transparent hover:border-primary/20">
+<span class="material-symbols-outlined text-primary mb-2 group-hover/btn:scale-110 transition-transform">share</span>
+<span class="text-sm font-medium text-on-surface">Share</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-all group/btn border border-transparent hover:border-primary/20">
+<span class="material-symbols-outlined text-primary mb-2 group-hover/btn:scale-110 transition-transform">account_balance_wallet</span>
+<span class="text-sm font-medium text-on-surface">Add to Wallet</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-2xl auteur-gradient hover:shadow-[0_0_20px_rgba(108,59,181,0.5)] transition-all group/btn">
+<span class="material-symbols-outlined text-white mb-2 group-hover/btn:scale-110 transition-transform">confirmation_number</span>
+<span class="text-sm font-bold text-white">My Bookings</span>
+</button>
+</div>
+<!-- Recommendations Section -->
+<section class="mt-32">
+<div class="flex justify-between items-end mb-10">
+<div>
+<h3 class="text-3xl font-headline font-bold text-white mb-2">Complete Your Experience</h3>
+<p class="text-on-surface-variant">Handpicked for you based on your movie choice</p>
+</div>
+<button class="text-primary font-bold text-sm tracking-widest uppercase hover:underline">View All</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Food Combo -->
+<div class="bg-surface-container-low rounded-2xl overflow-hidden group hover:bg-surface-container transition-all">
+<div class="h-48 relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Close-up of buttered cinema popcorn and two cold soda drinks with ice on a dark reflective surface with purple neon glow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBF5Zu-BXuErQ4NNn9qPFls504823qzUSbvWuYJVnehJUWsE3rYVLXZk_MFUOIoGUY6RP62MV43-fZL0mC4a368B6P-rn__oFGJIcU64irliRFCWCR8WZklzFlVqfdZuJrjj52yZk2YWlaZ9xZUEFTMxvs8ZloC3rZRsVXU_22EbG9R2Hm8ZMJm4Tp2NsXbtZiyN6hwtnAyRxZbbmJg7ci8ZKPUym9r-5vpCqOsCc22HVYYzb_YDQsQgYyTb7oxCq95j3n0mwsMEA"/>
+<div class="absolute top-4 right-4 bg-primary text-on-primary-fixed font-black text-xs px-2 py-1 rounded">20% OFF</div>
+</div>
+<div class="p-6">
+<h4 class="text-xl font-bold text-white mb-2">Ultimate Movie Duo</h4>
+<p class="text-on-surface-variant text-sm mb-6">Large Caramel Popcorn + 2 Coke (600ml)</p>
+<button class="w-full py-3 rounded-full border border-outline-variant text-primary font-bold hover:bg-primary/10 transition-colors">Add to Order • $14.99</button>
+</div>
+</div>
+<!-- Next Movie Recommendation -->
+<div class="bg-surface-container-low rounded-2xl overflow-hidden group hover:bg-surface-container transition-all">
+<div class="h-48 relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Modern sci-fi cinematic backdrop with neon blue and cyan highlights representing futuristic technology and space travel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEISS4u8d9DnIgfgv7v7xE6WlJx72t6CQiu-z5jIak6wvY7Rohi5wm54GLe_1L-CU4kW3wzUPAmSGhvOpwCUuUyCgTPmfN04GTaq96ZuziM6YxoY9SjieAiH8I6W5pSe86XEx-0r7uBX20fYnCQcPCVZwrGFVcyzpzCCz4bLn40h7jJ7nMuS6AO74PVX6IxlupjTpzyg85OtI8C5jCA7ojA_Lsd75kyE4FolBzj2Cthdkp16NNlnLMXRb3ZDbpC6rnhMI9OJa1XA"/>
+</div>
+<div class="p-6">
+<h4 class="text-xl font-bold text-white mb-2">Interstellar 2: Echoes</h4>
+<p class="text-on-surface-variant text-sm mb-6">Pre-booking starts next week. Set reminder?</p>
+<button class="w-full py-3 rounded-full border border-outline-variant text-primary font-bold hover:bg-primary/10 transition-colors">Notify Me</button>
+</div>
+</div>
+<!-- Gift Card -->
+<div class="bg-surface-container-low rounded-2xl overflow-hidden group hover:bg-surface-container transition-all">
+<div class="h-48 relative auteur-gradient p-8 flex items-center justify-center">
+<span class="material-symbols-outlined text-7xl text-white/20 absolute -bottom-4 -right-4">card_giftcard</span>
+<div class="relative z-10 text-center">
+<p class="text-white font-headline font-bold text-2xl tracking-tighter italic">SimplyCinema</p>
+<p class="text-primary-fixed-dim text-xs tracking-widest mt-1">THE GIFT OF MAGIC</p>
+</div>
+</div>
+<div class="p-6">
+<h4 class="text-xl font-bold text-white mb-2">Share the Magic</h4>
+<p class="text-on-surface-variant text-sm mb-6">Gift a movie experience to your friends or family.</p>
+<button class="w-full py-3 rounded-full border border-outline-variant text-primary font-bold hover:bg-primary/10 transition-colors">Buy Gift Card</button>
+</div>
+</div>
+</div>
+</section>
+</div></main>
+<!-- Footer (Shared Component Shell) -->
+<footer class="bg-[#131313] w-full pt-16 pb-8 border-t border-outline-variant/10">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-12 max-w-7xl mx-auto font-['Inter'] text-sm tracking-wide">
+<div class="space-y-6">
+<div class="text-xl font-black text-white">SimplyCinema</div>
+<p class="text-slate-500 leading-relaxed">Defining the next era of cinematic storytelling through premium technology and comfort.</p>
+<div class="flex space-x-4">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-slate-400 hover:text-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-lg">public</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-slate-400 hover:text-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-lg">videocam</span>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<h5 class="text-white font-semibold">Movies &amp; Events</h5>
+<ul class="space-y-2">
+<li><a class="text-slate-500 hover:text-violet-400 transition-colors hover:translate-x-1 inline-block" href="#">Now Showing</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 transition-colors hover:translate-x-1 inline-block" href="#">Coming Soon</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 transition-colors hover:translate-x-1 inline-block" href="#">Music Concerts</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h5 class="text-white font-semibold">Help &amp; Support</h5>
+<ul class="space-y-2">
+<li><a class="text-slate-500 hover:text-violet-400 transition-colors hover:translate-x-1 inline-block" href="#">Contact Us</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 transition-colors hover:translate-x-1 inline-block" href="#">FAQs</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 transition-colors hover:translate-x-1 inline-block" href="#">Refund Policy</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h5 class="text-white font-semibold">Legal</h5>
+<ul class="space-y-2">
+<li><a class="text-slate-500 hover:text-violet-400 transition-colors hover:translate-x-1 inline-block" href="#">Privacy Policy</a></li>
+<li><a class="text-slate-500 hover:text-violet-400 transition-colors hover:translate-x-1 inline-block" href="#">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="mt-16 text-center text-slate-500 opacity-80 border-t border-outline-variant/10 pt-8">
+            © 2024 SimplyCinema. All rights reserved.
+        </div>
+</footer>
+</body></html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Cinemas | SimplyCinema</title>
+  <meta name="description" content="Find cinemas and theatres near you. Browse all cinema halls across India on SimplyCinema."/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#201f1f", "background": "#131313", "outline": "#968e9e",
+            "on-background": "#e5e2e1", "primary-container": "#6c3bb5",
+            "on-surface-variant": "#ccc3d4", "surface-container-highest": "#353534",
+            "surface-container-lowest": "#0e0e0e", "surface-container-low": "#1c1b1b",
+            "on-surface": "#e5e2e1", "on-primary-container": "#dcc4ff",
+            "surface-container-high": "#2a2a2a", "primary": "#d6baff",
+            "secondary": "#ddb7ff", "on-secondary-container": "#d6a9ff",
+            "outline-variant": "#4a4452", "error": "#ffb4ab",
+          },
+          fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"], "label": ["Inter"] },
+          borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30 min-h-screen">
+
+<div id="navbar-placeholder"></div>
+
+<main class="pt-16">
+  <!-- Header -->
+  <section class="px-8 max-w-screen-2xl mx-auto pt-10 pb-6">
+    <h1 class="font-headline text-4xl font-bold text-white tracking-tight">All Cinemas</h1>
+    <p class="text-outline text-sm mt-2">Find theatres and check their showtimes. Select a city to filter.</p>
+  </section>
+
+  <!-- City Filter Row -->
+  <section class="px-8 max-w-screen-2xl mx-auto mb-8">
+    <div id="city-filter-row" class="flex gap-3 overflow-x-auto hide-scrollbar pb-4">
+      <button class="city-filter-btn px-5 py-2 bg-primary-container text-on-primary-container rounded-full text-sm font-medium whitespace-nowrap" data-city-id="all">All Cities</button>
+      <!-- Populated via JS -->
+    </div>
+  </section>
+
+  <!-- Cinemas Grid -->
+  <section class="px-8 max-w-screen-2xl mx-auto pb-16">
+    <div id="cinemas-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[400px]">
+      <div class="col-span-full text-white flex items-center gap-2 py-10">
+        <div class="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> Loading cinemas...
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script>
+  injectComponent("#navbar-placeholder", "../../components/navbar.html");
+  injectComponent("#footer-placeholder", "../../components/footer.html");
+
+  let activeCityFilter = 'all';
+
+  async function loadCityFilters() {
+    const container = document.getElementById('city-filter-row');
+    try {
+      const cities = await Cities.getAll();
+      if (!cities || cities.length === 0) return;
+      
+      const allBtn = `<button class="city-filter-btn px-5 py-2 bg-primary-container text-on-primary-container rounded-full text-sm font-medium whitespace-nowrap" data-city-id="all">All Cities</button>`;
+      container.innerHTML = allBtn + cities.map(c => `
+        <button class="city-filter-btn px-5 py-2 bg-surface-container-high text-on-surface-variant hover:text-white rounded-full text-sm font-medium transition-colors whitespace-nowrap" data-city-id="${c.id}">${c.name}</button>
+      `).join('');
+
+      container.querySelectorAll('.city-filter-btn').forEach(btn => {
+        btn.onclick = () => {
+          activeCityFilter = btn.getAttribute('data-city-id');
+          // Update active styles
+          container.querySelectorAll('.city-filter-btn').forEach(b => b.className = 'city-filter-btn px-5 py-2 bg-surface-container-high text-on-surface-variant hover:text-white rounded-full text-sm font-medium transition-colors whitespace-nowrap');
+          btn.className = 'city-filter-btn px-5 py-2 bg-primary-container text-on-primary-container rounded-full text-sm font-medium whitespace-nowrap';
+          loadCinemas();
+        };
+      });
+    } catch(e) {}
+  }
+
+  async function loadCinemas() {
+    const grid = document.getElementById('cinemas-grid');
+    grid.innerHTML = '<div class="col-span-full text-white flex items-center gap-2 py-10"><div class="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> Loading cinemas...</div>';
+
+    try {
+      let theatres = [];
+      if (activeCityFilter === 'all') {
+        const cities = await Cities.getAll();
+        if (cities && cities.length > 0) {
+          const promises = cities.map(c => Theatres.getByCity(c.id));
+          const results = await Promise.all(promises);
+          theatres = results.filter(r => r !== null).flat();
+        }
+      } else {
+        const res = await Theatres.getByCity(activeCityFilter);
+        theatres = res || [];
+      }
+
+      if (!theatres || theatres.length === 0) {
+        grid.innerHTML = '<div class="col-span-full text-center py-20"><div class="w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center mx-auto mb-4"><span class="material-symbols-outlined text-4xl text-outline">theaters</span></div><p class="text-outline">No cinemas found for the selected city.</p></div>';
+        return;
+      }
+
+      grid.innerHTML = '';
+      theatres.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'bg-surface-container-high rounded-3xl overflow-hidden border border-white/5 hover:border-primary/50 transition-all duration-500 group cursor-pointer hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_0_20px_rgba(108,59,181,0.2)] hover:-translate-y-2';
+        
+        const imageUrl = t.imageUrl || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=800';
+
+        div.innerHTML = `
+          <div class="relative h-48 w-full overflow-hidden">
+            <img src="${imageUrl}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="${t.name}">
+            <div class="absolute inset-0 bg-gradient-to-t from-surface-container-high via-transparent to-transparent"></div>
+            <div class="absolute top-4 right-4 px-3 py-1 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-primary text-[10px] font-black uppercase tracking-widest shadow-xl">
+              ${t.screens?.length || '?'} Screens
+            </div>
+          </div>
+          <div class="p-6">
+            <h4 class="font-black text-white text-xl mb-2 group-hover:text-primary transition-colors tracking-tight font-headline">${t.name}</h4>
+            <p class="text-on-surface-variant text-xs flex items-start gap-2 mb-6 opacity-70">
+              <span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+              <span class="line-clamp-2 leading-relaxed">${t.address || 'Address not listed'}</span>
+            </p>
+            <div class="flex items-center justify-between border-t border-white/5 pt-4">
+              <div class="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-outline font-black">
+                <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px] text-secondary">weekend</span>ATMOS</span>
+                <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px] text-primary">hd</span>4K</span>
+              </div>
+              <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary transform transition-transform group-hover:translate-x-1">
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(div);
+      });
+    } catch(err) {
+      grid.innerHTML = '<div class="col-span-full text-error text-center py-20">Failed to load cinemas.</div>';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    await loadCityFilters();
+    await loadCinemas();
+  });
+</script>
+
+</body>
+</html>

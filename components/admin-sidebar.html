@@ -1,0 +1,78 @@
+<!-- Sidebar Component for Admin and Theatre Owner -->
+<nav class="bg-surface-container-low font-headline tracking-tight h-screen w-64 fixed left-0 top-0 overflow-y-auto shadow-none flex flex-col p-6 gap-8 z-50 border-r border-white/5">
+    <div class="flex flex-col gap-1">
+        <span class="text-xl font-bold text-primary tracking-widest uppercase" id="sidebar-role-title">Admin Portal</span>
+        <span class="text-xs text-outline font-body tracking-wider" id="sidebar-role-subtitle">SimplyCinema Management</span>
+    </div>
+    
+    <div class="flex flex-col gap-2 flex-grow" id="sidebar-links">
+        <!-- Injected via JS based on role -->
+    </div>
+
+    <!-- Active User Profile -->
+    <div class="flex items-center gap-3 mt-auto p-3 rounded-xl bg-surface-container border border-white/5 shadow-inner">
+        <div class="w-10 h-10 rounded-full overflow-hidden bg-primary-container flex items-center justify-center font-bold text-white text-lg">
+            <span id="sidebar-user-initial">A</span>
+        </div>
+        <div class="flex flex-col">
+            <span class="text-sm font-bold text-on-surface truncate w-32" id="sidebar-user-name">Admin User</span>
+            <span class="text-[10px] text-primary uppercase tracking-widest font-bold cursor-pointer hover:underline" onclick="logout()">Logout</span>
+        </div>
+    </div>
+</nav>
+
+<script>
+    (() => {
+        const user = JSON.parse(localStorage.getItem('sc_user') || "{}");
+        if(user.firstName) {
+            document.getElementById('sidebar-user-name').innerText = `${user.firstName} ${user.lastName || ''}`.trim();
+            document.getElementById('sidebar-user-initial').innerText = user.firstName.charAt(0).toUpperCase();
+        }
+
+        const role = getRole() || 'CUSTOMER';
+        const roleTitle = document.getElementById('sidebar-role-title');
+        const roleSubtitle = document.getElementById('sidebar-role-subtitle');
+        const linksContainer = document.getElementById('sidebar-links');
+        
+        const path = window.location.pathname;
+        
+        function createLink(href, icon, text) {
+            const isSubdir = window.location.pathname.includes('/simplyCinema-frontend/');
+            const rootPrefix = isSubdir ? '/simplyCinema-frontend' : '';
+            const fullHref = href.startsWith('/') ? (rootPrefix + href) : href;
+            const isActive = path.includes(href);
+            const a = document.createElement('a');
+            a.href = fullHref;
+            
+            if(isActive) {
+                a.className = "flex items-center gap-3 px-4 py-3 bg-primary-container text-white rounded-full shadow-[0_0_20px_rgba(108,59,181,0.5)] transition-all font-bold";
+            } else {
+                a.className = "flex items-center gap-3 px-4 py-3 text-outline hover:text-white transition-colors hover:bg-surface-container hover:scale-[1.02] rounded-full font-medium";
+            }
+            
+            a.innerHTML = `<span class="material-symbols-outlined">${icon}</span><span>${text}</span>`;
+            return a;
+        }
+
+        if(role === 'ADMIN') {
+            roleTitle.innerText = "Auteur Admin";
+            roleSubtitle.innerText = "Global Cinema Management";
+            linksContainer.appendChild(createLink('/pages/admin/dashboard.html', 'dashboard', 'Dashboard'));
+            linksContainer.appendChild(createLink('/pages/admin/movies.html', 'movie', 'Movies'));
+            linksContainer.appendChild(createLink('/pages/admin/cities.html', 'location_on', 'Cities'));
+            linksContainer.appendChild(createLink('/pages/admin/theatres.html', 'theater_comedy', 'Theatres'));
+            linksContainer.appendChild(createLink('/pages/admin/shows.html', 'schedule', 'Shows'));
+            linksContainer.appendChild(createLink('/pages/admin/users.html', 'group', 'Users'));
+            linksContainer.appendChild(createLink('/pages/admin/support.html', 'support_agent', 'Support'));
+        } else if(role === 'THEATRE_OWNER') {
+            roleTitle.innerText = "Partner Portal";
+            roleSubtitle.innerText = "Manage Your Theatres";
+            linksContainer.appendChild(createLink('/pages/owner/dashboard.html', 'dashboard', 'Dashboard'));
+            linksContainer.appendChild(createLink('/pages/admin/movies.html', 'movie', 'Movies'));
+            linksContainer.appendChild(createLink('/pages/admin/cities.html', 'location_on', 'Cities'));
+            linksContainer.appendChild(createLink('/pages/owner/theatres.html', 'theater_comedy', 'Theatres'));
+            linksContainer.appendChild(createLink('/pages/owner/screens.html', 'tv', 'Screens'));
+            linksContainer.appendChild(createLink('/pages/owner/shows.html', 'schedule', 'Shows'));
+        }
+    })();
+</script>

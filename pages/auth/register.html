@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register | SimplyCinema</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background":                "#131313",
+            "surface":                   "#131313",
+            "surface-dim":               "#131313",
+            "surface-container-lowest":  "#0e0e0e",
+            "surface-container-low":     "#1c1b1b",
+            "surface-container":         "#201f1f",
+            "surface-container-high":    "#2a2a2a",
+            "surface-container-highest": "#353534",
+            "surface-bright":            "#3a3939",
+            "surface-variant":           "#353534",
+            "primary":                   "#d6baff",
+            "primary-container":         "#6c3bb5",
+            "primary-fixed":             "#ecdcff",
+            "primary-fixed-dim":         "#d6baff",
+            "on-primary":                "#420089",
+            "on-primary-container":      "#dcc4ff",
+            "on-primary-fixed":          "#280057",
+            "on-primary-fixed-variant":  "#5a26a3",
+            "inverse-primary":           "#7343bc",
+            "secondary":                 "#ddb7ff",
+            "secondary-container":       "#6f00be",
+            "secondary-fixed":           "#f0dbff",
+            "secondary-fixed-dim":       "#ddb7ff",
+            "on-secondary":              "#490080",
+            "on-secondary-container":    "#d6a9ff",
+            "on-secondary-fixed":        "#2c0051",
+            "on-secondary-fixed-variant":"#6900b3",
+            "tertiary":                  "#c6c4df",
+            "tertiary-container":        "#56556c",
+            "tertiary-fixed":            "#e2e0fc",
+            "tertiary-fixed-dim":        "#c6c4df",
+            "on-tertiary":               "#2f2e43",
+            "on-tertiary-container":     "#cdcbe6",
+            "on-tertiary-fixed":         "#1a1a2e",
+            "on-tertiary-fixed-variant": "#45455b",
+            "on-background":             "#e5e2e1",
+            "on-surface":                "#e5e2e1",
+            "on-surface-variant":        "#ccc3d4",
+            "outline":                   "#968e9e",
+            "outline-variant":           "#4a4452",
+            "inverse-surface":           "#e5e2e1",
+            "inverse-on-surface":        "#313030",
+            "surface-tint":              "#d6baff",
+            "error":                     "#ffb4ab",
+            "error-container":           "#93000a",
+            "on-error":                  "#690005",
+            "on-error-container":        "#ffdad6",
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body":     ["Inter"],
+            "label":    ["Inter"],
+          },
+          borderRadius: {
+            "DEFAULT": "1rem",
+            "lg":      "2rem",
+            "xl":      "3rem",
+            "full":    "9999px",
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .auteur-gradient { background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%); }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .lume-glow:hover { box-shadow: 0 0 20px rgba(108, 59, 181, 0.5); }
+    input:focus { outline: none; border-bottom-color: #d6baff !important; }
+  </style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
+
+<div id="navbar-placeholder"></div>
+
+<main class="flex-1 min-h-screen grid grid-cols-1 lg:grid-cols-2 mt-16">
+  <!-- Left Column: Cinematic Panel -->
+  <section class="hidden lg:flex relative overflow-hidden items-center justify-center p-12">
+    <div class="absolute inset-0 z-0">
+      <img alt="Cinematic theater interior" class="w-full h-full object-cover opacity-40 scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoID1Z1NlPcfYmPDujII3VzCqbDYcXEeVyzgG5faoeZpI057s78Z2yTTVEjTpRI-Zf8F4fXxXvgRyUZkiKer-FrnObbjrhRLhtSwE_IRIADBnc1Jg_qCFT6LMi5gH69mWGkgUP90C4SGcoHv7Tpps8W9v49WFb_TILzMRyrxDF-H6GHpLVA7cReIHWv7-YbBPdX_oHJCH1bwBPVJtpWbSa-lNacPJ_VuurOmGSFI5d9ATUlaUJzED93y81ZSodo5XtRIJPuFuonA"/>
+      <div class="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent"></div>
+    </div>
+    <div class="relative z-10 max-w-lg">
+      <div class="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-container/20 border border-primary/20 backdrop-blur-md">
+        <span class="text-xl">🎟️</span>
+        <span class="text-primary font-medium tracking-wide">Choose your perfect seat.</span>
+      </div>
+      <h1 class="text-6xl font-headline font-bold text-white mb-6 leading-tight">
+        Experience Cinema in its <span class="text-primary">Purest Form.</span>
+      </h1>
+      <p class="text-lg text-on-surface-variant tracking-wide leading-relaxed">
+        Unlock exclusive premieres, early-bird bookings, and personalized movie recommendations tailored just for your taste.
+      </p>
+      <div class="mt-12 relative">
+        <div class="w-64 h-96 rounded-xl overflow-hidden shadow-2xl rotate-3 translate-x-12 border border-white/5 bg-surface-container">
+          <img alt="Movie poster placeholder" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgCiyKOzIMHuFJqlsqZ442En05yos-i0v-Fx3RxZxDiByqRNp_Zmsw9mO9MZwiKqlhy2RPKh4MYMFtk-V2wKsRRRD-Blk5XQYeu3ZvmazzMyrL8oSqaddleJFYysSsJwqAYTcaIIaNvd7Gs-5XQzqHKwZaNY0reGsorE5GvLVTKaPZ874f0Oeb1IZaYr9amGFtHXvAI7FFEp-N3Vdu-8h5YWEGJffjD-cn4eq9MO0rLQXnENO1mcB9SEWR5kMvGIGf1hZeMRm6CQ"/>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Right Column: Auth Form Card -->
+  <section class="flex flex-col items-center justify-center px-6 py-12 lg:px-12 bg-surface-container-low min-h-screen">
+    <div class="w-full max-w-md space-y-8">
+      <div class="text-center lg:text-left">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-surface-container-highest mb-4">
+          <span class="material-symbols-outlined text-primary text-3xl">theaters</span>
+        </div>
+        <h2 class="text-3xl font-headline font-bold text-white tracking-tight">Create Your Account</h2>
+        <p class="text-on-surface-variant mt-2 tracking-wide">Join SimplyCinema — it's free!</p>
+      </div>
+
+      <form id="register-form" class="space-y-5">
+        <div class="group">
+          <label class="block text-xs font-medium text-outline uppercase tracking-[0.15em] mb-2 ml-1">Full Name</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">person</span>
+            <input required id="reg-name" class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline-variant py-4 pl-12 pr-4 text-on-surface placeholder:text-outline-variant transition-all focus:ring-0" placeholder="John Doe" type="text"/>
+          </div>
+        </div>
+
+        <div class="group">
+          <label class="block text-xs font-medium text-outline uppercase tracking-[0.15em] mb-2 ml-1">Email Address</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
+            <input required id="reg-email" class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline-variant py-4 pl-12 pr-4 text-on-surface placeholder:text-outline-variant transition-all focus:ring-0" placeholder="john@example.com" type="email"/>
+          </div>
+        </div>
+
+        <div class="group">
+          <label class="block text-xs font-medium text-outline uppercase tracking-[0.15em] mb-2 ml-1">Phone Number</label>
+          <div class="relative flex">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-primary font-medium">+91</span>
+            <input required id="reg-phone" class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline-variant py-4 pl-14 pr-4 text-on-surface placeholder:text-outline-variant transition-all focus:ring-0" placeholder="0000000000" type="tel" pattern="[0-9]{10}" maxlength="10"/>
+          </div>
+        </div>
+
+        <div class="group">
+          <label class="block text-xs font-medium text-outline uppercase tracking-[0.15em] mb-2 ml-1">Join As</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">group</span>
+            <select id="reg-role" class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline-variant py-4 pl-12 pr-4 text-on-surface appearance-none focus:ring-0 transition-all cursor-pointer">
+              <option value="ROLE_CUSTOMER">Movie Buff (Customer)</option>
+              <option value="ROLE_THEATRE_OWNER">Cinema Partner (Theatre Owner)</option>
+            </select>
+            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="group">
+            <label class="block text-xs font-medium text-outline uppercase tracking-[0.15em] mb-2 ml-1">Password</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+              <input required id="reg-pass" class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline-variant py-4 pl-12 pr-10 text-on-surface placeholder:text-outline-variant transition-all focus:ring-0" placeholder="••••••••" type="password"/>
+              <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant cursor-pointer hover:text-on-surface transition-colors" onclick="const p=document.getElementById('reg-pass'); p.type=p.type==='password'?'text':'password';">
+                <span class="material-symbols-outlined">visibility</span>
+              </button>
+            </div>
+          </div>
+          <div class="group">
+            <label class="block text-xs font-medium text-outline uppercase tracking-[0.15em] mb-2 ml-1">Confirm</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+              <input required id="reg-confirm" class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline-variant py-4 pl-12 pr-10 text-on-surface placeholder:text-outline-variant transition-all focus:ring-0" placeholder="••••••••" type="password"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Password Strength indicator & rules -->
+        <div class="space-y-2 mt-2">
+          <div class="flex gap-1 h-1 w-full rounded-full overflow-hidden bg-background">
+            <div id="str-1" class="flex-1 bg-surface-container-high transition-colors"></div>
+            <div id="str-2" class="flex-1 bg-surface-container-high transition-colors"></div>
+            <div id="str-3" class="flex-1 bg-surface-container-high transition-colors"></div>
+            <div id="str-4" class="flex-1 bg-surface-container-high transition-colors"></div>
+          </div>
+          <ul class="text-xs text-on-surface-variant grid grid-cols-2 gap-1 mt-2">
+            <li id="rule-len" class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_circle</span> 8+ characters</li>
+            <li id="rule-upp" class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_circle</span> 1 Uppercase</li>
+            <li id="rule-num" class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_circle</span> 1 Number</li>
+            <li id="rule-spc" class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_circle</span> 1 Special Char</li>
+          </ul>
+        </div>
+
+        <button id="btn-submit" class="auteur-gradient w-full py-4 rounded-full font-bold text-white lume-glow transition-all active:scale-95 flex items-center justify-center gap-2 mt-6" type="submit">
+          <span>Create Account</span>
+          <span class="material-symbols-outlined">auto_awesome</span>
+        </button>
+      </form>
+
+      <!-- OTP Verification Form (Hidden Initially) -->
+      <form id="otp-form" class="space-y-5 hidden">
+        <div class="text-center mb-6">
+          <p class="text-on-surface-variant">We've sent a 6-digit code to your email. Please enter it below to verify your account.</p>
+        </div>
+        <div class="group">
+          <label class="block text-xs font-medium text-outline uppercase tracking-[0.15em] mb-2 ml-1">Verification Code</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">dialpad</span>
+            <input required id="otp-code" class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline-variant py-4 pl-12 pr-4 text-on-surface placeholder:text-outline-variant transition-all focus:ring-0 text-center tracking-widest text-xl font-bold" placeholder="• • • • • •" type="text" maxlength="6"/>
+          </div>
+        </div>
+        <button id="btn-verify" class="auteur-gradient w-full py-4 rounded-full font-bold text-white lume-glow transition-all active:scale-95 flex items-center justify-center gap-2 mt-6" type="submit">
+          <span>Verify Account</span>
+          <span class="material-symbols-outlined">check_circle</span>
+        </button>
+        <div class="text-center mt-4">
+          <button type="button" id="btn-resend" class="text-sm text-primary hover:text-primary-fixed-dim transition-colors cursor-pointer">Didn't receive code? Resend.</button>
+        </div>
+      </form>
+
+      <!-- OAuth2 Integration -->
+      <div id="oauth-section" class="mt-6">
+        <div class="relative flex items-center mb-6">
+          <div class="flex-grow border-t border-outline-variant"></div>
+          <span class="flex-shrink-0 mx-4 text-outline text-xs uppercase tracking-widest font-bold">Or register with</span>
+          <div class="flex-grow border-t border-outline-variant"></div>
+        </div>
+        <a href="http://localhost:8080/oauth2/authorization/google" class="w-full h-[52px] bg-surface-container-lowest border border-outline-variant hover:border-primary text-on-surface font-bold rounded-full transition-all flex items-center justify-center gap-3">
+          <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Google
+        </a>
+      </div>
+
+      <div class="mt-8 text-center">
+        <p class="text-on-surface-variant text-sm font-medium">
+          Already have an account? 
+          <a class="text-primary hover:text-primary-fixed-dim font-semibold transition-colors ml-1" href="/pages/auth/login.html">Sign In</a>
+        </p>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script>
+  injectComponent("#navbar-placeholder", "/components/navbar.html");
+  injectComponent("#footer-placeholder", "/components/footer.html");
+
+  // OAuth2 Callback Hook: Check if URL has ?token=... from backend auth
+  document.addEventListener("DOMContentLoaded", () => {
+    if (Auth.handleOAuth2Redirect()) {
+      redirectByRole(); // Token saved, immediately route them
+    }
+  });
+
+  const passInput = document.getElementById('reg-pass');
+  passInput.addEventListener('input', (e) => {
+    const val = e.target.value;
+    let score = 0;
+    const len = val.length >= 8;
+    const upp = /[A-Z]/.test(val);
+    const num = /[0-9]/.test(val);
+    const spc = /[^A-Za-z0-9]/.test(val);
+    
+    if (len) score++;
+    if (upp) score++;
+    if (num) score++;
+    if (spc) score++;
+
+    document.getElementById('rule-len').className = `flex items-center gap-1 ${len ? 'text-primary' : 'text-on-surface-variant'}`;
+    document.getElementById('rule-upp').className = `flex items-center gap-1 ${upp ? 'text-primary' : 'text-on-surface-variant'}`;
+    document.getElementById('rule-num').className = `flex items-center gap-1 ${num ? 'text-primary' : 'text-on-surface-variant'}`;
+    document.getElementById('rule-spc').className = `flex items-center gap-1 ${spc ? 'text-primary' : 'text-on-surface-variant'}`;
+
+    const bars = [
+      document.getElementById('str-1'),
+      document.getElementById('str-2'),
+      document.getElementById('str-3'),
+      document.getElementById('str-4')
+    ];
+    bars.forEach(b => b.className = 'flex-1 bg-surface-container-high transition-colors');
+    
+    if (score >= 1) bars[0].className = 'flex-1 bg-red-500 transition-colors';
+    if (score >= 2) { bars[0].className = bars[1].className = 'flex-1 bg-orange-500 transition-colors'; }
+    if (score >= 3) { bars[0].className = bars[1].className = bars[2].className = 'flex-1 bg-yellow-500 transition-colors'; }
+    if (score === 4) { bars.forEach(b => b.className = 'flex-1 bg-green-500 transition-colors'); }
+  });
+
+
+  function startCooldown(btnId) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.disabled = true;
+    let t = 120; // 2 minutes
+    const timer = setInterval(() => {
+      t--;
+      btn.innerText = `Resend in ${t}s`;
+      if (t <= 0) {
+        clearInterval(timer);
+        btn.disabled = false;
+        btn.innerText = "Resend OTP";
+      }
+    }, 1000);
+  }
+
+  // Handle Initial OTP Send
+  document.getElementById('register-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btn-submit');
+    
+    const fullName = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value;
+    const phone = document.getElementById('reg-phone').value;
+    const password = document.getElementById('reg-pass').value;
+    const confirm = document.getElementById('reg-confirm').value;
+
+    if (password !== confirm) {
+      return showToast("Passwords do not match", "error");
+    }
+
+    const nameParts = fullName.split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    const role = document.getElementById('reg-role').value;
+
+    const oldText = btn.innerHTML;
+    btn.innerHTML = 'Sending OTP...';
+    btn.disabled = true;
+
+    try {
+      // Pass full registration details for backend validation (email/phone existence)
+      window.tempSignupData = { firstName, lastName, email, phone, password, role };
+      
+      const res = await Auth.sendSignupOtp(window.tempSignupData);
+      
+      if (res && (res.success || res.jwt === undefined)) { 
+        // res.success is used for signup initiation
+        showToast("OTP sent to your email!", "success");
+        document.getElementById('register-form').classList.add('hidden');
+        document.getElementById('oauth-section').classList.add('hidden');
+        document.getElementById('otp-form').classList.remove('hidden');
+        startCooldown('btn-resend');
+      }
+    } catch (e) {
+        console.error("Signup failed:", e);
+        // Toast is handled by apiCall, form stays visible
+    } finally {
+      btn.innerHTML = oldText;
+      btn.disabled = false;
+    }
+  });
+
+  // OTP Verification
+  document.getElementById('otp-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btn-verify');
+    const otp = document.getElementById('otp-code').value.trim();
+    const signupData = window.tempSignupData;
+
+    if (!signupData) return showToast("Session expired", "error");
+    const oldText = btn.innerHTML;
+    btn.innerHTML = 'Verifying...';
+    btn.disabled = true;
+
+    try {
+      const res = await Auth.verifyOtpAndRegister({ ...signupData, otp });
+      if (res && res.jwt) {
+        btn.innerHTML = 'Success!';
+        showToast("Registration successful! Redirecting to your dashboard...", "success");
+        
+        // Save the token and immediately try to sync profile
+        localStorage.setItem("sc_token", res.jwt);
+        
+        console.log("Success! JWT received, initiating automatic redirect...");
+        
+        // Wait a tiny bit for storage to settle, then redirect
+        setTimeout(async () => {
+          await redirectByRole();
+        }, 800);
+      }
+    } catch (e) {
+        console.error("Verification error:", e);
+        showToast("Verification failed. Please check your code.", "error");
+    } finally {
+      if (btn.innerHTML !== 'Success!') {
+          btn.innerHTML = oldText;
+          btn.disabled = false;
+      }
+    }
+  });
+
+  // Resend OTP
+  document.getElementById('btn-resend').addEventListener('click', async () => {
+    const signupData = window.tempSignupData;
+    if (!signupData?.email) return showToast("No email found for resend", "error");
+    try {
+      const res = await Auth.resendOtp(signupData.email);
+      if (res && res.status) {
+        showToast("OTP Resent!", "success");
+        startCooldown('btn-resend');
+      }
+    } catch(e) {
+      showToast("Failed to resend OTP", "error");
+    }
+  });
+</script>
+</body>
+</html>
