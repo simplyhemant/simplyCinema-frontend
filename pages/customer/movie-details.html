@@ -86,11 +86,15 @@
           
           <div class="flex flex-wrap items-center gap-8 py-2">
             <div class="flex items-center gap-3">
-              <div class="flex items-center gap-1.5 bg-secondary/10 px-3 py-1.5 rounded-full border border-secondary/20">
-                <span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
-                <span id="m-avg-rating" class="text-2xl font-black text-white leading-none">0.0</span>
+              <div class="flex items-center gap-1.5 bg-yellow-500/10 px-4 py-2 rounded-full border border-yellow-500/30 shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                <span class="material-symbols-outlined text-yellow-500 text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+                <span id="m-avg-rating" class="text-3xl font-black text-white leading-none">0.0</span>
+                <span class="text-[10px] font-black text-yellow-500/60 ml-1">/10</span>
               </div>
-              <span class="text-[10px] font-bold text-outline uppercase tracking-widest">User Rating</span>
+              <div class="flex flex-col">
+                <span class="text-[10px] font-black text-white uppercase tracking-[0.2em] leading-tight">Audience Score</span>
+                <span class="text-[9px] font-medium text-outline uppercase tracking-widest mt-0.5">Simply Cinema Verified</span>
+              </div>
             </div>
             
             <div class="h-8 w-px bg-white/10 hidden md:block"></div>
@@ -126,8 +130,8 @@
   <nav class="sticky top-[64px] z-40 bg-background/90 backdrop-blur-md border-b border-white/5 mt-24">
     <div class="max-w-7xl mx-auto px-8">
       <div class="flex gap-8">
-        <a class="py-5 text-sm font-bold tracking-widest text-primary border-b-2 border-primary uppercase" href="#">About</a>
-        <a class="py-5 text-sm font-bold tracking-widest text-white/40 hover:text-white transition-colors uppercase" href="#">Reviews</a>
+        <a id="tab-about" onclick="switchTab('about')" class="cursor-pointer py-5 text-sm font-bold tracking-widest text-primary border-b-2 border-primary uppercase">About</a>
+        <a id="tab-reviews" onclick="switchTab('reviews')" class="cursor-pointer py-5 text-sm font-bold tracking-widest text-white/40 hover:text-white transition-colors uppercase">Reviews</a>
       </div>
     </div>
   </nav>
@@ -136,6 +140,7 @@
   <div class="max-w-7xl mx-auto px-8 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
     <!-- Left Column (Main Content) -->
     <div class="lg:col-span-8 space-y-12">
+      <div id="section-about" class="space-y-12 block">
       <!-- Synopsis -->
       <section>
         <h2 class="text-xs font-bold tracking-[0.3em] text-white/40 uppercase mb-6">Synopsis</h2>
@@ -191,6 +196,39 @@
             </div>
         </div>
       </section>
+      </div> <!-- End of About Section -->
+
+      <div id="section-reviews" class="space-y-10 hidden">
+        <div class="flex justify-between items-end mb-6">
+           <h2 class="text-xs font-black tracking-[0.4em] text-primary uppercase flex items-center gap-3">
+              <span class="w-8 h-px bg-primary/30"></span> 
+              Audience Reviews
+           </h2>
+        </div>
+
+        <!-- Write Review Form -->
+        <div id="write-review-container" class="bg-surface-container-low p-6 rounded-2xl border border-white/5 space-y-4">
+            <h3 class="font-headline font-bold text-lg text-white">Write a Review</h3>
+            <div class="flex gap-1 mb-2" id="star-rating">
+                <button data-value="1" class="star-btn material-symbols-outlined text-outline hover:text-yellow-400 focus:outline-none">star</button>
+                <button data-value="2" class="star-btn material-symbols-outlined text-outline hover:text-yellow-400 focus:outline-none">star</button>
+                <button data-value="3" class="star-btn material-symbols-outlined text-outline hover:text-yellow-400 focus:outline-none">star</button>
+                <button data-value="4" class="star-btn material-symbols-outlined text-outline hover:text-yellow-400 focus:outline-none">star</button>
+                <button data-value="5" class="star-btn material-symbols-outlined text-outline hover:text-yellow-400 focus:outline-none">star</button>
+                <button data-value="6" class="star-btn material-symbols-outlined text-outline hover:text-yellow-400 focus:outline-none">star</button>
+                <button data-value="7" class="star-btn material-symbols-outlined text-outline hover:text-yellow-400 focus:outline-none">star</button>
+                <button data-value="8" class="star-btn material-symbols-outlined text-outline hover:text-yellow-400 focus:outline-none">star</button>
+                <button data-value="9" class="star-btn material-symbols-outlined text-outline hover:text-yellow-400 focus:outline-none">star</button>
+                <button data-value="10" class="star-btn material-symbols-outlined text-outline hover:text-yellow-400 focus:outline-none">star</button>
+            </div>
+            <textarea id="review-text" rows="3" class="w-full bg-surface-container-high rounded-xl border-white/10 text-white placeholder:text-white/30 text-sm focus:border-primary focus:ring-1 focus:ring-primary" placeholder="What did you think of the movie?"></textarea>
+            <button id="submit-review-btn" onclick="submitReview()" class="px-6 py-2.5 bg-primary-container text-white text-xs font-bold uppercase tracking-widest rounded-lg hover:shadow-[0_0_15px_rgba(108,59,181,0.4)] transition-all">Publish</button>
+        </div>
+
+        <div id="reviews-list" class="space-y-6">
+            <p class="text-xs text-outline italic">Loading reviews...</p>
+        </div>
+      </div> <!-- End of Reviews Section -->
     </div>
 
     <!-- Right Column (Sidebar) -->
@@ -290,6 +328,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const movieId = urlParams.get('id');
+    window.movieIdGlobal = movieId;
     if(!movieId) {
       window.location.href = '/pages/customer/home';
       return;
@@ -369,6 +408,9 @@
       bookBtn.onclick = () => {
          openBookingModal(movie);
       };
+
+      // Load average rating dynamically from backend to stay in sync
+      loadAverageRating(movieId);
 
     } catch (err) {
       console.error(err);
@@ -481,6 +523,166 @@
 
   function scrollToTrailer() {
       document.getElementById('trailer-section').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // --- Reviews Logic ---
+  let currentRating = 0;
+  document.querySelectorAll('.star-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+          currentRating = parseInt(e.target.dataset.value);
+          document.querySelectorAll('.star-btn').forEach(s => {
+              if(parseInt(s.dataset.value) <= currentRating) {
+                  s.classList.replace('text-outline', 'text-yellow-400');
+                  s.style.fontVariationSettings = "'FILL' 1";
+              } else {
+                  s.classList.replace('text-yellow-400', 'text-outline');
+                  s.style.fontVariationSettings = "'FILL' 0";
+              }
+          });
+      });
+  });
+
+  function switchTab(tabName) {
+      const tabAbout = document.getElementById('tab-about');
+      const tabReviews = document.getElementById('tab-reviews');
+      const secAbout = document.getElementById('section-about');
+      const secReviews = document.getElementById('section-reviews');
+
+      if (tabName === 'about') {
+          tabAbout.className = "cursor-pointer py-5 text-sm font-bold tracking-widest text-primary border-b-2 border-primary uppercase";
+          tabReviews.className = "cursor-pointer py-5 text-sm font-bold tracking-widest text-white/40 hover:text-white transition-colors uppercase";
+          secAbout.classList.remove('hidden');
+          secAbout.classList.add('block');
+          secReviews.classList.add('hidden');
+          secReviews.classList.remove('block');
+      } else {
+          tabReviews.className = "cursor-pointer py-5 text-sm font-bold tracking-widest text-primary border-b-2 border-primary uppercase";
+          tabAbout.className = "cursor-pointer py-5 text-sm font-bold tracking-widest text-white/40 hover:text-white transition-colors uppercase";
+          secAbout.classList.add('hidden');
+          secAbout.classList.remove('block');
+          secReviews.classList.remove('hidden');
+          secReviews.classList.add('block');
+          loadReviews();
+      }
+  }
+
+  async function submitReview() {
+      const user = JSON.parse(localStorage.getItem('sc_user') || 'null');
+      if(!user) {
+          showToast("Please log in to submit a review", "error");
+          setTimeout(() => window.location.href = '/pages/auth/login', 2000);
+          return;
+      }
+
+      if(currentRating === 0) return showToast("Please select a rating", "error");
+      const text = document.getElementById('review-text').value.trim();
+      if(!text) return showToast("Please enter a review text", "error");
+
+      const btn = document.getElementById('submit-review-btn');
+      btn.disabled = true;
+      btn.innerText = "Publishing...";
+
+      try {
+         const dto = {
+             rating: currentRating,
+             reviewText: text
+         };
+         await Reviews.submit(window.movieIdGlobal, dto);
+         showToast("Review submitted!", "success");
+         document.getElementById('review-text').value = '';
+         currentRating = 0;
+         document.querySelectorAll('.star-btn').forEach(s => {
+             s.classList.replace('text-yellow-400', 'text-outline');
+             s.style.fontVariationSettings = "'FILL' 0";
+         });
+         loadReviews(); 
+         loadAverageRating(window.movieIdGlobal);
+      } catch(err) {
+         showToast("Failed to submit review", "error");
+      } finally {
+         btn.disabled = false;
+         btn.innerText = "Publish";
+      }
+  }
+
+  async function loadAverageRating(id) {
+      if(!id) return;
+      try {
+          const rating = await Reviews.getAverageRating(id);
+          const ratingEl = document.getElementById('m-avg-rating');
+          if(ratingEl && rating !== null) {
+              ratingEl.innerText = parseFloat(rating).toFixed(1);
+          }
+      } catch(e) {
+          console.error("Failed to load average rating", e);
+      }
+  }
+
+  async function loadReviews() {
+      const list = document.getElementById('reviews-list');
+      list.innerHTML = '<p class="text-xs text-outline italic">Loading...</p>';
+      try {
+          const reviews = await Reviews.getByMovie(window.movieIdGlobal);
+          if(!reviews || reviews.length === 0) {
+              list.innerHTML = '<p class="text-sm text-outline border border-white/5 bg-surface-container-low p-6 rounded-2xl">No reviews yet. Be the first to share your thoughts!</p>';
+              return;
+          }
+
+          list.innerHTML = reviews.map(r => {
+             const dDate = r.createdAt ? new Date(r.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent';
+             const displayName = r.userName || `Critic #${r.userId}`;
+             const initials = displayName.split(' ').map(n => n[0]).join('').substring(0, 2);
+             
+             return `
+            <div class="bg-surface-container-high/40 backdrop-blur-md p-8 rounded-3xl border border-white/5 space-y-6 shadow-2xl group hover:border-primary/40 transition-all duration-700 relative overflow-hidden">
+                <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all duration-500"></div>
+                
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-6">
+                    <div class="flex items-center gap-5">
+                        <div class="w-14 h-14 rounded-2xl auteur-gradient text-white flex items-center justify-center font-black text-xl shadow-[0_15px_30px_rgba(108,59,181,0.4)] ring-4 ring-white/5 transform rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                           ${initials}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-lg font-black text-white tracking-tight">${displayName}</h4>
+                                <div class="bg-primary/20 px-2 py-0.5 rounded text-[8px] font-black text-primary uppercase tracking-widest border border-primary/20">Verified Critic</div>
+                            </div>
+                            <p class="text-[10px] text-outline font-bold uppercase tracking-[0.2em] mt-1">${dDate}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-4 bg-background/80 px-5 py-3 rounded-2xl border border-white/10 shadow-inner self-start md:self-center">
+                        <div class="flex gap-1">
+                            ${[1,2,3,4,5].map(i => `
+                                <span class="material-symbols-outlined text-[16px] ${i <= (r.rating/2) ? 'text-yellow-400' : 'text-white/10'}" style="font-variation-settings: 'FILL' ${i <= (r.rating/2) ? 1 : 0};">star</span>
+                            `).join('')}
+                        </div>
+                        <div class="h-4 w-px bg-white/10"></div>
+                        <span class="text-lg font-black text-white">${r.rating.toFixed(1)}<span class="text-[10px] text-outline font-black">/10</span></span>
+                    </div>
+                </div>
+
+                <div class="relative pl-6">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-primary-container rounded-full opacity-30 group-hover:opacity-100 transition-opacity"></div>
+                    <span class="material-symbols-outlined absolute -top-4 -left-2 text-white/5 text-6xl select-none">format_quote</span>
+                    <p class="text-base text-white/90 font-light leading-relaxed italic relative z-10">
+                        "${r.reviewText || 'An absolute cinematic phenomenon that redefines the genre.'}"
+                    </p>
+                </div>
+                
+                <div class="flex items-center gap-4 pt-2">
+                   <button class="text-[10px] font-black text-outline uppercase tracking-widest hover:text-primary transition-colors flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[14px]">thumb_up</span> Helpful (12)
+                   </button>
+                   <button class="text-[10px] font-black text-outline uppercase tracking-widest hover:text-error transition-colors flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[14px]">flag</span> Report
+                   </button>
+                </div>
+            </div>
+          `}).join('');
+      } catch(err) {
+          list.innerHTML = '<p class="text-sm text-error">Failed to load reviews.</p>';
+      }
   }
 
   // Animation for modal

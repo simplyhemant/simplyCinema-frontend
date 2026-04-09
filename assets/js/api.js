@@ -5,7 +5,10 @@
 const BASE_URL = "http://localhost:8080"; // Replace with EC2 public IP when deploying
 
 function getHeaders(isPublic = false) {
-  const headers = { "Content-Type": "application/json" };
+  const headers = { 
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  };
   if (!isPublic) {
     const token = localStorage.getItem("sc_token");
     if (token) headers["Authorization"] = `Bearer ${token}`;
@@ -251,6 +254,8 @@ const Bookings = {
 const User = {
   getProfile: () => apiCall("GET", "/api/user/profile"),
   updateProfile: (data) => apiCall("PUT", "/api/user/profile/update", data),
+  getPreferences: () => apiCall("GET", "/api/user/preferences"),
+  updatePreferences: (data) => apiCall("PUT", "/api/user/preferences/update", data),
 };
 
 const Cities = {
