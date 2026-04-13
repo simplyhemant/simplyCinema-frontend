@@ -65,6 +65,4 @@ simplyCinema-frontend/
 
 ---
 
-## 🤝 Contact
 
-For any queries regarding the frontend, please reach out to the development team.
