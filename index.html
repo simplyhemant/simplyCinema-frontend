@@ -260,8 +260,20 @@
   </div>
 
   <script>
-    injectComponent("#navbar-placeholder", "components/navbar.html");
-    injectComponent("#footer-placeholder", "components/footer.html");
+    (async function() {
+      // Extract OAuth2 token if present
+      const hasToken = Auth.handleOAuth2Redirect();
+      if (hasToken) {
+        // Fetch and save the user profile so the navbar knows who is logged in
+        const profile = await User.getProfile();
+        if (profile) {
+          localStorage.setItem("sc_user", JSON.stringify(profile));
+        }
+      }
+      
+      injectComponent("#navbar-placeholder", "components/navbar.html");
+      injectComponent("#footer-placeholder", "components/footer.html");
+    })();
 
     // ─── Slider scroll helper ───
     function scrollSlider(id, delta) {

@@ -2,7 +2,7 @@
 // If you get CORS errors, add your frontend origin to the backend's
 // CorsConfig.java allowedOrigins list.
 
-const BASE_URL = "http://localhost:8080"; // Replace with EC2 public IP when deploying
+const BASE_URL = "http://localhost:8080"; // Deployed AWS Backend URL
 
 function getHeaders(isPublic = false) {
   const headers = { 
