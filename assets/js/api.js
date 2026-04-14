@@ -3,7 +3,7 @@
 // CorsConfig.java allowedOrigins list.
 
 // const BASE_URL = "http://localhost:8080"; 
-const BASE_URL = "http://3.6.92.204:8080";   // Deployed AWS Backend URL
+const BASE_URL = "https://autos-antibody-usgs-tribune.trycloudflare.com";  // Deployed AWS Backend URL , cloudflare
 
 function getHeaders(isPublic = false) {
   const headers = {
