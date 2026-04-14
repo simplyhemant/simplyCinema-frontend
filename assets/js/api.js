@@ -2,10 +2,11 @@
 // If you get CORS errors, add your frontend origin to the backend's
 // CorsConfig.java allowedOrigins list.
 
-const BASE_URL = "http://localhost:8080"; // Deployed AWS Backend URL
+// const BASE_URL = "http://localhost:8080"; 
+const BASE_URL = "http://3.6.92.204:8080";   // Deployed AWS Backend URL
 
 function getHeaders(isPublic = false) {
-  const headers = { 
+  const headers = {
     "Content-Type": "application/json",
     "Accept": "application/json"
   };
@@ -124,7 +125,7 @@ const Auth = {
       if (token) {
         await apiCall("POST", "/api/auth/logout", null, false);
       }
-    } catch (e) {}
+    } catch (e) { }
     localStorage.removeItem("sc_token");
     localStorage.removeItem("sc_user");
     localStorage.removeItem("sc_city");
@@ -288,7 +289,7 @@ const Admin = {
   getUserById: (id) => apiCall("GET", `/admin/user/${id}`),
   getUserRoles: (userId) => apiCall("GET", `/admin/user-role/${userId}`),
   toggleUserStatus: (userId, isActive) => apiCall("PATCH", `/admin/user/${userId}/toggle-status?isActive=${isActive}`),
-  
+
   // Role Management
   assignRole: (userId, roleName) => apiCall("POST", `/admin/assign?userId=${userId}&roleName=${encodeURIComponent(roleName)}`),
   deleteRole: (roleId) => apiCall("DELETE", `/admin/${roleId}`),
