@@ -4,7 +4,7 @@
 
 // const BASE_URL = "http://localhost:8080"; 
 // const BASE_URL = "https://autos-antibody-usgs-tribune.trycloudflare.com";  // Deployed AWS Backend URL , cloudflare
-const BASE_URL = "https://simplyhemant.duckdns.org";
+const BASE_URL = "https://simplyhemant.duckdns.org";  // Secure AWS Backend via DuckDNS
 
 function getHeaders(isPublic = false) {
   const headers = {
