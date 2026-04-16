@@ -110,7 +110,7 @@
 
   async function loadMyTheatres() {
       try {
-          const theatres = await Theatres.getByOwner(user.id);
+          const theatres = await Theatres.getByOwner(user.id) || [];
           theatreSelector.innerHTML = '<option value="">Select a Theatre</option>' + 
               theatres.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
       } catch(e) {

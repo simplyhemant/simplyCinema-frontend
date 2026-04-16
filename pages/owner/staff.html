@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Manage Staff | SimplyCinema</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-container": "#201f1f", "background": "#131313", "outline": "#968e9e", "primary-container": "#6c3bb5", "surface-container-highest": "#353534", "surface-container-low": "#1c1b1b", "primary": "#d6baff" }, fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"] } } } }
+  </script>
+  <style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-on-background font-body">
+
+<div id="admin-sidebar-placeholder"></div>
+<div id="admin-topbar-placeholder"></div>
+
+<main class="pl-64 pt-20 min-h-screen">
+  <div class="p-8 space-y-8">
+    <div class="flex justify-between items-end">
+      <div>
+        <h1 class="font-headline text-3xl font-bold tracking-tight text-white mb-2">Manage Staff</h1>
+        <p class="text-outline text-sm">View and manage your counter and verification staff</p>
+      </div>
+      <button onclick="openAddModal()" class="px-6 py-2.5 bg-primary-container text-white font-bold rounded-lg hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center gap-2">
+        <span class="material-symbols-outlined">add</span>
+        Register Staff
+      </button>
+    </div>
+
+    <!-- Filter by Theatre -->
+    <div class="flex items-center gap-4 bg-surface-container-low p-4 rounded-xl border border-white/5">
+        <label class="text-sm font-bold text-outline">Filter by Theatre:</label>
+        <select id="theatreFilter" onchange="loadStaff()" class="bg-surface-container border border-white/10 rounded-lg px-4 py-2 text-white focus:border-primary focus:ring-1 focus:ring-primary w-64 outline-none">
+            <option value="">Select a theatre...</option>
+        </select>
+    </div>
+
+    <div class="overflow-hidden rounded-2xl border border-white/5 bg-surface-container">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-surface-container-highest/50 border-b border-white/5 text-sm uppercase tracking-wider text-outline font-bold">
+              <th class="p-4">Name</th>
+              <th class="p-4">Contact</th>
+              <th class="p-4">Theatre</th>
+              <th class="p-4">Role</th>
+              <th class="p-4">Status</th>
+              <th class="p-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="staffTableBody" class="divide-y divide-white/5 text-sm">
+             <tr><td colspan="6" class="p-8 text-center text-outline">Loading staff...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Add/Edit Staff Modal -->
+<div id="staffModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity">
+  <div class="bg-surface-container rounded-2xl shadow-2xl border border-white/10 w-full max-w-lg overflow-hidden transform scale-95 transition-transform" id="staffModalContent">
+    <div class="flex items-center justify-between p-6 border-b border-white/10">
+      <h2 class="text-xl font-headline font-bold text-white flex items-center gap-2" id="modalTitle">
+        <span class="material-symbols-outlined text-primary">person_add</span> Register Staff
+      </h2>
+      <button onclick="closeModal()" class="text-outline hover:text-white p-2 rounded-full hover:bg-white/5 transition-colors">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    
+    <div class="p-6 overflow-y-auto max-h-[70vh]">
+      <form id="staffForm" class="space-y-4" onsubmit="handleFormSubmit(event)">
+        <input type="hidden" id="staffId">
+        
+        <div id="registrationFields" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+              <label class="text-sm font-bold text-outline">First Name *</label>
+              <input type="text" id="sf_firstName" required class="w-full bg-surface-container-low border border-white/10 rounded-lg px-4 py-2.5 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+              </div>
+              <div class="space-y-1">
+              <label class="text-sm font-bold text-outline">Last Name</label>
+              <input type="text" id="sf_lastName" class="w-full bg-surface-container-low border border-white/10 rounded-lg px-4 py-2.5 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+              </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="text-sm font-bold text-outline">Email *</label>
+            <input type="email" id="sf_email" required autocomplete="new-password" class="w-full bg-surface-container-low border border-white/10 rounded-lg px-4 py-2.5 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+          </div>
+          
+          <div class="space-y-1">
+            <label class="text-sm font-bold text-outline">Phone *</label>
+            <input type="text" id="sf_phone" required class="w-full bg-surface-container-low border border-white/10 rounded-lg px-4 py-2.5 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+          </div>
+
+          <div class="space-y-1" id="pwFieldContainer">
+            <label class="text-sm font-bold text-outline">Password *</label>
+            <input type="password" id="sf_password" autocomplete="new-password" class="w-full bg-surface-container-low border border-white/10 rounded-lg px-4 py-2.5 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+            <p class="text-xs text-outline mt-1">Min 6 characters. Must be secure.</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+              <label class="text-sm font-bold text-outline">Theatre *</label>
+              <select id="sf_theatreId" required class="w-full bg-surface-container-low border border-white/10 rounded-lg px-4 py-2.5 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                  <!-- Populate via JS -->
+              </select>
+              </div>
+              
+              <div class="space-y-1">
+              <label class="text-sm font-bold text-outline">Role *</label>
+              <select id="sf_staffType" required class="w-full bg-surface-container-low border border-white/10 rounded-lg px-4 py-2.5 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                  <option value="ROLE_COUNTER_STAFF">Counter Staff</option>
+                  <option value="ROLE_VERIFICATION_STAFF">Verification Staff</option>
+              </select>
+              </div>
+          </div>
+        </div>
+
+        <div id="otpFields" class="hidden space-y-4 text-center py-6">
+           <span class="material-symbols-outlined text-4xl text-primary mb-2">mark_email_read</span>
+           <h3 class="text-white font-bold text-lg">Verify Email</h3>
+           <p class="text-outline text-sm mb-4">An OTP has been sent to the staff member's email. Enter it below to complete registration.</p>
+           
+           <div class="space-y-1 max-w-xs mx-auto">
+             <input type="text" id="sf_otp" placeholder="Enter 6-digit OTP" class="w-full bg-surface-container-low border border-white/10 rounded-lg px-4 py-3 text-center text-xl text-white tracking-widest focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+           </div>
+        </div>
+      </form>
+    </div>
+    
+    <div class="p-6 border-t border-white/10 bg-surface-container-highest/20 flex justify-end gap-3">
+      <button onclick="closeModal()" class="px-5 py-2 rounded-lg font-bold text-outline hover:text-white hover:bg-white/5 transition-colors">Cancel</button>
+      <button id="saveStaffBtn" onclick="document.getElementById('staffForm').dispatchEvent(new Event('submit'))" class="px-5 py-2 bg-primary-container text-white font-bold rounded-lg hover:scale-105 active:scale-95 transition-all shadow-md">Save Staff</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  injectComponent("#admin-sidebar-placeholder", "../../components/admin-sidebar.html");
+  injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
+
+  let allTheatres = [];
+  let currentStaffList = [];
+  let isEditMode = false;
+  let otpPendingEmail = null;
+
+  document.addEventListener('DOMContentLoaded', async () => {
+      requireAuth(['THEATRE_OWNER']);
+      await loadTheatres();
+  });
+
+  async function loadTheatres() {
+      const user = getSession();
+      if(!user || !user.id) return;
+      
+      allTheatres = await Theatres.getByOwner(user.id);
+      const filterSelect = document.getElementById('theatreFilter');
+      const modalSelect = document.getElementById('sf_theatreId');
+      
+      allTheatres.forEach(th => {
+          filterSelect.innerHTML += `<option value="${th.id}">${th.name} (${th.city?.name || ''})</option>`;
+          modalSelect.innerHTML += `<option value="${th.id}">${th.name}</option>`;
+      });
+
+      if(allTheatres.length > 0) {
+          filterSelect.value = allTheatres[0].id;
+          await loadStaff();
+      } else {
+          document.getElementById('staffTableBody').innerHTML = `<tr><td colspan="6" class="p-8 text-center text-outline">You don't have any theatres yet.</td></tr>`;
+      }
+  }
+
+  async function loadStaff() {
+      const theatreId = document.getElementById('theatreFilter').value;
+      if(!theatreId) return;
+
+      document.getElementById('staffTableBody').innerHTML = `<tr><td colspan="6" class="p-8 text-center text-outline">Loading...</td></tr>`;
+      currentStaffList = await CounterStaff.getAllByTheatre(theatreId);
+      renderTable();
+  }
+
+  function getTheatreName(id) {
+      const th = allTheatres.find(t => t.id === id);
+      return th ? th.name : 'Unknown';
+  }
+
+  function renderTable() {
+      const tbody = document.getElementById('staffTableBody');
+      if(!currentStaffList || currentStaffList.length === 0){
+          tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-outline flex-col"><span class="material-symbols-outlined text-4xl mb-2 text-white/20">search_off</span><br/>No staff found for this theatre</td></tr>`;
+          return;
+      }
+      
+      tbody.innerHTML = currentStaffList.map(s => `
+        <tr class="hover:bg-white/[0.02] transition-colors group">
+          <td class="p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">
+                ${s.firstName.charAt(0)}
+              </div>
+              <div>
+                <p class="font-bold text-white">${s.firstName} ${s.lastName || ''}</p>
+              </div>
+            </div>
+          </td>
+          <td class="p-4">
+             <p class="text-sm text-outline">${s.email}</p>
+             <p class="text-xs text-outline/70 mt-0.5">${s.phone}</p>
+          </td>
+          <td class="p-4 font-bold text-primary/80">${getTheatreName(s.theatreId)}</td>
+          <td class="p-4">
+             <span class="px-2.5 py-1 bg-surface-container-highest rounded text-xs font-bold text-outline border border-white/5">
+               ${s.staffType === 'ROLE_COUNTER_STAFF' ? 'Counter' : 'Verifier'}
+             </span>
+          </td>
+          <td class="p-4">
+             <div class="flex flex-col gap-1">
+                <div class="flex items-center gap-2">
+                   <div class="flex items-center justify-between w-14 border border-white/10 rounded-full px-1 py-0.5 cursor-pointer select-none transition-colors ${s.isActive ? 'bg-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.3)]' : 'bg-red-500/20'}" onclick="toggleActive(${s.id})">
+                     ${s.isActive ? `<span class="h-4 w-4 bg-green-500 rounded-full ml-auto"></span>` : `<span class="h-4 w-4 bg-red-500 rounded-full mr-auto"></span>`}
+                   </div>
+                   <span class="text-xs font-bold ${s.isActive ? 'text-green-400' : 'text-red-400'}">${s.isActive ? 'Active' : 'Inactive'}</span>
+                </div>
+                <!-- Duty Toggle -->
+                <div class="flex items-center gap-2 mt-1">
+                   <div class="flex items-center justify-between w-14 border border-white/10 rounded-full px-1 py-0.5 cursor-pointer select-none transition-colors ${s.isOnDuty ? 'bg-blue-500/20' : 'bg-surface-container-highest'}" onclick="toggleDutyStatus(${s.id}, ${!s.isOnDuty})">
+                     ${s.isOnDuty ? `<span class="h-4 w-4 bg-blue-500 rounded-full ml-auto"></span>` : `<span class="h-4 w-4 bg-outline rounded-full mr-auto"></span>`}
+                   </div>
+                   <span class="text-[10px] font-bold text-outline uppercase tracking-wider">${s.isOnDuty ? 'On Duty' : 'Off Duty'}</span>
+                </div>
+             </div>
+          </td>
+          <td class="p-4 text-right">
+            <button onclick="openEditModal(${s.id})" class="p-2 text-outline hover:text-primary hover:bg-primary/10 rounded-full transition-colors mr-2 h-10 w-10 relative group/btn">
+              <span class="material-symbols-outlined">edit</span>
+              <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-highest text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap">Edit Staff</span>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+  }
+
+  function openAddModal() {
+      isEditMode = false;
+      otpPendingEmail = null;
+      document.getElementById('saveStaffBtn').innerHTML = "Register & Send OTP";
+      
+      document.getElementById('registrationFields').classList.remove('hidden');
+      document.getElementById('otpFields').classList.add('hidden');
+      document.getElementById('sf_otp').removeAttribute('required');
+      document.getElementById('sf_otp').value = '';
+      
+      document.getElementById('staffId').value = '';
+      document.getElementById('sf_firstName').value = '';
+      document.getElementById('sf_lastName').value = '';
+      document.getElementById('sf_email').value = '';
+      document.getElementById('sf_phone').value = '';
+      document.getElementById('sf_password').value = '';
+      document.getElementById('sf_password').setAttribute('required', 'true');
+      document.getElementById('pwFieldContainer').classList.remove('hidden');
+      
+      const tid = document.getElementById('theatreFilter').value;
+      if(tid) document.getElementById('sf_theatreId').value = tid;
+
+      document.getElementById('modalTitle').innerHTML = '<span class="material-symbols-outlined text-primary">person_add</span> Register Staff';
+      
+      const modal = document.getElementById('staffModal');
+      const content = document.getElementById('staffModalContent');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+          modal.classList.remove('opacity-0');
+          content.classList.remove('scale-95');
+      }, 10);
+  }
+
+  function openEditModal(id) {
+      isEditMode = true;
+      const s = currentStaffList.find(x => x.id === id);
+      if(!s) return;
+      
+      document.getElementById('registrationFields').classList.remove('hidden');
+      document.getElementById('otpFields').classList.add('hidden');
+      document.getElementById('sf_otp').removeAttribute('required');
+      document.getElementById('sf_otp').value = '';
+      
+      document.getElementById('staffId').value = s.id;
+      document.getElementById('sf_firstName').value = s.firstName;
+      document.getElementById('sf_lastName').value = s.lastName || '';
+      document.getElementById('sf_email').value = s.email;
+      document.getElementById('sf_phone').value = s.phone;
+      document.getElementById('sf_password').removeAttribute('required');
+      document.getElementById('sf_password').value = ''; // Don't show existing pass
+      document.getElementById('pwFieldContainer').classList.add('hidden'); // Simplified: editing pass might be separate, hiding to prevent overwriting accidentally, or leave optional. Let's leave optional but hide it for now.
+      
+      document.getElementById('sf_theatreId').value = s.theatreId;
+      document.getElementById('sf_staffType').value = s.staffType;
+
+      document.getElementById('modalTitle').innerHTML = '<span class="material-symbols-outlined text-primary">edit</span> Edit Staff';
+      
+      const modal = document.getElementById('staffModal');
+      const content = document.getElementById('staffModalContent');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+          modal.classList.remove('opacity-0');
+          content.classList.remove('scale-95');
+      }, 10);
+  }
+
+  function closeModal() {
+      const modal = document.getElementById('staffModal');
+      const content = document.getElementById('staffModalContent');
+      modal.classList.add('opacity-0');
+      content.classList.add('scale-95');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+      document.getElementById('staffForm').reset();
+      otpPendingEmail = null;
+  }
+
+  async function handleFormSubmit(e) {
+      e.preventDefault();
+      const payload = {
+          firstName: document.getElementById('sf_firstName').value.trim(),
+          lastName: document.getElementById('sf_lastName').value.trim(),
+          email: document.getElementById('sf_email').value.trim(),
+          phone: document.getElementById('sf_phone').value.trim(),
+          theatreId: parseInt(document.getElementById('sf_theatreId').value),
+          staffType: document.getElementById('sf_staffType').value,
+          counterNumber: "1",
+          gateNumber: "1"
+      };
+
+      const id = document.getElementById('staffId').value;
+
+      if(isEditMode) {
+          payload.password = document.getElementById('sf_password').value || "dummy_ignored"; 
+          const res = await CounterStaff.update(id, payload);
+          if (res) {
+              showToast("Staff updated successfully", "success");
+              closeModal();
+              document.getElementById('theatreFilter').value = payload.theatreId;
+              loadStaff();
+          }
+      } else {
+          if (otpPendingEmail) {
+             const otp = document.getElementById('sf_otp').value.trim();
+             if(!otp) {
+                 showToast("Please enter the OTP.", "error");
+                 return;
+             }
+             
+             const btn = document.getElementById('saveStaffBtn');
+             btn.disabled = true;
+             btn.innerHTML = "Verifying...";
+             
+             try {
+                const res = await CounterStaff.verifyRegistration({ email: otpPendingEmail, otp: otp });
+                if(res) {
+                    showToast("Staff verified and registered successfully!", "success");
+                    closeModal();
+                    document.getElementById('theatreFilter').value = payload.theatreId;
+                    loadStaff();
+                }
+             } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Verify OTP & Complete";
+             }
+          } else {
+             payload.password = document.getElementById('sf_password').value;
+             const btn = document.getElementById('saveStaffBtn');
+             btn.disabled = true;
+             btn.innerHTML = "Sending...";
+             
+             try {
+                const res = await CounterStaff.registerInitiate(payload);
+                if(res) {
+                    otpPendingEmail = payload.email;
+                    showToast("OTP sent to staff email! Please enter it to complete registration.", "info");
+                    
+                    document.getElementById('registrationFields').classList.add('hidden');
+                    document.getElementById('otpFields').classList.remove('hidden');
+                    document.getElementById('sf_otp').setAttribute('required', 'true');
+                    btn.innerHTML = "Verify OTP & Complete";
+                } else {
+                    btn.innerHTML = "Register & Send OTP";
+                }
+             } finally {
+                btn.disabled = false;
+             }
+          }
+      }
+  }
+
+  async function toggleActive(id) {
+      const s = currentStaffList.find(x => x.id === id);
+      if(!s) return;
+      if(s.isActive) {
+          if(confirm("Are you sure you want to deactivate this staff account?")) {
+              const res = await CounterStaff.deactivate(id);
+              if(res) {
+                  showToast("Staff account deactivated.", "success");
+                  loadStaff();
+              }
+          }
+      } else {
+          if(confirm("Are you sure you want to reactivate this staff account?")) {
+              const res = await CounterStaff.activate(id);
+              if(res) {
+                  showToast("Staff account activated.", "success");
+                  loadStaff();
+              }
+          }
+      }
+  }
+
+  async function toggleDutyStatus(id, newStatus) {
+      const res = await CounterStaff.updateDutyStatus(id, newStatus);
+      if (res) {
+          loadStaff();
+          showToast(`Duty status updated to ${newStatus ? 'On Duty' : 'Off Duty'}.`, "success");
+      }
+  }
+</script>
+</body>
+</html>

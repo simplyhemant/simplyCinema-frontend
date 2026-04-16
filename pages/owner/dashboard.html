@@ -10,7 +10,11 @@
   <script id="tailwind-config">
     tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-container": "#201f1f", "background": "#131313", "outline": "#968e9e", "primary-container": "#6c3bb5", "surface-container-highest": "#353534", "surface-container-low": "#1c1b1b", "primary": "#d6baff" }, fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"] } } } }
   </script>
-  <style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .stat-card { background: rgba(32,31,31,0.8); border: 1px solid rgba(255,255,255,0.05); border-radius: 1.5rem; padding: 1.5rem; transition: all 0.3s ease; }
+    .stat-card:hover { border-color: rgba(214,186,255,0.2); transform: translateY(-2px); }
+  </style>
   <script src="../../assets/js/utils.js"></script>
   <script src="../../assets/js/auth.js"></script>
   <script src="../../assets/js/api.js"></script>
@@ -23,8 +27,45 @@
 <main class="pl-64 pt-20 min-h-screen">
   <div class="p-8 space-y-8">
     <div>
-      <h1 class="font-headline text-3xl font-bold tracking-tight text-white mb-2">Partner Dashboard</h1>
+      <h1 class="font-headline text-3xl font-bold tracking-tight text-white mb-1">Partner Dashboard</h1>
       <p class="text-outline text-sm">Welcome to your theatre management portal.</p>
+    </div>
+
+    <!-- Revenue Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="stat-card relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-3xl -mr-12 -mt-12"></div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2.5 rounded-xl bg-primary/10 text-primary">
+            <span class="material-symbols-outlined text-xl">payments</span>
+          </div>
+          <span class="text-[10px] uppercase font-black tracking-widest text-outline">Net Earnings</span>
+        </div>
+        <h2 class="text-3xl font-headline font-bold text-white" id="owner-revenue">₹ —</h2>
+        <p class="text-xs text-outline mt-1">Ticket sales + GST, excl. platform fees</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2.5 rounded-xl bg-secondary-container/20 text-purple-300" style="background:rgba(214,186,255,0.08)">
+            <span class="material-symbols-outlined text-xl">confirmation_number</span>
+          </div>
+          <span class="text-[10px] uppercase font-black tracking-widest text-outline">Tickets Sold</span>
+        </div>
+        <h2 class="text-3xl font-headline font-bold text-white" id="owner-bookings">—</h2>
+        <p class="text-xs text-outline mt-1">Confirmed bookings across all theatres</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2.5 rounded-xl" style="background:rgba(108,59,181,0.15)">
+            <span class="material-symbols-outlined text-xl text-purple-400">theater_comedy</span>
+          </div>
+          <span class="text-[10px] uppercase font-black tracking-widest text-outline">Your Theatres</span>
+        </div>
+        <h2 class="text-3xl font-headline font-bold text-white" id="owner-theatres">—</h2>
+        <p class="text-xs text-outline mt-1">Registered properties under your account</p>
+      </div>
     </div>
 
     <!-- Central Hub Links -->
@@ -61,8 +102,34 @@
   injectComponent("#admin-sidebar-placeholder", "../../components/admin-sidebar.html");
   injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
       requireAuth(['THEATRE_OWNER']);
+
+      const user = JSON.parse(localStorage.getItem('sc_user') || '{}');
+      const ownerId = user.id;
+
+      function formatCurrency(amount) {
+          if (!amount && amount !== 0) return '₹ —';
+          if (amount >= 10000000) return '₹ ' + (amount/10000000).toFixed(2) + ' Cr';
+          if (amount >= 100000) return '₹ ' + (amount/100000).toFixed(2) + ' L';
+          if (amount >= 1000) return '₹ ' + (amount/1000).toFixed(2) + 'K';
+          return '₹ ' + amount.toFixed(2);
+      }
+
+      if (ownerId) {
+          try {
+              const stats = await Admin.getOwnerStats(ownerId);
+              if (stats) {
+                  document.getElementById('owner-revenue').innerText = formatCurrency(stats.totalRevenue);
+                  document.getElementById('owner-bookings').innerText = (stats.totalBookings || 0).toLocaleString();
+              }
+          } catch(e) {}
+
+          try {
+              const theatres = await Theatres.getByOwner(ownerId);
+              if (theatres) document.getElementById('owner-theatres').innerText = theatres.length;
+          } catch(e) {}
+      }
   });
 </script>
 </body>

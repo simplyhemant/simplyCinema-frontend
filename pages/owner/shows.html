@@ -128,17 +128,23 @@
 
   async function loadMovies() {
       try {
-          movies = await Movies.getAll(0, 100);
+          movies = await Movies.getAll(0, 100) || [];
           const select = document.getElementById('movieId');
-          select.innerHTML = movies.map(m => `<option value="${m.id}">${m.title} (${m.duration}m)</option>`).join('');
+          if (movies.length === 0) {
+              select.innerHTML = '<option value="">No movies available</option>';
+              return;
+          }
+          select.innerHTML = '<option value="" disabled selected>Select a Movie</option>' +
+              movies.map(m => `<option value="${m.id}">${m.title}${m.durationMinutes ? ' (' + m.durationMinutes + 'm)' : ''}</option>`).join('');
       } catch(e) {}
   }
 
   async function loadMyTheatres() {
       try {
-          const theatres = await Theatres.getByOwner(user.id);
+          const theatres = await Theatres.getByOwner(user.id) || [];
           theatreSelector.innerHTML = '<option value="">Select a Theatre</option>' + 
               theatres.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+
       } catch(e) {}
   }
 
@@ -175,8 +181,8 @@
           
           container.innerHTML = '';
           res.forEach(s => {
-              const movie = movies.find(m => m.id === s.movieId) || { title: 'Unknown Movie' };
-              const screen = currentTheatreScreens.find(scr => scr.id === s.screenId) || { name: 'Unknown Screen' };
+              const movie = movies.find(m => m.id == s.movieId) || { title: 'Unknown Movie' };
+              const screen = currentTheatreScreens.find(scr => scr.id == s.screenId) || { name: 'Unknown Screen' };
               
               const row = document.createElement('div');
               row.className = "grid grid-cols-12 gap-4 p-6 items-center hover:bg-white/5 transition-colors";
@@ -186,8 +192,8 @@
                     <span class="text-[10px] text-outline uppercase tracking-wider">${screen.name}</span>
                   </div>
                   <div class="col-span-3 flex flex-col">
-                    <span class="text-white text-sm">${s.showDate}</span>
-                    <span class="text-primary text-xs font-bold">${s.showTime}</span>
+                    <span class="text-white text-sm">${formatShowDate(s.showDate)}</span>
+                    <span class="text-primary text-xs font-bold">${formatShowTime(s.showTime)}</span>
                   </div>
                   <div class="col-span-2 flex flex-col gap-1">
                     <span class="text-xs text-white">Reg: ₹${s.seatPrices?.REGULAR || 0}</span>
@@ -206,6 +212,27 @@
       } catch(e) {
           container.innerHTML = '<div class="p-20 text-center text-error">Failed to load shows.</div>';
       }
+  }
+
+  // Helper: format "2026-04-01" -> "01 Apr"
+  function formatShowDate(dateStr) {
+      if (!dateStr) return '--';
+      try {
+          const [year, month, day] = dateStr.split('-');
+          const d = new Date(Number(year), Number(month) - 1, Number(day));
+          return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+      } catch(e) { return dateStr; }
+  }
+
+  // Helper: format "10:00:00" or "10:00" -> "10:00 AM"
+  function formatShowTime(timeStr) {
+      if (!timeStr) return '--';
+      try {
+          const [h, m] = timeStr.split(':');
+          const d = new Date();
+          d.setHours(parseInt(h), parseInt(m), 0);
+          return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      } catch(e) { return timeStr; }
   }
 
   function openCreateModal() {
@@ -252,15 +279,22 @@
 
       try {
           showLoader();
+          let result;
           if(id) {
-              await Shows.update(id, data);
-              showToast("Show updated successfully");
+              result = await Shows.update(id, data);
+              if(result !== null) {
+                  showToast("Show updated successfully");
+              }
           } else {
-              await Shows.create(data);
-              showToast("Show scheduled successfully");
+              result = await Shows.create(data);
+              if(result !== null) {
+                  showToast("Show scheduled successfully");
+              }
           }
-          closeModal();
-          fetchShows(theatreSelector.value);
+          if(result !== null) {
+              closeModal();
+              await fetchShows(theatreSelector.value);
+          }
       } catch(err) {
           showToast(err.message || "Failed to save show", "error");
       } finally {
@@ -272,9 +306,11 @@
       if(!confirm("Cancel this show? Note: This will affect active bookings.")) return;
       try {
           showLoader();
-          await Shows.delete(id);
-          showToast("Show cancelled");
-          fetchShows(theatreSelector.value);
+          const result = await Shows.delete(id);
+          if(result !== null) {
+              showToast("Show cancelled");
+              await fetchShows(theatreSelector.value);
+          }
       } catch(err) {
           showToast("Failed to delete", "error");
       } finally {

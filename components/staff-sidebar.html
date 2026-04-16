@@ -1,8 +1,8 @@
-<!-- Sidebar Component for Admin and Theatre Owner -->
+<!-- Sidebar Component for Counter Staff -->
 <nav class="bg-surface-container-low font-headline tracking-tight h-screen w-64 fixed left-0 top-0 overflow-y-auto shadow-none flex flex-col p-6 gap-8 z-50 border-r border-white/5">
     <div class="flex flex-col gap-1">
-        <span class="text-xl font-bold text-primary tracking-widest uppercase" id="sidebar-role-title">Admin Portal</span>
-        <span class="text-xs text-outline font-body tracking-wider" id="sidebar-role-subtitle">SimplyCinema Management</span>
+        <span class="text-xl font-bold text-primary tracking-widest uppercase" id="sidebar-role-title">Staff Portal</span>
+        <span class="text-xs text-outline font-body tracking-wider" id="sidebar-role-subtitle">SimplyCinema Booking</span>
     </div>
     
     <div class="flex flex-col gap-2 flex-grow" id="sidebar-links">
@@ -12,10 +12,10 @@
     <!-- Active User Profile -->
     <div class="flex items-center gap-3 mt-auto p-3 rounded-xl bg-surface-container border border-white/5 shadow-inner">
         <div class="w-10 h-10 rounded-full overflow-hidden bg-primary-container flex items-center justify-center font-bold text-white text-lg">
-            <span id="sidebar-user-initial">A</span>
+            <span id="sidebar-user-initial">S</span>
         </div>
         <div class="flex flex-col">
-            <span class="text-sm font-bold text-on-surface truncate w-32" id="sidebar-user-name">Admin User</span>
+            <span class="text-sm font-bold text-on-surface truncate w-32" id="sidebar-user-name">Staff User</span>
             <span class="text-[10px] text-primary uppercase tracking-widest font-bold cursor-pointer hover:underline" onclick="logout()">Logout</span>
         </div>
     </div>
@@ -54,26 +54,10 @@
             return a;
         }
 
-        if(role === 'ADMIN') {
-            roleTitle.innerText = "Auteur Admin";
-            roleSubtitle.innerText = "Global Cinema Management";
-            linksContainer.appendChild(createLink('/pages/admin/dashboard.html', 'dashboard', 'Dashboard'));
-            linksContainer.appendChild(createLink('/pages/admin/movies.html', 'movie', 'Movies'));
-            linksContainer.appendChild(createLink('/pages/admin/cities.html', 'location_on', 'Cities'));
-            linksContainer.appendChild(createLink('/pages/admin/theatres.html', 'theater_comedy', 'Theatres'));
-            linksContainer.appendChild(createLink('/pages/admin/shows.html', 'schedule', 'Shows'));
-            linksContainer.appendChild(createLink('/pages/admin/users.html', 'group', 'Users'));
-            linksContainer.appendChild(createLink('/pages/admin/support.html', 'support_agent', 'Support'));
-        } else if(role === 'THEATRE_OWNER') {
-            roleTitle.innerText = "Partner Portal";
-            roleSubtitle.innerText = "Manage Your Theatres";
-            linksContainer.appendChild(createLink('/pages/owner/dashboard.html', 'dashboard', 'Dashboard'));
-            linksContainer.appendChild(createLink('/pages/admin/movies.html', 'movie', 'Movies'));
-            linksContainer.appendChild(createLink('/pages/admin/cities.html', 'location_on', 'Cities'));
-            linksContainer.appendChild(createLink('/pages/owner/theatres.html', 'theater_comedy', 'Theatres'));
-            linksContainer.appendChild(createLink('/pages/owner/screens.html', 'tv', 'Screens'));
-            linksContainer.appendChild(createLink('/pages/owner/shows.html', 'schedule', 'Shows'));
-            linksContainer.appendChild(createLink('/pages/owner/staff.html', 'badge', 'Staff'));
+        if(role === 'THEATRE_STAFF') {
+            roleTitle.innerText = "Counter Booking";
+            roleSubtitle.innerText = "Issue Tickets";
+            linksContainer.appendChild(createLink('/pages/staff/dashboard.html', 'point_of_sale', 'Booking Console'));
         }
     })();
 </script>

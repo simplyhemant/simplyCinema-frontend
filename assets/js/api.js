@@ -2,9 +2,9 @@
 // If you get CORS errors, add your frontend origin to the backend's
 // CorsConfig.java allowedOrigins list.
 
-// const BASE_URL = "http://localhost:8080"; 
 // const BASE_URL = "https://autos-antibody-usgs-tribune.trycloudflare.com";  // Deployed AWS Backend URL , cloudflare
-const BASE_URL = "https://simplyhemant.duckdns.org";  // Secure AWS Backend via DuckDNS
+// const BASE_URL = "https://simplyhemant.duckdns.org";  // Secure AWS Backend via DuckDNS
+const BASE_URL = "http://localhost:8080";  // Local Backend
 
 function getHeaders(isPublic = false) {
   const headers = {
@@ -225,12 +225,21 @@ const Theatres = {
     const res = await apiCall("GET", `/api/theatre/list?pageNo=${pageNo}&pageSize=${pageSize}`);
     return res?.content || res || [];
   },
+  getByOwner: (ownerId) => apiCall("GET", `/api/theatre/owner/list/${ownerId}`),
+  create: (data) => apiCall("POST", `/api/theatre/owner/create`, data),
+  update: (id, data) => apiCall("PUT", `/api/theatre/owner/update/${id}`, data),
+  delete: (id) => apiCall("DELETE", `/api/theatre/owner/delete/${id}`),
   search: (keyword) => apiCall("GET", `/api/theatre/search?keyword=${encodeURIComponent(keyword)}`)
 };
 
 const Screens = {
   getByTheatre: (theatreId) => apiCall("GET", `/api/screens/theatre/${theatreId}`),
   getById: (id) => apiCall("GET", `/api/screens/${id}`),
+  create: (data) => apiCall("POST", "/api/screens/create", data),
+  update: (id, data) => apiCall("PUT", `/api/screens/update/${id}`, data),
+  delete: (id) => apiCall("DELETE", `/api/screens/${id}`),
+  activate: (id) => apiCall("PATCH", `/api/screens/owner/${id}/activate`),
+  deactivate: (id) => apiCall("PATCH", `/api/screens/owner/${id}/deactivate`)
 };
 
 const Bookings = {
@@ -261,8 +270,12 @@ const User = {
 };
 
 const Cities = {
-  getAll: () => apiCall("GET", "/api/cities/active"),
+  getAll: () => apiCall("GET", "/api/cities/all"),
+  getActive: () => apiCall("GET", "/api/cities/active"),
   search: (keyword) => apiCall("GET", `/api/cities/search?keyword=${encodeURIComponent(keyword)}`),
+  create: (data) => apiCall("POST", "/api/cities/create", data),
+  update: (id, data) => apiCall("PUT", `/api/cities/update/${id}`, data),
+  delete: (id) => apiCall("DELETE", `/api/cities/delete/${id}`),
 };
 
 const Reviews = {
@@ -285,6 +298,10 @@ const Support = {
 };
 
 const Admin = {
+  // Stats
+  getStats: () => apiCall("GET", "/admin/stats"),
+  getOwnerStats: (ownerId) => apiCall("GET", `/admin/stats/owner/${ownerId}`),
+
   // User Management
   getUsers: () => apiCall("GET", "/admin/all/users"),
   getUserById: (id) => apiCall("GET", `/admin/user/${id}`),
@@ -299,4 +316,17 @@ const Admin = {
   addMovie: (data) => apiCall("POST", "/api/movies/create", data),
   updateMovie: (id, data) => apiCall("PUT", `/api/movies/update/${id}`, data),
   deleteMovie: (id) => apiCall("DELETE", `/api/movies/delete/${id}`),
+};
+
+const CounterStaff = {
+  registerInitiate: (data) => apiCall("POST", "/api/v1/counter-staff/register/initiate", data),
+  verifyRegistration: (data) => apiCall("POST", "/api/v1/counter-staff/register/verify", data),
+  update: (id, data) => apiCall("PUT", `/api/v1/counter-staff/${id}`, data),
+  getById: (id) => apiCall("GET", `/api/v1/counter-staff/${id}`),
+  getAllByTheatre: (theatreId) => apiCall("GET", `/api/v1/counter-staff/theatre/${theatreId}`),
+  deactivate: (id) => apiCall("DELETE", `/api/v1/counter-staff/${id}/deactivate`),
+  activate: (id) => apiCall("PATCH", `/api/v1/counter-staff/${id}/activate`),
+  updateDutyStatus: (id, isOnDuty) => apiCall("PATCH", `/api/v1/counter-staff/${id}/duty-status?isOnDuty=${isOnDuty}`),
+  createBooking: (data) => apiCall("POST", "/api/v1/counter-staff/create/booking", data),
+  getMyProfile: () => apiCall("GET", "/api/v1/counter-staff/profile"),
 };

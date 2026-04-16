@@ -23,9 +23,17 @@ function getRole() {
   const roles = payload.roles || [];
   if (roles.length === 0) return null;
   
-  // Return the first role without the ROLE_ prefix
-  const role = roles[0];
-  return role.replace("ROLE_", "");
+  // Clean up roles array
+  const cleanRoles = roles.map(r => r.replace("ROLE_", ""));
+
+  // Prioritize the highest privilege role for UI rendering
+  if (cleanRoles.includes("ADMIN")) return "ADMIN";
+  if (cleanRoles.includes("THEATRE_OWNER")) return "THEATRE_OWNER";
+  if (cleanRoles.includes("THEATRE_STAFF")) return "THEATRE_STAFF";
+  if (cleanRoles.includes("COUNTER_STAFF")) return "COUNTER_STAFF";
+  
+  // Default fallback if no elevated privileges
+  return cleanRoles[0];
 }
 
 function getAllRoles() {
@@ -110,9 +118,9 @@ async function redirectByRole() {
 
   const routes = {
     CUSTOMER:      "/",
-    ADMIN:         "/pages/admin/dashboard",
-    THEATRE_OWNER: "/pages/owner/dashboard",
-    THEATRE_STAFF: "/",
+    ADMIN:         "/pages/admin/dashboard.html",
+    THEATRE_OWNER: "/pages/owner/dashboard.html",
+    THEATRE_STAFF: "/pages/staff/dashboard.html",
   };
 
   // Fallback to Home if role is missing or unknown
@@ -121,4 +129,24 @@ async function redirectByRole() {
   
   // Use replace to prevent back-button loops in auth flow
   window.location.replace(target);
+}
+
+/**
+ * STRICT ROLE ACCESS GUARD
+ * Prevents THEATRE_STAFF from accessing customer/owner/admin pages.
+ * Should be called on every page that is NOT a staff dashboard.
+ */
+function enforceStaffRestriction() {
+  if (!isLoggedIn()) return;
+  const role = getRole();
+  const path = window.location.pathname;
+
+  // If staff member is trying to access anything that isn't their portal or logout
+  if (role === 'THEATRE_STAFF') {
+     const isStaffPage = path.includes('/pages/staff/') || path.includes('/pages/auth/login');
+     if (!isStaffPage) {
+        console.warn("Staff access restricted - redirecting to console.");
+        window.location.replace("/pages/staff/dashboard.html");
+     }
+  }
 }

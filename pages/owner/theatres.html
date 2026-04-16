@@ -110,11 +110,20 @@
   });
 
   async function loadCities() {
+      const select = document.getElementById('cityId');
+      select.innerHTML = '<option value="" disabled selected>Loading cities...</option>';
       try {
           const cities = await Cities.getActive();
-          const select = document.getElementById('cityId');
-          select.innerHTML = cities.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-      } catch(e) { console.error("Failed to load cities", e); }
+          if (!cities || cities.length === 0) {
+              select.innerHTML = '<option value="" disabled selected>No cities available</option>';
+              return;
+          }
+          select.innerHTML = '<option value="" disabled selected>Select City</option>' + 
+                            cities.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      } catch(e) { 
+          console.error("Failed to load cities", e);
+          select.innerHTML = '<option value="" disabled selected>Error loading cities</option>';
+      }
   }
 
   async function fetchMyTheatres() {
@@ -145,7 +154,7 @@
                   </div>
                   <div>
                     <h3 class="font-headline text-lg font-bold text-white mb-1">${t.name}</h3>
-                    <p class="text-xs text-outline flex items-center gap-1"><span class="material-symbols-outlined text-xs">location_on</span> ${t.city?.name}</p>
+                    <p class="text-xs text-outline flex items-center gap-1"><span class="material-symbols-outlined text-xs">location_on</span> ${t.cityName || 'Unknown City'}</p>
                   </div>
                   <div class="text-[10px] py-1 px-2 bg-white/5 rounded inline-block text-outline">
                     ${t.openingHour ? `${t.openingHour} - ${t.closingHour}` : 'Hours not set'}
@@ -162,7 +171,8 @@
               container.appendChild(card);
           });
       } catch(e) {
-          container.innerHTML = '<div class="col-span-full py-20 text-center text-error">Failed to load theatres.</div>';
+          console.error("Error fetching theatres:", e);
+          container.innerHTML = '<div class="col-span-full py-20 text-center text-outline bg-surface-container rounded-2xl border border-white/5">You haven\'t added any theatres yet.</div>';
       }
   }
 

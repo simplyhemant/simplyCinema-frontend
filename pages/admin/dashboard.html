@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
+
 <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>Admin Dashboard | SimplyCinema</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
@@ -40,132 +44,190 @@
             "body": ["Inter"],
             "label": ["Inter"]
           },
-          borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
         },
       },
     }
   </script>
   <style>
-    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-    .auteur-gradient { background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%); }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #131313; }
-    ::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .auteur-gradient {
+      background: linear-gradient(135deg, #6C3BB5 0%, #1A1A2E 100%);
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #131313;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #353534;
+      border-radius: 10px;
+    }
   </style>
 
   <script src="../../assets/js/utils.js"></script>
   <script src="../../assets/js/auth.js"></script>
   <script src="../../assets/js/api.js"></script>
 </head>
+
 <body class="bg-background text-on-background font-body overflow-x-hidden">
 
-<div id="admin-sidebar-placeholder"></div>
-<div id="admin-topbar-placeholder"></div>
+  <div id="admin-sidebar-placeholder"></div>
+  <div id="admin-topbar-placeholder"></div>
 
-<main class="pl-64 pt-20 min-h-screen">
-  <div class="p-8 space-y-8">
-    <!-- Hero Header Section -->
-    <div class="flex justify-between items-end">
-      <div>
-        <h1 class="font-headline text-4xl font-bold tracking-tight text-white">Dashboard Overview</h1>
-        <p class="text-outline font-body mt-2 tracking-wide">Real-time cinema performance and audience engagement metrics.</p>
-      </div>
-      <div class="flex gap-3">
-        <button onclick="location.reload()" class="px-5 py-2.5 rounded-full bg-primary-container text-white shadow-[0_0_20px_rgba(108,59,181,0.4)] hover:brightness-110 transition-all text-sm font-medium flex items-center gap-2">
+  <main class="pl-64 pt-20 min-h-screen">
+    <div class="p-8 space-y-8">
+      <!-- Hero Header Section -->
+      <div class="flex justify-between items-end">
+        <div>
+          <h1 class="font-headline text-4xl font-bold tracking-tight text-white">Dashboard Overview</h1>
+          <p class="text-outline font-body mt-2 tracking-wide">Real-time cinema performance and audience engagement
+            metrics.</p>
+        </div>
+        <div class="flex gap-3">
+          <button onclick="location.reload()"
+            class="px-5 py-2.5 rounded-full bg-primary-container text-white shadow-[0_0_20px_rgba(108,59,181,0.4)] hover:brightness-110 transition-all text-sm font-medium flex items-center gap-2">
             <span class="material-symbols-outlined text-sm">refresh</span> Refresh
-        </button>
+          </button>
+        </div>
       </div>
-    </div>
 
-    <!-- 4 Metric Cards - Bento Style -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="bg-surface-container-low border border-white/5 p-6 rounded-2xl space-y-4 hover:bg-surface-container transition-colors group">
-        <div class="flex justify-between items-start">
-          <div class="p-3 rounded-xl bg-primary/10 text-primary">
-            <span class="material-symbols-outlined">payments</span>
+      <!-- 4 Metric Cards - Bento Style -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div
+          class="bg-surface-container-low border border-white/5 p-6 rounded-2xl space-y-4 hover:bg-surface-container transition-colors group">
+          <div class="flex justify-between items-start">
+            <div class="p-3 rounded-xl bg-primary/10 text-primary">
+              <span class="material-symbols-outlined">payments</span>
+            </div>
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-1 rounded-full">+18.2%</span>
           </div>
-          <span class="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-1 rounded-full">+18.2%</span>
-        </div>
-        <div>
-          <p class="text-outline text-xs font-medium uppercase tracking-widest">Total Revenue</p>
-          <h3 class="text-3xl font-headline font-bold mt-1 text-white">₹ 48.32L</h3>
-        </div>
-      </div>
-
-      <div class="bg-surface-container-low border border-white/5 p-6 rounded-2xl space-y-4 hover:bg-surface-container transition-colors group">
-        <div class="flex justify-between items-start">
-          <div class="p-3 rounded-xl bg-secondary/10 text-secondary">
-            <span class="material-symbols-outlined">confirmation_number</span>
-          </div>
-          <span class="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-1 rounded-full">+24.5%</span>
-        </div>
-        <div>
-          <p class="text-outline text-xs font-medium uppercase tracking-widest">Total Bookings</p>
-          <h3 class="text-3xl font-headline font-bold mt-1 text-white">12,847</h3>
-        </div>
-      </div>
-
-      <div class="bg-surface-container-low border border-white/5 p-6 rounded-2xl space-y-4 hover:bg-surface-container transition-colors group">
-        <div class="flex justify-between items-start">
-          <div class="p-3 rounded-xl bg-tertiary/10 text-tertiary">
-            <span class="material-symbols-outlined">group</span>
+          <div>
+            <p class="text-outline text-xs font-medium uppercase tracking-widest">Total Revenue</p>
+            <h3 class="text-3xl font-headline font-bold mt-1 text-white" id="revenue-count">₹ 0</h3>
           </div>
         </div>
-        <div>
-          <p class="text-outline text-xs font-medium uppercase tracking-widest">Registered Users</p>
-          <h3 class="text-3xl font-headline font-bold mt-1 text-white" id="users-count">...</h3>
-        </div>
-      </div>
 
-      <div class="bg-surface-container-low border border-white/5 p-6 rounded-2xl space-y-4 hover:bg-surface-container transition-colors group">
-        <div class="flex justify-between items-start">
-          <div class="p-3 rounded-xl bg-on-surface-variant/10 text-on-surface-variant">
-            <span class="material-symbols-outlined">theater_comedy</span>
+        <div
+          class="bg-surface-container-low border border-white/5 p-6 rounded-2xl space-y-4 hover:bg-surface-container transition-colors group">
+          <div class="flex justify-between items-start">
+            <div class="p-3 rounded-xl bg-secondary/10 text-secondary">
+              <span class="material-symbols-outlined">confirmation_number</span>
+            </div>
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-1 rounded-full">+24.5%</span>
+          </div>
+          <div>
+            <p class="text-outline text-xs font-medium uppercase tracking-widest">Total Bookings</p>
+            <h3 class="text-3xl font-headline font-bold mt-1 text-white" id="bookings-count">0</h3>
           </div>
         </div>
-        <div>
-          <p class="text-outline text-xs font-medium uppercase tracking-widest">Active Theatres</p>
-          <h3 class="text-3xl font-headline font-bold mt-1 text-white" id="theatres-count">...</h3>
+
+        <div
+          class="bg-surface-container-low border border-white/5 p-6 rounded-2xl space-y-4 hover:bg-surface-container transition-colors group">
+          <div class="flex justify-between items-start">
+            <div class="p-3 rounded-xl bg-tertiary/10 text-tertiary">
+              <span class="material-symbols-outlined">group</span>
+            </div>
+          </div>
+          <div>
+            <p class="text-outline text-xs font-medium uppercase tracking-widest">Registered Users</p>
+            <h3 class="text-3xl font-headline font-bold mt-1 text-white" id="users-count">...</h3>
+          </div>
+        </div>
+
+        <div
+          class="bg-surface-container-low border border-white/5 p-6 rounded-2xl space-y-4 hover:bg-surface-container transition-colors group relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16"></div>
+          <div class="flex justify-between items-start">
+            <div class="p-3 rounded-xl bg-primary-container/20 text-primary">
+              <span class="material-symbols-outlined">account_balance_wallet</span>
+            </div>
+            <span class="text-zinc-500 text-[10px] font-black uppercase tracking-tighter">Net Profit</span>
+          </div>
+          <div>
+            <p class="text-outline text-xs font-medium uppercase tracking-widest">Platform Earnings</p>
+            <h3 class="text-3xl font-headline font-bold mt-1 text-primary" id="fees-count">₹ 0</h3>
+          </div>
+        </div>
+
+        <div
+          class="bg-surface-container-low border border-white/5 p-6 rounded-2xl space-y-4 hover:bg-surface-container transition-colors group">
+          <div class="flex justify-between items-start">
+            <div class="p-3 rounded-xl bg-on-surface-variant/10 text-on-surface-variant">
+              <span class="material-symbols-outlined">theater_comedy</span>
+            </div>
+          </div>
+          <div>
+            <p class="text-outline text-xs font-medium uppercase tracking-widest">Active Theatres</p>
+            <h3 class="text-3xl font-headline font-bold mt-1 text-white" id="theatres-count">...</h3>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- System Health -->
-    <div class="bg-surface-container-low border border-white/5 rounded-2xl p-6 flex flex-col justify-between max-w-sm">
+      <!-- System Health -->
+      <div
+        class="bg-surface-container-low border border-white/5 rounded-2xl p-6 flex flex-col justify-between max-w-sm">
         <h4 class="font-headline text-lg font-bold mb-4 text-white">System Health</h4>
         <div class="space-y-3">
-            <div class="flex items-center justify-between">
-                <span class="text-xs text-outline">Core API</span>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">OPERATIONAL</span>
-            </div>
-            <div class="flex items-center justify-between">
-                <span class="text-xs text-outline">Database</span>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">OPERATIONAL</span>
-            </div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-outline">Core API</span>
+            <span
+              class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">OPERATIONAL</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-outline">Database</span>
+            <span
+              class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">OPERATIONAL</span>
+          </div>
         </div>
+      </div>
+
     </div>
+  </main>
 
-  </div>
-</main>
+  <script>
+    injectComponent("#admin-sidebar-placeholder", "../../components/admin-sidebar.html");
+    injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
 
-<script>
-  injectComponent("#admin-sidebar-placeholder", "../../components/admin-sidebar.html");
-  injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
-
-  document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       requireAuth(['ADMIN']);
-      
+
       // Fetch dynamic stats where possible
       try {
-         const users = await Admin.getUsers();
-         if(users) document.getElementById('users-count').innerText = users.length;
-      } catch(e) {}
+        const users = await Admin.getUsers();
+        if (users) document.getElementById('users-count').innerText = users.length;
+      } catch (e) { }
 
       try {
-         const theatres = await Theatres.getAll();
-         if(theatres) document.getElementById('theatres-count').innerText = theatres.length;
-      } catch(e) {}
-  });
-</script>
+        const stats = await Admin.getStats();
+        if (stats) {
+          document.getElementById('revenue-count').innerText = formatCurrency(stats.totalRevenue);
+          document.getElementById('bookings-count').innerText = stats.totalBookings.toLocaleString();
+          document.getElementById('fees-count').innerText = formatCurrency(stats.totalPlatformFees || 0);
+        }
+      } catch (e) { }
+
+      try {
+        const theatres = await Theatres.getAll();
+        if (theatres) document.getElementById('theatres-count').innerText = theatres.length;
+      } catch (e) { }
+    });
+
+    function formatCurrency(amount) {
+      if (!amount) return "₹ 0";
+      if (amount >= 10000000) return "₹ " + (amount / 10000000).toFixed(2) + "Cr";
+      if (amount >= 100000) return "₹ " + (amount / 100000).toFixed(2) + "L";
+      if (amount >= 1000) return "₹ " + (amount / 1000).toFixed(2) + "K";
+      return "₹ " + amount.toFixed(2);
+    }
+  </script>
 </body>
+
 </html>
