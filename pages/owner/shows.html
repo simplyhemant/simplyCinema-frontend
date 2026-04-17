@@ -22,28 +22,48 @@
 
 <main class="pl-64 pt-20 min-h-screen">
   <div class="p-8 space-y-8">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2">
       <div>
-        <h1 class="font-headline text-3xl font-bold tracking-tight text-white mb-2">Schedule Shows</h1>
-        <div class="flex items-center gap-3">
-          <select id="theatre-selector" onchange="onTheatreChange()" class="bg-surface-container border border-white/10 rounded-lg text-sm text-white px-4 h-10 focus:ring-1 focus:ring-primary min-w-[200px]">
-            <option value="">Select a Theatre</option>
-          </select>
-          <p class="text-outline text-sm" id="theatre-subtitle">Select a theatre to manage movie screenings.</p>
+        <h1 class="font-headline text-4xl font-black bg-gradient-to-r from-white via-white to-primary bg-clip-text text-transparent tracking-tight mb-2">Schedule Shows</h1>
+        <div class="flex items-center gap-4 bg-white/5 p-2 pr-4 rounded-2xl border border-white/5 backdrop-blur-md">
+          <div class="flex items-center gap-3 pl-2">
+            <span class="material-symbols-outlined text-outline text-lg">theater_comedy</span>
+            <select id="theatre-selector" onchange="onTheatreChange()" class="bg-transparent border-none rounded-lg text-sm text-white px-2 h-10 focus:ring-0 font-bold min-w-[200px] cursor-pointer hover:text-primary transition-colors">
+              <option value="">Select a Theatre</option>
+            </select>
+          </div>
+          <div class="w-[1px] h-6 bg-white/10"></div>
+          <p class="text-outline text-[10px] uppercase font-bold tracking-widest hidden lg:block" id="theatre-subtitle">Manage Screenings</p>
         </div>
       </div>
-      <button onclick="openCreateModal()" id="add-show-btn" disabled class="px-6 py-2.5 bg-primary text-background font-bold rounded-full hover:scale-105 transition-all flex items-center gap-2 shadow-xl opacity-50 cursor-not-allowed">
-        <span class="material-symbols-outlined text-xl">event</span> New Show
-      </button>
+      <div class="flex items-center gap-4">
+          <div id="stats-summary" class="hidden md:flex items-center gap-6 px-6 py-3 bg-white/5 rounded-2xl border border-white/5 backdrop-blur-md">
+             <div class="flex flex-col">
+                <span class="text-[9px] text-outline uppercase font-black tracking-widest">Active Shows</span>
+                <span id="active-shows-count" class="text-white font-headline font-bold">--</span>
+             </div>
+          </div>
+          <button onclick="openCreateModal()" id="add-show-btn" disabled class="px-8 py-3.5 bg-primary text-background font-black rounded-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 shadow-[0_10px_40px_-10px_rgba(214,186,255,0.5)] opacity-50 cursor-not-allowed uppercase tracking-widest text-xs">
+            <span class="material-symbols-outlined text-lg">add_circle</span> New Schedule
+          </button>
+      </div>
     </div>
 
-    <div class="bg-surface-container-low rounded-2xl border border-white/5 overflow-hidden">
-        <div class="grid grid-cols-12 gap-4 p-6 bg-surface-container-highest/30 border-b border-white/5 text-[10px] uppercase font-bold text-outline tracking-widest">
-            <div class="col-span-4">Movie & Screen</div>
-            <div class="col-span-3">Date & Time</div>
-            <div class="col-span-2">Pricing</div>
-            <div class="col-span-1">Status</div>
-            <div class="col-span-2 text-right">Actions</div>
+    <div class="bg-surface-container-low/40 backdrop-blur-xl rounded-[2rem] border border-white/10 overflow-hidden shadow-2xl">
+        <div class="grid grid-cols-12 gap-6 p-6 bg-white/5 border-b border-white/10 text-[9px] uppercase font-black text-outline tracking-[0.2em] items-center">
+            <div class="col-span-4 pl-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-xs">movie</span> MOVIE & SCREEN
+            </div>
+            <div class="col-span-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-xs">event</span> SCHEDULE
+            </div>
+            <div class="col-span-2 flex items-center gap-2">
+                <span class="material-symbols-outlined text-xs">payments</span> PRICING
+            </div>
+            <div class="col-span-1 flex items-center gap-2">
+                <span class="material-symbols-outlined text-xs">info</span> STATUS
+            </div>
+            <div class="col-span-2 text-right pr-4">ACTIONS</div>
         </div>
         <div id="shows-list" class="divide-y divide-white/5">
             <div class="p-20 text-center text-outline">Please select a theatre first.</div>
@@ -65,7 +85,7 @@
             
             <div class="col-span-2 md:col-span-1">
                 <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Select Movie</label>
-                <select id="movieId" required class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary"></select>
+                <select id="movieId" required onchange="onMovieChange()" class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary"></select>
             </div>
 
             <div class="col-span-2 md:col-span-1">
@@ -81,6 +101,20 @@
             <div class="col-span-2 md:col-span-1">
                 <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Start Time</label>
                 <input type="time" id="showTime" required class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary">
+            </div>
+
+            <div class="col-span-2 md:col-span-1">
+                <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Language</label>
+                <select id="languageId" required class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary">
+                    <option value="">Select Language</option>
+                </select>
+            </div>
+
+            <div class="col-span-2 md:col-span-1">
+                <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Format</label>
+                <select id="formatId" required class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary">
+                    <option value="">Select Format</option>
+                </select>
             </div>
 
             <div class="col-span-2 border-t border-white/5 pt-4">
@@ -123,7 +157,7 @@
 
   document.addEventListener('DOMContentLoaded', async () => {
       requireAuth(['THEATRE_OWNER']);
-      await Promise.all([loadMyTheatres(), loadMovies()]);
+      await Promise.all([loadMyTheatres(), loadMovies(), loadMetadata()]);
   });
 
   async function loadMovies() {
@@ -139,13 +173,106 @@
       } catch(e) {}
   }
 
-  async function loadMyTheatres() {
-      try {
-          const theatres = await Theatres.getByOwner(user.id) || [];
-          theatreSelector.innerHTML = '<option value="">Select a Theatre</option>' + 
-              theatres.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+  let allLanguages = [];
+  const formatDisplayNames = {
+      'TWO_D': '2D',
+      'THREE_D': '3D',
+      'IMAX': 'IMAX',
+      'FOUR_DX': '4DX'
+  };
 
-      } catch(e) {}
+  async function loadMetadata() {
+    try {
+        const langs = await Languages.getAll();
+        allLanguages = langs || [];
+    } catch(e) {}
+  }
+
+  async function onMovieChange() {
+    const movieId = document.getElementById('movieId').value;
+    const langSelect = document.getElementById('languageId');
+    const formatSelect = document.getElementById('formatId');
+
+    if (!movieId) {
+        langSelect.innerHTML = '<option value="">Select Language</option>';
+        formatSelect.innerHTML = '<option value="">Select Format</option>';
+        return;
+    }
+
+    let movie = movies.find(m => m.id == movieId);
+    if (!movie) return;
+
+    // If movie doesn't have formats/languages (stale data), fetch full details
+    // Now checking for 'formats' instead of 'formatIds'
+    if ((!movie.formats || movie.formats.length === 0) && (!movie.languageIds || movie.languageIds.length === 0)) {
+        try {
+            console.log("Fetching full movie details for:", movieId);
+            const latestMovie = await Movies.getById(movieId);
+             // Update the movie object in our list
+            const idx = movies.findIndex(m => m.id == movieId);
+            if(idx !== -1) movies[idx] = latestMovie;
+            movie = latestMovie;
+        } catch(e) {
+            console.error("Failed to fetch movie details:", e);
+        }
+    }
+
+    console.log("Movie selected:", movie.title, "Languages:", movie.languageIds, "AllLangs:", allLanguages.length);
+
+    // Populate Languages for this movie
+    const movieLangs = allLanguages.filter(l => movie.languageIds?.includes(l.id));
+    langSelect.innerHTML = '<option value="">Select Language</option>' + 
+        movieLangs.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+
+    // Populate Formats for this movie (movie.formats is now a Set/List of Enums)
+    const movieFormats = movie.formats || [];
+    formatSelect.innerHTML = '<option value="">Select Format</option>' + 
+        movieFormats.map(f => `<option value="${f}">${formatDisplayNames[f] || f}</option>`).join('');
+  }
+
+  async function loadMyTheatres() {
+      const container = document.getElementById('shows-list');
+      try {
+          if (!user || !user.id) {
+              console.warn("User ID missing, redirecting to login...");
+              window.location.href = "/pages/auth/login";
+              return;
+          }
+
+          const theatres = await Theatres.getByOwner(user.id) || [];
+          if (theatres.length === 0) {
+              theatreSelector.innerHTML = '<option value="">No Theatres Found</option>';
+              container.innerHTML = `
+                <div class="p-20 text-center space-y-4">
+                    <span class="material-symbols-outlined text-outline/20 text-7xl">theaters</span>
+                    <p class="text-outline text-lg underline-offset-4 decoration-primary/30 font-medium">No theatres found for your account.</p>
+                    <a href="theatres.html" class="inline-flex items-center gap-2 px-6 py-2 bg-white/5 rounded-xl text-primary hover:bg-white/10 transition-colors font-bold text-sm tracking-widest uppercase"><span class="material-symbols-outlined">add</span> Add Theatre</a>
+                </div>`;
+              return;
+          }
+
+          theatreSelector.innerHTML = theatres.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+          
+          // Auto-select first theatre
+          theatreSelector.value = theatres[0].id;
+          onTheatreChange();
+
+      } catch(e) {
+          console.error("Failed to load theatres:", e);
+          container.innerHTML = `
+            <div class="p-24 text-center space-y-6">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-error/10 text-error mb-2">
+                    <span class="material-symbols-outlined text-4xl">error_outline</span>
+                </div>
+                <div>
+                   <h3 class="text-xl font-bold text-white mb-2 tracking-tight">Failed to load dashboard</h3>
+                   <p class="text-outline text-sm max-w-md mx-auto">We encountered an error while fetching your theatre data. Please check your connection or try again.</p>
+                </div>
+                <button onclick="loadMyTheatres()" class="px-8 py-3 bg-white/5 text-white rounded-2xl hover:bg-white/10 transition-all font-black uppercase tracking-widest text-[10px] flex items-center gap-3 mx-auto border border-white/5">
+                    <span class="material-symbols-outlined text-lg">refresh</span> Retry Now
+                </button>
+            </div>`;
+      }
   }
 
   async function onTheatreChange() {
@@ -170,41 +297,80 @@
 
   async function fetchShows(theatreId) {
       const container = document.getElementById('shows-list');
-      container.innerHTML = '<div class="p-20 text-center text-outline">Fetching shows...</div>';
+      const statsSummary = document.getElementById('stats-summary');
+      const activeCountEl = document.getElementById('active-shows-count');
+      
+      container.innerHTML = `
+        <div class="p-20 text-center flex flex-col items-center gap-4 animate-pulse">
+            <span class="material-symbols-outlined text-outline text-5xl">sync</span>
+            <p class="text-outline text-xs uppercase font-black tracking-widest">Fetching screenings...</p>
+        </div>`;
       
       try {
           const res = await Shows.getByTheatre(theatreId);
           if(!res || res.length === 0) {
-              container.innerHTML = '<div class="p-20 text-center text-outline italic">No shows scheduled yet.</div>';
+              container.innerHTML = `
+                <div class="p-20 text-center space-y-4">
+                    <span class="material-symbols-outlined text-outline/20 text-7xl">event_busy</span>
+                    <p class="text-outline text-lg font-medium">No shows scheduled yet for this theatre.</p>
+                    <button onclick="openCreateModal()" class="text-primary hover:underline font-bold text-sm uppercase tracking-widest">Schedule your first show</button>
+                </div>`;
+              activeCountEl.innerText = "0";
+              statsSummary.classList.remove('hidden');
               return;
           }
           
+          activeCountEl.innerText = res.filter(s => s.status === 'ACTIVE').length || res.length;
+          statsSummary.classList.remove('hidden');
+
           container.innerHTML = '';
           res.forEach(s => {
-              const movie = movies.find(m => m.id == s.movieId) || { title: 'Unknown Movie' };
               const screen = currentTheatreScreens.find(scr => scr.id == s.screenId) || { name: 'Unknown Screen' };
+              const posterUrl = s.moviePosterUrl || 'https://via.placeholder.com/300x450?text=No+Poster';
               
               const row = document.createElement('div');
-              row.className = "grid grid-cols-12 gap-4 p-6 items-center hover:bg-white/5 transition-colors";
+              row.className = "grid grid-cols-12 gap-6 p-6 items-center hover:bg-white/5 transition-all group border-b border-white/5 last:border-0";
               row.innerHTML = `
-                  <div class="col-span-4 flex flex-col">
-                    <span class="text-white font-bold">${movie.title}</span>
-                    <span class="text-[10px] text-outline uppercase tracking-wider">${screen.name}</span>
+                  <div class="col-span-4 flex items-center gap-4">
+                    <img src="${posterUrl}" class="w-12 h-16 rounded-md object-cover shadow-lg border border-white/10 group-hover:scale-110 transition-transform" />
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-white font-bold tracking-tight">${s.movieTitle || 'Unknown Movie'}</span>
+                            <span class="px-1.5 py-0.5 bg-primary/10 text-primary text-[8px] rounded-sm font-black uppercase tracking-tighter border border-primary/20">${s.formatName || '2D'}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                             <span class="text-[9px] text-outline font-bold uppercase tracking-widest">${screen.name}</span>
+                             <span class="w-1 h-1 rounded-full bg-outline/30"></span>
+                             <span class="text-[9px] text-outline font-medium uppercase tracking-widest">${s.languageName || 'Unknown'}</span>
+                        </div>
+                    </div>
                   </div>
+                  
                   <div class="col-span-3 flex flex-col">
-                    <span class="text-white text-sm">${formatShowDate(s.showDate)}</span>
-                    <span class="text-primary text-xs font-bold">${formatShowTime(s.showTime)}</span>
+                    <div class="flex items-center gap-2 text-white">
+                        <span class="material-symbols-outlined text-sm text-outline">calendar_today</span>
+                        <span class="text-sm font-medium">${formatShowDate(s.showDate)}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-primary mt-1">
+                        <span class="material-symbols-outlined text-sm">schedule</span>
+                        <span class="text-xs font-black tracking-widest">${formatShowTime(s.showTime)}</span>
+                    </div>
                   </div>
-                  <div class="col-span-2 flex flex-col gap-1">
-                    <span class="text-xs text-white">Reg: ₹${s.seatPrices?.REGULAR || 0}</span>
-                    <span class="text-xs text-outline italic">VIP: ₹${s.seatPrices?.VIP || 0}</span>
+
+                  <div class="col-span-2 flex flex-col justify-center">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-outline uppercase font-bold tracking-tighter mb-1">Starting From</span>
+                        <span class="text-white font-headline text-lg font-bold">₹${s.minPrice || 0}</span>
+                    </div>
                   </div>
+
                   <div class="col-span-1">
-                    <span class="px-2 py-0.5 bg-green-500/10 text-green-500 text-[9px] rounded font-bold uppercase">${s.status || 'UPCOMING'}</span>
+                    <span class="px-2.5 py-1 bg-green-500/10 text-green-500 text-[9px] rounded-full font-black uppercase tracking-widest border border-green-500/20">${s.status || 'UPCOMING'}</span>
                   </div>
-                  <div class="col-span-2 text-right flex justify-end gap-2">
-                    <button onclick='openEditModal(${JSON.stringify(s).replace(/'/g, "&apos;")})' class="p-2 text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
-                    <button onclick="deleteShow(${s.id})" class="p-2 text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+
+                  <div class="col-span-2 text-right flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick='openEditModal(${JSON.stringify(s).replace(/'/g, "&apos;")})' class="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 text-outline hover:text-primary hover:bg-primary/10 transition-all" title="Edit Show"><span class="material-symbols-outlined text-lg">edit</span></button>
+                    <button onclick="deleteShow(${s.id})" class="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 text-outline hover:text-error hover:bg-error/10 transition-all" title="Delete Show"><span class="material-symbols-outlined text-lg">delete</span></button>
                   </div>
               `;
               container.appendChild(row);
@@ -242,7 +408,7 @@
       modal.classList.remove('hidden');
   }
 
-  function openEditModal(s) {
+  async function openEditModal(s) {
       document.getElementById('modal-title').innerText = "Edit Show Timing";
       document.getElementById('show-id').value = s.id;
       document.getElementById('movieId').value = s.movieId;
@@ -250,7 +416,13 @@
       document.getElementById('showDate').value = s.showDate;
       document.getElementById('showTime').value = s.showTime;
       
-      document.getElementById('price-REGULAR').value = s.seatPrices?.REGULAR || 250;
+      // Trigger metadata population for selected movie
+      await onMovieChange();
+      
+      document.getElementById('languageId').value = s.languageId || "";
+      document.getElementById('formatId').value = s.format || "";
+      
+      document.getElementById('price-REGULAR').value = s.seatPrices?.REGULAR || s.seatPrices?.STANDARD || 250;
       document.getElementById('price-PREMIUM').value = s.seatPrices?.PREMIUM || 450;
       document.getElementById('price-VIP').value = s.seatPrices?.VIP || 800;
       
@@ -269,9 +441,12 @@
           screenId: Number(document.getElementById('screenId').value),
           showDate: document.getElementById('showDate').value,
           showTime: document.getElementById('showTime').value,
+          languageId: Number(document.getElementById('languageId').value),
+          format: document.getElementById('formatId').value,
           status: "UPCOMING",
           seatPrices: {
               REGULAR: Number(document.getElementById('price-REGULAR').value),
+              STANDARD: Number(document.getElementById('price-REGULAR').value),
               PREMIUM: Number(document.getElementById('price-PREMIUM').value),
               VIP: Number(document.getElementById('price-VIP').value)
           }

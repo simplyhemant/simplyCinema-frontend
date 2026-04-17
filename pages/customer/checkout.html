@@ -282,8 +282,14 @@
     try {
       // 1. Create Booking / Initialize Razorpay Order
       const response = await Bookings.create(bookingCtx.showId, bookingCtx.seatIds);
-      if(!response || !response.razorpayOrderId) {
-        throw new Error("Failed to initialize payment");
+      if(!response) {
+        payBtn.innerHTML = oldHtml;
+        payBtn.disabled = false;
+        return; 
+      }
+      
+      if(!response.razorpayOrderId) {
+        throw new Error("Unable to retrieve payment information from server");
       }
 
       console.log("💰 Razorpay Order Created:", response.razorpayOrderId);

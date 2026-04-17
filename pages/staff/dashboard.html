@@ -12,35 +12,25 @@
   </script>
   <style>
     :root { color-scheme: dark; }
-    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
-    /* Premium Seat Styles */
-    .seat-checkbox:checked + .seat-box { 
-      background-color: #d6baff; 
-      border-color: #d6baff; 
-      color: #420089;
-      box-shadow: 0 0 15px rgba(214, 186, 255, 0.6);
-      transform: scale(1.05);
+    /* Minimal Seat Styles */
+    .seat-box { 
+      width: 34px; height: 34px; 
+      border-radius: 4px; border: 1px solid transparent;
+      transition: all 0.1s; font-size: 11px; font-weight: 500; 
+      display: flex; items-center justify-center; 
     }
-    .seat-box {
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .curved-screen-effect {
-      box-shadow: 0 -15px 40px -10px rgba(108, 59, 181, 0.4);
-      transform: rotateX(-10deg);
-    }
-    .glass-panel {
-      background: rgba(32, 31, 31, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
+    
+    .seat-available { background-color: #E0E0E0; color: #1a1a1a; cursor: pointer; }
+    .seat-checkbox:checked + .seat-box { background-color: #4CAF50 !important; border-color: #4CAF50 !important; color: white !important; }
+    .seat-booked { background-color: #404040 !important; border: none !important; color: #757575 !important; cursor: not-allowed; opacity: 0.6; }
+    
+    .screen-indicator { background: #333333; border-radius: 2px; }
+    
     /* Fix native dropdown for dark theme */
-    select option {
-      background-color: #131313;
-      color: white;
-    }
+    select option { background-color: #131313; color: white; }
   </style>
   <script src="../../assets/js/utils.js"></script>
   <script src="../../assets/js/auth.js"></script>
@@ -59,9 +49,15 @@
         <h1 class="font-headline text-4xl font-black tracking-tight text-white mb-2 uppercase">Ticket Console</h1>
         <p class="text-outline text-sm font-medium tracking-wide opacity-60">Box office terminal • <span id="currentDateDisplay">Today</span></p>
       </div>
-      <div id="staff-badge" class="px-4 py-2 bg-primary/10 border border-primary/20 rounded-full flex items-center gap-2">
-         <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-         <span class="text-[10px] uppercase font-black tracking-widest text-primary" id="staff-name-display">Counter Active</span>
+      <div class="flex items-center gap-3">
+          <a href="./verify.html" class="px-6 py-2.5 bg-white/5 border border-white/10 rounded-full flex items-center gap-2 hover:bg-white/10 transition-all">
+             <span class="material-symbols-outlined text-sm">rule</span>
+             <span class="text-[10px] uppercase font-black tracking-widest text-white">Verify Tickets</span>
+          </a>
+          <div id="staff-badge" class="px-4 py-2 bg-primary/10 border border-primary/20 rounded-full flex items-center gap-2">
+             <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+             <span class="text-[10px] uppercase font-black tracking-widest text-primary" id="staff-name-display">Counter Active</span>
+          </div>
       </div>
     </div>
 
@@ -297,7 +293,7 @@
           allMovieShows.forEach(s => {
               if (s.showDate) {
                   // Format as 'YYYY-MM-DD' cleanly
-                  const d = new Date(s.showDate).toISOString().split('T')[0];
+                  const d = formatLocalDate(s.showDate);
                   uniqueDates.add(d);
               }
           });
@@ -333,7 +329,7 @@
 
       currentShows = allMovieShows.filter(s => {
           if(!s.showDate) return false;
-          return new Date(s.showDate).toISOString().split('T')[0] === selectedDate;
+          return formatLocalDate(s.showDate) === selectedDate;
       });
 
       if(currentShows.length === 0) {
@@ -384,7 +380,6 @@
   function renderSeatMap() {
       const container = document.getElementById('seatMapContainer');
       
-      // Smart Grouping: Try to group by row label, but if they are numeric/unique, handle that
       const rows = {};
       currentSeatsData.forEach(s => {
          let r = s.rowNumber || 'A';
@@ -393,66 +388,70 @@
       });
 
       let gridHtml = '';
-      const sortedRowNames = Object.keys(rows).sort((a,b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+      // Group and sort rows REVERSED (Z -> A) so A is at the bottom (near screen)
+      const sortedRowNames = Object.keys(rows).sort((a,b) => b.localeCompare(a, undefined, {numeric: true, sensitivity: 'base'}));
       
       sortedRowNames.forEach(rowName => {
          const rowSeats = rows[rowName].sort((a,b) => (parseInt(a.seatNumber) || 0) - (parseInt(b.seatNumber) || 0));
          
          gridHtml += `<div class="flex items-center gap-3 mb-2 shrink-0">
-             <div class="w-8 h-8 flex items-center justify-center text-[10px] font-black text-outline opacity-40 uppercase border border-white/5 rounded-lg">${rowName}</div>
+             <div class="w-8 h-8 flex items-center justify-center text-[10px] font-black text-white/20 uppercase border border-white/5 rounded-lg">${rowName}</div>
              <div class="flex gap-2">`;
              
          rowSeats.forEach((seat, idx) => {
-            // Aisle logic
             if(idx === 6 || idx === 14) {
                gridHtml += `<div class="w-10"></div>`; 
             }
 
             const isAvail = seat.status === 'AVAILABLE';
             const price = seat.price || 250;
-            const seatLabel = seat.seatNumber.toString().padStart(2, '0');
+            const seatLabel = rowName + seat.seatNumber.toString().padStart(2, '0');
                 
             gridHtml += `
             <label class="relative group cursor-pointer" title="Seat ${rowName}${seat.seatNumber} | ₹${price}">
                 <input type="checkbox" class="sr-only seat-checkbox shadow-none" value="${seat.id}" onchange="toggleSeat(this, ${price})" ${!isAvail ? 'disabled' : ''}>
-                <div class="seat-box w-10 h-10 border-2 rounded-xl flex items-center justify-center text-[11px] font-bold 
-                          ${isAvail ? 'bg-primary/5 border-primary/20 text-primary group-hover:bg-primary/20' : 'bg-white/5 border-white/5 text-outline/30 cursor-not-allowed opacity-50'}">
+                <div class="seat-box w-10 h-10 rounded-xl flex items-center justify-center text-[11px] font-bold 
+                          ${isAvail ? 'seat-available hover:bg-[#d1d1d1]' : 'seat-booked'}">
                     ${seatLabel}
                 </div>
             </label>`;
          });
 
          gridHtml += `</div>
-             <div class="w-8 h-8 flex items-center justify-center text-[10px] font-black text-outline opacity-40 uppercase border border-white/5 rounded-lg ml-3">${rowName}</div>
+             <div class="w-8 h-8 flex items-center justify-center text-[10px] font-black text-white/20 uppercase ml-3">${rowName}</div>
          </div>`;
       });
       
       container.innerHTML = `
-        <!-- Cinema Screen Curve -->
-        <div class="w-full max-w-lg mb-16 relative flex flex-col items-center">
-            <div class="h-1.5 w-full bg-primary rounded-full shadow-[0_-15px_40px_rgba(108,59,181,0.6)] curved-screen-effect"></div>
-            <span class="text-[10px] text-outline uppercase tracking-[0.6em] font-black mt-4 opacity-50">Auditorium Screen</span>
-        </div>
+        <div class="relative w-full flex flex-col items-center">
+            <div class="relative w-full flex items-center justify-center mt-12 mb-12">
+                <div class="w-full overflow-x-auto pb-8 flex flex-col items-center hide-scrollbar">
+                    <div class="inline-flex flex-col items-center px-12">
+                        ${gridHtml}
+                    </div>
+                </div>
+            </div>
 
-        <div class="w-full overflow-x-auto pb-8 flex flex-col items-center hide-scrollbar">
-            <div class="inline-flex flex-col items-center px-8">
-                ${gridHtml}
+            <!-- Screen Area (Minimalist - AT BOTTOM) -->
+            <div class="w-full max-w-lg mb-20 flex flex-col items-center">
+                <div class="screen-indicator w-full h-[3px] mb-3"></div>
+                <div class="text-[10px] uppercase tracking-[0.4em] text-white/30 font-black">Screen this way</div>
             </div>
-        </div>
-        
-        <!-- Premium Legend -->
-        <div class="flex items-center gap-10 mt-6 pt-10 border-t border-white/5 text-[10px] font-black text-outline uppercase tracking-widest w-full justify-center">
-            <div class="flex items-center gap-2 group">
-                <div class="w-4 h-4 rounded-md border-2 border-primary/30 bg-primary/5"></div> 
-                <span class="group-hover:text-primary transition-colors">Available</span>
-            </div>
-            <div class="flex items-center gap-2 group">
-                <div class="w-4 h-4 rounded-md bg-primary shadow-[0_0_15px_rgba(108,59,181,0.5)]"></div> 
-                <span class="text-primary group-hover:brightness-125 transition-all">Selected</span>
-            </div>
-            <div class="flex items-center gap-2 group">
-                <div class="w-4 h-4 rounded-md bg-white/5 border border-white/5 opacity-40"></div> 
-                <span class="opacity-40 group-hover:opacity-100 transition-opacity">Reserved</span>
+
+            <!-- Legend (Minimalist) -->
+            <div class="flex items-center gap-10 mt-6 pt-10 border-t border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/40 w-full justify-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-3.5 h-3.5 rounded-sm bg-[#E0E0E0]"></div> 
+                    <span>Available</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3.5 h-3.5 rounded-sm bg-[#4CAF50]"></div> 
+                    <span class="text-[#4CAF50]">Selected</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3.5 h-3.5 rounded-sm bg-[#404040]"></div> 
+                    <span>Reserved</span>
+                </div>
             </div>
         </div>
       `;

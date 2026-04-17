@@ -143,6 +143,12 @@
   injectComponent("#navbar-placeholder", "../../components/navbar.html");
   injectComponent("#footer-placeholder", "../../components/footer.html");
 
+  window.addEventListener('cityChanged', (e) => {
+    console.log('City changed detected in home.html:', e.detail);
+    loadMovies();
+    if (currentMainTab === 'cinemas') loadCinemas();
+  });
+
   const tabMovies = document.getElementById('tab-movies');
   const tabCinemas = document.getElementById('tab-cinemas');
   const viewMovies = document.getElementById('movies-view');
@@ -201,6 +207,12 @@
   }
 
   async function loadMovies() {
+    let cityId = null;
+    try {
+        const savedCity = JSON.parse(localStorage.getItem('sc_city'));
+        if (savedCity) cityId = savedCity.cityId;
+    } catch(e) {}
+
     moviesGrid.innerHTML = '<div class="col-span-full text-white flex items-center gap-2"><div class="full-screen-loader" style="position:static;width:24px;height:24px;"></div> Loading movies...</div>';
     upcomingGrid.innerHTML = '<div class="text-white flex items-center gap-2 py-10 px-4"><div class="full-screen-loader" style="position:static;width:24px;height:24px;"></div> Loading...</div>';
 
@@ -209,7 +221,7 @@
       let upcomingMovies = [];
 
       if (activeGenreId === 'all') {
-          showingMovies = await Movies.getNowShowing();
+          showingMovies = await Movies.getNowShowing(cityId);
           upcomingMovies = await Movies.getUpcoming();
       } else {
           const genreMovies = await Movies.getByGenre(activeGenreId);
@@ -235,16 +247,13 @@
   function renderMovieGrid(movies, container, isUpcoming = false) {
     container.innerHTML = '';
     movies.forEach(movie => {
+        const posterUrl = movie.posterUrl && movie.posterUrl !== 'null' ? movie.posterUrl : 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1000&auto=format&fit=crop';
+        
         const div = document.createElement('div');
         div.className = 'group cursor-pointer';
-        div.onclick = () => {
-          sessionStorage.setItem('sc_booking', JSON.stringify({ movieId: movie.id, title: movie.title, posterUrl: movie.posterUrl }));
-          window.location.href = `/pages/customer/movie-details?id=${movie.id}`;
-        };
-        
-        const posterUrl = movie.posterUrl && movie.posterUrl !== 'null' ? movie.posterUrl : 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1000&auto=format&fit=crop';
         div.innerHTML = `
-          <div class="relative group aspect-[2/3] rounded-xl overflow-hidden bg-surface-container-highest border border-white/5 transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)]">
+          <a href="movie-details?id=${movie.id}" class="block" onclick="saveBookingToSession('${movie.id}', '${movie.title.replace(/'/g, "\\'")}', '${posterUrl}')">
+            <div class="relative group aspect-[2/3] rounded-xl overflow-hidden bg-surface-container-highest border border-white/5 transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)]">
             <div id="poster-fallback-home-${movie.id}" class="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-surface-container-low to-surface-container-highest text-outline/20">
                 <span class="material-symbols-outlined text-[32px]">movie</span>
             </div>
@@ -267,10 +276,14 @@
                     </div>
                 </div>
             </div>
-          </div>
+          </a>
         `;
         container.appendChild(div);
     });
+  }
+
+  function saveBookingToSession(id, title, posterUrl) {
+      sessionStorage.setItem('sc_booking', JSON.stringify({ movieId: id, title, posterUrl }));
   }
 
   async function loadCinemas() {

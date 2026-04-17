@@ -184,7 +184,7 @@
               </div>
 
               <!-- Selection Row -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div class="space-y-2">
                        <div class="flex justify-between px-1">
                           <label class="text-[9px] uppercase tracking-[0.2em] font-black text-outline">Genres</label>
@@ -198,6 +198,30 @@
                           <span id="lang-status" class="text-[8px] text-primary/40 font-black"></span>
                        </div>
                        <div id="language-options" class="grid grid-cols-2 gap-2 bg-surface-container-lowest/50 p-3 rounded-xl border border-white/5 max-h-[100px] overflow-y-auto custom-scrollbar"></div>
+                  </div>
+                  <div class="space-y-2">
+                       <div class="flex justify-between px-1">
+                          <label class="text-[9px] uppercase tracking-[0.2em] font-black text-outline">Formats</label>
+                          <span id="format-status" class="text-[8px] text-primary/40 font-black"></span>
+                       </div>
+                       <div id="format-options" class="grid grid-cols-2 gap-2 bg-surface-container-lowest/50 p-3 rounded-xl border border-white/5 max-h-[100px] overflow-y-auto custom-scrollbar">
+                           <label class="flex items-center gap-2 cursor-pointer group">
+                               <input type="checkbox" name="formats" value="TWO_D" class="rounded border-white/10 bg-surface-container-lowest text-primary focus:ring-primary">
+                               <span class="text-xs text-outline group-hover:text-white transition-colors">2D</span>
+                           </label>
+                           <label class="flex items-center gap-2 cursor-pointer group">
+                               <input type="checkbox" name="formats" value="THREE_D" class="rounded border-white/10 bg-surface-container-lowest text-primary focus:ring-primary">
+                               <span class="text-xs text-outline group-hover:text-white transition-colors">3D</span>
+                           </label>
+                           <label class="flex items-center gap-2 cursor-pointer group">
+                               <input type="checkbox" name="formats" value="IMAX" class="rounded border-white/10 bg-surface-container-lowest text-primary focus:ring-primary">
+                               <span class="text-xs text-outline group-hover:text-white transition-colors">IMAX</span>
+                           </label>
+                           <label class="flex items-center gap-2 cursor-pointer group">
+                               <input type="checkbox" name="formats" value="FOUR_DX" class="rounded border-white/10 bg-surface-container-lowest text-primary focus:ring-primary">
+                               <span class="text-xs text-outline group-hover:text-white transition-colors">4DX</span>
+                           </label>
+                       </div>
                   </div>
               </div>
 
@@ -280,6 +304,7 @@
 
   let allGenres = [];
   let allLanguages = [];
+  let allFormats = [];
 
   let currentPage = 0;
   const pageSize = 16;
@@ -291,19 +316,22 @@
   document.addEventListener('DOMContentLoaded', async () => {
       requireAuth(['ADMIN', 'THEATRE_OWNER']);
       
-      // Load Genres and Languages for Modal
+      // Load Metadata for Modal
       try {
-          const [gRes, lRes] = await Promise.all([
+          const [gRes, lRes, fRes] = await Promise.all([
               Genres.getAll(),
-              Languages.getAll()
+              Languages.getAll(),
+              Formats.getAll()
           ]);
           
           allGenres = gRes || [];
           allLanguages = lRes || [];
+          allFormats = fRes || [];
           
           renderOptions();
           document.getElementById('genre-status').innerText = `${allGenres.length} found`;
           document.getElementById('lang-status').innerText = `${allLanguages.length} found`;
+          document.getElementById('format-status').innerText = `${allFormats.length} found`;
       } catch(e) {
           console.error("Failed to load options", e);
       }
@@ -449,6 +477,7 @@
   function renderOptions() {
       const gContainer = document.getElementById('genre-options');
       const lContainer = document.getElementById('language-options');
+      const fContainer = document.getElementById('format-options');
       
       gContainer.innerHTML = allGenres.map(g => `
           <label class="flex items-center gap-2 cursor-pointer group">
@@ -463,6 +492,8 @@
               <span class="text-xs text-outline group-hover:text-white transition-colors">${l.name}</span>
           </label>
       `).join('');
+
+      // Formats are now hardcoded in HTML
   }
 
   function openModal() {
@@ -531,7 +562,7 @@
              const [y, m, d] = movie.releaseDate;
              relDate = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
           } else if (movie.releaseDate) {
-             relDate = new Date(movie.releaseDate).toISOString().split('T')[0];
+             relDate = formatLocalDate(movie.releaseDate);
           }
           document.getElementById('m-releaseDate').value = relDate;
           document.getElementById('m-rating').value = movie.rating;
@@ -562,6 +593,13 @@
               cb.checked = movieLangIds.includes(parseInt(cb.value));
           });
 
+          // Set Formats
+          const fChecks = document.getElementsByName('formats');
+          const movieFormats = movie.formats || [];
+          fChecks.forEach(cb => {
+              cb.checked = movieFormats.includes(cb.value);
+          });
+
           document.getElementById('modal-title').innerText = 'Edit Movie';
           const modal = document.getElementById('movie-modal');
           const inner = document.getElementById('m-modal-inner');
@@ -585,6 +623,9 @@
       
       const languageIds = Array.from(document.getElementsByName('languages'))
           .filter(cb => cb.checked).map(cb => parseInt(cb.value));
+          
+      const formats = Array.from(document.getElementsByName('formats'))
+          .filter(cb => cb.checked).map(cb => cb.value);
 
       const data = {
           title: document.getElementById('m-title').value,
@@ -599,7 +640,8 @@
           crew: document.getElementById('m-crew').value.split(',').map(s => s.trim()).filter(s => s),
           leadActor: document.getElementById('m-leadActor').value,
           genreIds: genreIds,
-          languageIds: languageIds
+          languageIds: languageIds,
+          formats: formats
       };
 
       try {

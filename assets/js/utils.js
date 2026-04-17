@@ -43,6 +43,15 @@ function formatCurrency(amount) {
   return `₹${Number(amount).toFixed(2)}`;
 }
 
+// Returns YYYY-MM-DD in local time
+function formatLocalDate(date) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 async function injectComponent(placeholderId, filePath) {
   const el = document.querySelector(placeholderId);
   if (!el) return;

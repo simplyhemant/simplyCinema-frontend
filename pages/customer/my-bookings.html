@@ -304,9 +304,10 @@
       return `
         <div class="featured-card rounded-[40px] p-8 md:p-12 border border-primary/10 flex flex-col md:flex-row gap-10 items-center">
             <div class="w-full md:w-48 aspect-[2/3] bg-zinc-900 rounded-3xl border border-white/5 flex flex-col items-center justify-center text-zinc-700 shadow-2xl relative group overflow-hidden">
-                <span class="material-symbols-outlined text-5xl mb-2">movie</span>
-                <span class="text-[10px] uppercase font-black tracking-widest px-4 text-center">${b.movieTitle}</span>
-                <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                ${b.posterUrl ? `<img src="${b.posterUrl}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${b.movieTitle}">` : '<span class="material-symbols-outlined text-5xl mb-2">movie</span>'}
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                    <span class="text-[10px] uppercase font-black tracking-widest text-white">${b.movieTitle}</span>
+                </div>
             </div>
             
             <div class="flex-1 space-y-8 w-full">
@@ -317,7 +318,10 @@
                             <span class="text-[10px] font-black tracking-widest text-emerald-400 uppercase">Active Ticket</span>
                         </div>
                         <h2 class="text-4xl md:text-5xl font-headline font-black text-white tracking-tighter">${b.movieTitle}</h2>
-                        <p class="text-zinc-400 font-medium">${b.theatreName} • ${b.screenName || 'Main Screen'}</p>
+                        <div class="flex items-center gap-4">
+                            <p class="text-zinc-400 font-medium">${b.theatreName} • ${b.screenName || 'Main Screen'}</p>
+                            <span class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-lg text-[10px] font-black tracking-widest text-primary uppercase">REF: ${b.bookingReference || 'SC-BKG-'+b.bookingId}</span>
+                        </div>
                     </div>
                     <div class="bg-primary/10 border border-primary/20 rounded-2xl px-6 py-4 text-center">
                          <span class="block text-2xl font-headline font-black text-primary">₹${b.finalAmount}</span>
@@ -344,8 +348,8 @@
                 </div>
 
                 <div class="flex flex-wrap gap-4 pt-6 border-t border-white/5 mt-auto">
-                    <button class="flex-1 md:flex-none px-8 py-4 bg-primary text-background font-black rounded-2xl flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_10px_20px_rgba(214,186,255,0.15)]">
-                        <span class="material-symbols-outlined font-black">qr_code_2</span>
+                    <button onclick="window.location.href='./ticket.html?bookingId=${b.bookingId}'" class="flex-1 md:flex-none px-8 py-4 bg-primary text-background font-black rounded-2xl flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_10px_20px_rgba(214,186,255,0.15)]">
+                        <span class="material-symbols-outlined font-black">confirmation_number</span>
                         View Ticket
                     </button>
                     <button class="flex-1 md:flex-none px-8 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all">
@@ -378,36 +382,41 @@
                 <span class="px-3 py-1 rounded-lg text-[9px] font-black tracking-widest border ${badgeClass}">
                     ${statusText}
                 </span>
-                <span class="text-zinc-600 text-[10px] font-bold">#SC-${b.bookingId}</span>
+                <span class="text-primary/60 text-[8px] font-black tracking-widest uppercase">REF: ${b.bookingReference || 'SC-BKG-'+b.bookingId}</span>
             </div>
             
-            <div class="space-y-4">
-                <h4 class="text-xl font-headline font-black text-white group-hover:text-primary transition-colors leading-tight">${b.movieTitle}</h4>
-                
-                <div class="space-y-3">
-                    <div class="flex items-center gap-3 text-xs text-zinc-400 font-medium">
-                        <span class="material-symbols-outlined text-lg opacity-50">calendar_today</span>
-                        ${dt.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} • ${b.showTime.substring(0,5)}
-                    </div>
-                    <div class="flex items-center gap-3 text-xs text-zinc-400 font-medium">
-                        <span class="material-symbols-outlined text-lg opacity-50">location_on</span>
-                        ${b.theatreName}
-                    </div>
-                    <div class="flex items-center gap-3 text-xs text-zinc-400 font-medium">
-                        <span class="material-symbols-outlined text-lg opacity-50">event_seat</span>
-                        ${b.seatNumbers.join(', ')}
+            <div class="flex gap-4">
+                <div class="w-20 h-28 bg-zinc-900 rounded-xl overflow-hidden shrink-0 border border-white/5">
+                    ${b.posterUrl ? `<img src="${b.posterUrl}" class="w-full h-full object-cover">` : '<div class="w-full h-full flex items-center justify-center"><span class="material-symbols-outlined text-zinc-800">movie</span></div>'}
+                </div>
+                <div class="flex-1 space-y-4">
+                    <h4 class="text-lg font-headline font-black text-white group-hover:text-primary transition-colors leading-tight">${b.movieTitle}</h4>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-[10px] text-zinc-400 font-medium">
+                            <span class="material-symbols-outlined text-sm opacity-50">calendar_today</span>
+                            ${dt.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} • ${b.showTime.substring(0,5)}
+                        </div>
+                        <div class="flex items-center gap-2 text-[10px] text-zinc-400 font-medium line-clamp-1">
+                            <span class="material-symbols-outlined text-sm opacity-50">location_on</span>
+                            ${b.theatreName}
+                        </div>
+                        <div class="flex items-center gap-2 text-[10px] text-zinc-400 font-medium">
+                            <span class="material-symbols-outlined text-sm opacity-50">event_seat</span>
+                            ${b.seatNumbers.join(', ')}
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="pt-6 mt-6 border-t border-white/5 flex items-center justify-between">
-                    <div class="flex flex-col">
-                        <span class="text-[9px] uppercase font-black tracking-widest text-zinc-500 mb-1">Paid Amount</span>
-                        <span class="text-xl font-headline font-black text-white">₹${b.finalAmount}</span>
-                    </div>
-                    <button class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-primary hover:text-background transition-all hover:scale-110 active:scale-90 group-hover:bg-primary group-hover:text-background">
-                        <span class="material-symbols-outlined font-bold">chevron_right</span>
-                    </button>
+            <div class="pt-4 mt-4 border-t border-white/5 flex items-center justify-between">
+                <div class="flex flex-col">
+                    <span class="text-[8px] uppercase font-black tracking-widest text-zinc-500 mb-0.5">Paid</span>
+                    <span class="text-lg font-headline font-black text-white">₹${b.finalAmount}</span>
                 </div>
+                <button onclick="window.location.href='./ticket.html?bookingId=${b.bookingId}'" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary hover:text-background transition-all hover:scale-110 active:scale-90 group-hover:bg-primary group-hover:text-background">
+                    <span class="material-symbols-outlined font-bold text-sm">confirmation_number</span>
+                </button>
             </div>
         </div>
       `;

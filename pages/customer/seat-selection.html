@@ -44,23 +44,30 @@
     }
   </script>
   <style>
-    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-    .seat-map-grid { perspective: 1000px; }
-    .curved-screen { box-shadow: 0 -15px 40px -10px rgba(108, 59, 181, 0.4); transform: rotateX(-10deg); }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .seat-btn { width: 32px; height: 32px; border-radius: 6px; transition: all 0.2s; font-size: 10px; font-weight: bold; }
-    .seat-available { background: rgba(108, 59, 181, 0.1); border: 1px solid rgba(108, 59, 181, 0.3); color: #d6baff; }
-    .seat-available:hover { background: rgba(108, 59, 181, 0.3); }
-    .seat-selected { background: #8b5cf6; border: 1px solid #a78bfa; color: white; box-shadow: 0 0 10px rgba(139, 92, 246, 0.6); }
-    .seat-booked { background: #3f3f46; opacity: 0.5; cursor: not-allowed; border: 1px solid #52525b; }
+    
+    /* Minimal Seat Styles */
+    .seat-btn { 
+      width: 34px; height: 34px; 
+      border-radius: 4px; border: 1px solid transparent;
+      transition: all 0.1s; font-size: 11px; font-weight: 500; 
+      display: flex; items-center justify-center; 
+    }
+    
+    .seat-available { background-color: #E0E0E0; color: #1a1a1a; cursor: pointer; }
+    .seat-available:hover { background-color: #d1d1d1; }
+    .seat-selected { background-color: #4CAF50 !important; color: white !important; }
+    .seat-booked { background-color: #404040 !important; color: #757575 !important; cursor: not-allowed; opacity: 0.6; }
+    
+    .screen-indicator { background: #333333; border-radius: 2px; }
   </style>
 
   <script src="../../assets/js/utils.js"></script>
   <script src="../../assets/js/auth.js"></script>
   <script src="../../assets/js/api.js"></script>
 </head>
-<body class="bg-background text-on-background font-body selection:bg-primary/30 min-h-screen">
+<body class="bg-[#0b0b0b] text-on-background font-body selection:bg-primary/30 min-h-screen">
 
 <div id="navbar-placeholder"></div>
 
@@ -69,52 +76,51 @@
   <!-- Left Panel: Seat Selection Area -->
   <section class="flex flex-col items-center w-full">
     
-    <!-- Show Summary Header -->
-    <div class="w-full max-w-4xl mb-8 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-surface-container-low p-6 rounded-2xl border border-white/5 shadow-lg" id="show-selector-container">
+    <!-- Show Summary Header (Clean) -->
+    <div class="w-full max-w-4xl mb-12 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-surface-container-low p-6 rounded-2xl border border-white/5" id="show-selector-container">
       <div>
-        <h2 id="movie-title-display" class="font-headline text-3xl font-black text-white mb-2 tracking-tight">Loading...</h2>
+        <h2 id="movie-title-display" class="font-headline text-3xl font-bold text-white mb-1 tracking-tight">Loading...</h2>
         <div class="flex items-center gap-2 text-on-surface-variant text-sm">
-             <span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
-             <span id="theatre-name-display" class="font-medium text-white/90">Theatre Name</span>
+             <span id="theatre-name-display" class="font-medium text-white/70 tracking-wide uppercase text-[10px]">Theatre Name</span>
         </div>
       </div>
-      <div class="flex flex-col items-end gap-1 px-5 py-3 bg-surface-container-highest/50 rounded-xl border border-white/5">
-        <span class="text-[10px] uppercase font-bold text-outline tracking-wider">Showtime</span>
-        <span id="show-time-display" class="text-xl font-bold text-primary font-headline">--:--</span>
-        <span id="show-date-display" class="text-xs text-white/60 font-medium">--</span>
-      </div>
-    </div>
-
-    <!-- Screen Area -->
-    <div class="w-full max-w-4xl mb-16 relative">
-      <div class="h-2 w-full bg-gradient-to-r from-transparent via-violet-500 to-transparent rounded-full curved-screen opacity-80"></div>
-      <div class="mt-4 text-center">
-        <span class="text-[10px] uppercase tracking-[0.4em] text-neutral-500 font-medium font-headline">Digital Projection Surface</span>
-      </div>
-      <div class="absolute -bottom-16 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-violet-600/5 blur-[80px] pointer-events-none"></div>
-    </div>
-
-    <!-- Seat Legend -->
-    <div class="flex flex-wrap justify-center gap-6 mb-12 px-6 py-4 bg-surface-container-low/50 rounded-2xl border border-white/5">
-      <div class="flex items-center gap-2">
-        <div class="seat-btn seat-available w-6 h-6 flex items-center justify-center border-none"></div>
-        <span class="text-xs text-neutral-400 font-medium">Available</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <div class="seat-btn seat-selected w-6 h-6 flex items-center justify-center border-none"></div>
-        <span class="text-xs text-neutral-400 font-medium">Selected</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <div class="seat-btn seat-booked w-6 h-6 flex items-center justify-center border-none"></div>
-        <span class="text-xs text-neutral-400 font-medium">Booked</span>
+      <div class="flex flex-col items-end gap-1">
+        <span id="show-time-display" class="text-xl font-bold text-white">--:--</span>
+        <span id="show-date-display" class="text-[10px] text-white/50 font-bold uppercase tracking-widest">--</span>
       </div>
     </div>
 
     <!-- Seat Grid Container -->
-    <div id="seat-map-grid" class="seat-map-grid w-full flex flex-col items-center gap-4 overflow-x-auto hide-scrollbar pb-8 min-h-[400px]">
-      <div class="text-white text-center mt-20"><div class="full-screen-loader" style="position:static;width:24px;height:24px;margin: 0 auto 10px auto;"></div> Loading seats...</div>
+    <div class="relative w-full flex flex-col items-center mt-12 mb-16">
+        <div id="seat-map-grid" class="w-full flex flex-col items-center gap-3 overflow-x-auto hide-scrollbar pb-8 min-h-[400px]">
+          <div class="text-white/30 text-[10px] uppercase font-bold tracking-widest mt-20">Analysing Seat Map...</div>
+        </div>
+    </div>
+
+    <!-- Screen Area (Minimalist - AT BOTTOM) -->
+    <div class="w-full max-w-2xl mb-20 flex flex-col items-center">
+      <div class="screen-indicator w-full h-[3px] mb-4"></div>
+      <div class="text-[10px] uppercase tracking-[0.4em] text-white/30 font-bold">Screen this way</div>
+    </div>
+
+    <!-- Legend (Minimalist) -->
+    <div class="flex items-center gap-10 px-8 py-4 bg-white/5 rounded-full border border-white/5 text-[10px] uppercase font-bold tracking-widest text-white/40">
+      <div class="flex items-center gap-3">
+        <div class="w-3.5 h-3.5 rounded-sm bg-[#E0E0E0]"></div>
+        <span>Available</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-3.5 h-3.5 rounded-sm bg-[#4CAF50]"></div>
+        <span class="text-[#4CAF50]">Selected</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-3.5 h-3.5 rounded-sm bg-[#404040]"></div>
+        <span>Booked</span>
+      </div>
     </div>
   </section>
+
+  <!-- Right Panel: Booking Summary Sidebar -->
 
   <!-- Right Panel: Booking Summary Sidebar -->
   <aside class="hidden lg:flex flex-col w-full p-6 gap-4 sticky top-24 h-[calc(100vh-6rem)] rounded-2xl bg-surface-container-high shadow-xl font-headline border border-white/5">
@@ -272,14 +278,15 @@
         rowMap[row].push(s);
      });
 
-     Object.keys(rowMap).sort().forEach(rowName => {
-        const rowSeats = rowMap[rowName].sort((a,b) => (a.seatNumber||0) - (b.seatNumber||0));
+     // Group and sort rows REVERSED (Z -> A) so A is at the bottom (near screen)
+     Object.keys(rowMap).sort((a,b) => b.localeCompare(a)).forEach(rowName => {
+        const rowSeats = rowMap[rowName].sort((a,b) => (parseInt(a.seatNumber)||0) - (parseInt(b.seatNumber)||0));
         
         const rowDiv = document.createElement('div');
         rowDiv.className = 'flex items-center gap-4';
         
         const rowLabel = document.createElement('span');
-        rowLabel.className = 'text-xs text-outline w-4 font-bold';
+        rowLabel.className = 'text-[11px] font-black text-outline w-6 flex shrink-0 items-center justify-center font-headline opacity-40';
         rowLabel.innerText = rowName;
         rowDiv.appendChild(rowLabel);
 
@@ -287,8 +294,8 @@
         seatsDiv.className = 'flex gap-2';
         
         rowSeats.forEach((seat, idx) => {
-           // Aisle logic (gap every 4 seats for aesthetic, just optional)
-           if(idx === 4 || idx === 12) {
+           // Aisle logic
+           if(idx === 6 || idx === 14) {
               const aisle = document.createElement('div');
               aisle.className = 'w-6';
               seatsDiv.appendChild(aisle);
@@ -318,7 +325,7 @@
       allSeats = [];
       const gridEl = document.getElementById('seat-map-grid');
       gridEl.innerHTML = '';
-      const rows = "ABCDEFGHIJ".split('');
+      const rows = "JIHGFEDCBA".split('');
       
       let seatIdCounter = 1;
       rows.forEach(row => {
@@ -326,27 +333,28 @@
           rowDiv.className = 'flex items-center gap-4';
           
           const rowLabel = document.createElement('span');
-          rowLabel.className = 'text-[10px] text-outline w-4 font-bold';
+          rowLabel.className = 'text-[10px] text-white/20 w-4 font-bold';
           rowLabel.innerText = row;
           rowDiv.appendChild(rowLabel);
 
           const seatsDiv = document.createElement('div');
           seatsDiv.className = 'flex gap-2';
 
-          for(let i=1; i<=10; i++) {
-              if(i === 3 || i === 9) {
+          for(let i=1; i<=15; i++) {
+              if(i === 7 || i === 15) {
                   const aisle = document.createElement('div');
-                  aisle.className = 'w-4 md:w-8';
+                  aisle.className = 'w-6';
                   seatsDiv.appendChild(aisle);
+                  if(i === 15) continue;
               }
 
               const seat = {
                   id: seatIdCounter++,
                   seatRow: row,
                   seatNumber: i,
-                  status: Math.random() > 0.8 ? 'BOOKED' : 'AVAILABLE',
-                  price: row < 'E' ? 150 : (row < 'I' ? 250 : 350), // Pricing tiers
-                  type: 'STANDARD'
+                  status: Math.random() > 0.1 ? 'AVAILABLE' : 'BOOKED',
+                  price: row < 'D' ? 250 : (row < 'G' ? 450 : 800),
+                  seatType: row < 'D' ? 'REGULAR' : (row < 'G' ? 'STANDARD' : 'VIP')
               };
               allSeats.push(seat);
 
@@ -415,7 +423,9 @@
               if(seat) {
                   let p = seat.price || 150;
                   total += p;
-                  const seatIdent = `${seat.rowNumber || seat.seatRow || seat.row || ''}${seat.seatNumber || seat.seatColumn || ''}`;
+                  let rLabel = seat.rowNumber || seat.seatRow || seat.row || '';
+                  let sNum = seat.seatNumber || seat.seatColumn || '';
+                  const seatIdent = `${rLabel}${sNum}`;
                   
                   seatList.innerHTML += `
                      <div class="flex justify-between items-center py-2 border-b border-white/5 last:border-0">

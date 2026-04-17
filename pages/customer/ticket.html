@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Your Digital Ticket | SimplyCinema</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#18181b",
+            "background": "#09090b",
+            "outline": "#a1a1aa",
+            "primary": "#d6baff",
+            "accent": "#6c3bb5",
+            "surface-bright": "#27272a"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+  <style>
+    :root { color-scheme: dark; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    
+    .glass-ticket {
+      background: linear-gradient(135deg, rgba(24, 24, 27, 0.8) 0%, rgba(9, 9, 11, 0.9) 100%);
+      backdrop-filter: blur(40px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+    }
+
+    .ticket-arc-left, .ticket-arc-right {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        background: #09090b;
+        border-radius: 50%;
+        top: 65%;
+        z-index: 10;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .ticket-arc-left { left: -20px; }
+    .ticket-arc-right { right: -20px; }
+
+    .ticket-line {
+        position: absolute;
+        top: calc(65% + 20px);
+        left: 30px;
+        right: 30px;
+        border-top: 2px dashed rgba(255,255,255,0.1);
+        z-index: 5;
+    }
+
+    @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 20px rgba(214, 186, 255, 0.1); }
+        50% { box-shadow: 0 0 40px rgba(214, 186, 255, 0.2); }
+    }
+    .ticket-glow { animation: pulse-glow 4s infinite ease-in-out; }
+
+    canvas { background: white; padding: 10px; border-radius: 12px; }
+  </style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+</head>
+<body class="bg-background text-zinc-100 font-body antialiased selection:bg-primary/20 flex flex-col min-h-screen">
+
+<div id="navbar-placeholder"></div>
+
+<main class="flex-1 flex items-center justify-center p-6 pt-24 pb-12">
+    
+    <div id="loading-state" class="flex flex-col items-center gap-4">
+        <div class="w-12 h-12 rounded-full border-4 border-primary/10 border-t-primary animate-spin"></div>
+        <p class="text-zinc-500 font-medium tracking-widest uppercase text-[10px]">Processing Ticket...</p>
+    </div>
+
+    <div id="ticket-container" class="hidden w-full max-w-md animate-in fade-in zoom-in duration-700">
+        <!-- Ticket Card -->
+        <div class="glass-ticket rounded-[40px] overflow-hidden ticket-glow flex flex-col min-h-[650px]">
+            
+            <!-- Poster/Header -->
+            <div class="relative h-[240px] w-full shrink-0">
+                <img id="t-poster" src="" class="absolute inset-0 w-full h-full object-cover grayscale-[0.2]" alt="Movie Poster">
+                <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent"></div>
+                <div class="absolute bottom-6 left-8 right-8">
+                    <h1 id="t-title" class="text-3xl font-headline font-black text-white tracking-tighter leading-none mb-2">Movie Title</h1>
+                    <p id="t-meta" class="text-xs font-bold text-primary tracking-widest uppercase">Language • Format</p>
+                </div>
+            </div>
+
+            <!-- Details Section -->
+            <div class="p-8 flex-1 space-y-8">
+                <div class="grid grid-cols-2 gap-y-8">
+                    <div class="space-y-1">
+                        <span class="text-[9px] uppercase font-black tracking-widest text-zinc-500">Theatre</span>
+                        <p id="t-theatre" class="text-white font-bold leading-tight"></p>
+                    </div>
+                    <div class="space-y-1 text-right">
+                        <span class="text-[9px] uppercase font-black tracking-widest text-zinc-500">Screen</span>
+                        <p id="t-screen" class="text-white font-bold"></p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] uppercase font-black tracking-widest text-zinc-500">Date</span>
+                        <p id="t-date" class="text-white font-bold"></p>
+                    </div>
+                    <div class="space-y-1 text-right">
+                        <span class="text-[9px] uppercase font-black tracking-widest text-zinc-500">Time</span>
+                        <p id="t-time" class="text-white font-bold"></p>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-white/5 border border-white/5 rounded-3xl flex items-center justify-between">
+                    <div>
+                        <span class="text-[9px] uppercase font-black tracking-widest text-zinc-500 block mb-1">Seats</span>
+                        <p id="t-seats" class="text-xl font-headline font-black text-white tracking-tight"></p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[9px] uppercase font-black tracking-widest text-zinc-500 block mb-1">Amount</span>
+                        <p id="t-amount" class="text-xl font-headline font-black text-primary tracking-tight"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticket Cut Outs -->
+            <div class="ticket-arc-left"></div>
+            <div class="ticket-arc-right"></div>
+            <div class="ticket-line"></div>
+
+            <!-- QR & Reference Section -->
+            <div class="p-10 pt-16 flex flex-col items-center gap-6 bg-zinc-950/50">
+                <canvas id="qr-code"></canvas>
+                <div class="text-center w-full px-6">
+                    <div class="bg-primary/5 border border-primary/10 rounded-2xl py-4 px-6 inline-block w-full">
+                        <span class="text-[8px] uppercase font-black tracking-[0.3em] text-primary/60 block mb-2">Booking Reference</span>
+                        <p id="t-ref" class="text-2xl font-headline font-black text-white tracking-[0.25em] uppercase"></p>
+                    </div>
+                </div>
+                <div class="flex gap-4 w-full">
+                    <button onclick="window.print()" class="flex-1 py-3 rounded-2xl bg-white/5 border border-white/10 text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-sm">print</span> Print
+                    </button>
+                    <button onclick="shareTicket()" class="flex-1 py-3 rounded-2xl bg-primary text-background text-xs font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-sm">share</span> Share
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <p class="mt-8 text-center text-[10px] text-zinc-600 font-bold uppercase tracking-[0.2em]">
+            Please present this QR code at the cinema entrance.<br>
+            Powered by SimplyCinema Terminal
+        </p>
+
+        <div class="mt-8 flex justify-center">
+             <a href="./my-bookings.html" class="flex items-center gap-2 text-primary font-bold text-xs hover:gap-3 transition-all">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                Back to History
+             </a>
+        </div>
+    </div>
+
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script>
+    injectComponent("#navbar-placeholder", "../../components/navbar.html");
+    injectComponent("#footer-placeholder", "../../components/footer.html");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookingId = urlParams.get('bookingId');
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        requireAuth();
+        if(!bookingId) {
+            window.location.href = './my-bookings.html';
+            return;
+        }
+        await loadTicket();
+    });
+
+    async function loadTicket() {
+        try {
+            const b = await Bookings.getDetails(bookingId);
+            if(!b) throw new Error("Ticket not found");
+
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('ticket-container').classList.remove('hidden');
+
+            document.getElementById('t-title').innerText = b.movieTitle;
+            document.getElementById('t-poster').src = b.posterUrl || 'https://via.placeholder.com/400x600?text=No+Poster';
+            document.getElementById('t-meta').innerText = `${b.cityName} • ${b.theatreName}`;
+            document.getElementById('t-theatre').innerText = b.theatreName;
+            document.getElementById('t-screen').innerText = b.screenName || 'Screen 1';
+            
+            const dt = new Date(`${b.showDate}T${b.showTime}`);
+            document.getElementById('t-date').innerText = dt.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+            document.getElementById('t-time').innerText = b.showTime.substring(0,5);
+            
+            document.getElementById('t-seats').innerText = b.seatNumbers.join(', ');
+            document.getElementById('t-amount').innerText = `₹${b.finalAmount}`;
+            document.getElementById('t-ref').innerText = b.bookingReference || `SC-BKG-${b.bookingId}`;
+
+            // Generate QR
+            new QRious({
+                element: document.getElementById('qr-code'),
+                value: b.bookingReference || `SC-BKG-${b.bookingId}`,
+                size: 160,
+                level: 'H'
+            });
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById('loading-state').innerHTML = `<p class="text-red-400 font-bold">Failed to load ticket details.</p>`;
+        }
+    }
+
+    function shareTicket() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'My SimplyCinema Ticket',
+                text: `I'm watching ${document.getElementById('t-title').innerText}! Ref: ${document.getElementById('t-ref').innerText}`,
+                url: window.location.href
+            }).catch(console.error);
+        } else {
+            alert('Sharing not supported on this browser. You can copy the URL.');
+        }
+    }
+</script>
+</body>
+</html>

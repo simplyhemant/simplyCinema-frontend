@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Ticket Verification | SimplyCinema Portal</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#18181b",
+            "background": "#09090b",
+            "outline": "#a1a1aa",
+            "primary": "#d6baff",
+            "accent": "#6c3bb5",
+            "surface-bright": "#27272a"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+  <style>
+    :root { color-scheme: dark; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    
+    .search-glow {
+        box-shadow: 0 0 50px rgba(108, 59, 181, 0.1);
+        transition: all 0.3s ease;
+    }
+    .search-glow:focus-within {
+        box-shadow: 0 0 70px rgba(108, 59, 181, 0.2);
+        border-color: rgba(214, 186, 255, 0.3);
+    }
+    
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+    
+    .valid-card { border-left: 4px solid #10b981; }
+    .invalid-card { border-left: 4px solid #ef4444; }
+  </style>
+
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+</head>
+<body class="bg-background text-zinc-100 font-body antialiased selection:bg-primary/20 flex flex-col min-h-screen">
+
+<div id="staff-sidebar-placeholder"></div>
+<div id="admin-topbar-placeholder"></div>
+
+<main class="pl-64 pt-24 min-h-screen">
+    <div class="p-8 max-w-4xl mx-auto space-y-12">
+        
+        <!-- Header -->
+        <header>
+            <h1 class="text-4xl font-headline font-black text-white tracking-tighter mb-2">Gate Verification</h1>
+            <p class="text-zinc-500 font-medium">Verify guest tickets by entering their unique reference number or scanning the QR code.</p>
+        </header>
+
+        <!-- Search Bar Area -->
+        <section class="relative">
+            <div class="search-glow bg-zinc-900/50 border border-white/5 rounded-[32px] p-2 flex items-center transition-all">
+                <div class="pl-6 text-zinc-500">
+                    <span class="material-symbols-outlined">qr_code_scanner</span>
+                </div>
+                <input type="text" id="refInput" placeholder="Enter Reference (e.g. BMS-7X9W2J...)" 
+                       class="flex-1 bg-transparent border-none focus:ring-0 text-xl font-headline font-black text-white placeholder:text-zinc-700 placeholder:font-medium tracking-tight px-6 py-4">
+                <button onclick="verifyRef()" id="verifyBtn" class="px-10 py-4 bg-primary text-background font-black rounded-[24px] hover:scale-105 active:scale-95 transition-all shadow-xl">
+                    Verify Ticket
+                </button>
+            </div>
+            <p class="mt-4 ml-6 text-[10px] text-zinc-600 font-black uppercase tracking-widest">Type reference code exactly as shown on user's digital ticket</p>
+        </section>
+
+        <!-- Result Container -->
+        <div id="res-container" class="hidden animate-in fade-in slide-in-from-bottom-8 duration-500">
+            <!-- Dynamically populated -->
+        </div>
+
+        <!-- Initial Placeholder -->
+        <div id="initial-state" class="flex flex-col items-center justify-center py-20 opacity-20">
+            <span class="material-symbols-outlined text-8xl mb-4">confirmation_number</span>
+            <p class="text-sm font-black uppercase tracking-[0.2em]">Awaiting Input</p>
+        </div>
+
+    </div>
+</main>
+
+<script>
+    injectComponent("#staff-sidebar-placeholder", "../../components/staff-sidebar.html");
+    injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
+
+    document.addEventListener('DOMContentLoaded', () => {
+        requireAuth(['THEATRE_STAFF', 'ADMIN']);
+        
+        document.getElementById('refInput').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') verifyRef();
+        });
+    });
+
+    async function verifyRef() {
+        const ref = document.getElementById('refInput').value.trim();
+        const btn = document.getElementById('verifyBtn');
+        const resCont = document.getElementById('res-container');
+        const initState = document.getElementById('initial-state');
+
+        if(!ref) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">autorenew</span>';
+        
+        try {
+            const b = await Bookings.verify(ref);
+            initState.classList.add('hidden');
+            resCont.classList.remove('hidden');
+            
+            const dt = new Date(`${b.showDate}T${b.showTime}`);
+            const isToday = formatLocalDate(new Date()) === b.showDate;
+            const statusColor = b.bookingStatus === 'CONFIRMED' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20';
+
+            resCont.innerHTML = `
+                <div class="bg-zinc-900 border border-white/5 rounded-[40px] p-10 space-y-8 ${b.bookingStatus === 'CONFIRMED' ? 'valid-card' : 'invalid-card'} shadow-2xl">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div class="space-y-2">
+                             <div class="flex items-center gap-3">
+                                 <h2 class="text-xl font-black text-zinc-500 uppercase tracking-widest">${ref}</h2>
+                                 <span class="px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest border ${statusColor}">${b.bookingStatus}</span>
+                             </div>
+                             <h3 class="text-4xl font-headline font-black text-white tracking-tighter">${b.movieTitle}</h3>
+                             <p class="text-zinc-500 font-medium">${b.theatreName} • ${b.screenName || 'Screen 1'}</p>
+                        </div>
+                        <div class="w-full md:w-auto p-6 bg-zinc-950 rounded-3xl border border-white/5 flex flex-col items-center">
+                             <span class="text-4xl font-headline font-black text-primary">${b.seatNumbers.length}</span>
+                             <span class="text-[9px] font-black uppercase tracking-widest text-zinc-600">Tickets</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 py-8 border-y border-white/5">
+                        <div class="space-y-1">
+                            <span class="text-[9px] uppercase font-black tracking-widest text-zinc-600">Show Date</span>
+                            <p class="text-white font-bold flex items-center gap-2">
+                                ${dt.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                ${isToday ? '<span class="text-[8px] bg-emerald-500 text-black px-1.5 py-0.5 rounded font-black tracking-widest">TODAY</span>' : ''}
+                            </p>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-[9px] uppercase font-black tracking-widest text-zinc-600">Show Time</span>
+                            <p class="text-white font-bold">${b.showTime.substring(0,5)}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-[9px] uppercase font-black tracking-widest text-zinc-600">Selected Seats</span>
+                            <p class="text-white font-bold tracking-tight">${b.seatNumbers.join(', ')}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button onclick="dismissResult()" class="flex-1 py-4 bg-zinc-950 border border-white/5 text-zinc-400 font-black rounded-2xl hover:bg-zinc-800 transition-all uppercase tracking-widest text-[10px]">
+                            Dismiss
+                        </button>
+                        <button onclick="window.print()" class="flex-1 py-4 bg-white/5 border border-white/10 text-white font-black rounded-2xl hover:bg-white/10 transition-all uppercase tracking-widest text-[10px] flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-sm">print</span> Print Audit
+                        </button>
+                    </div>
+                </div>
+            `;
+
+        } catch (err) {
+            initState.classList.remove('hidden');
+            resCont.classList.add('hidden');
+            showToast("Invalid reference or server error.", "error");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Verify Ticket';
+        }
+    }
+
+    function dismissResult() {
+        document.getElementById('res-container').classList.add('hidden');
+        document.getElementById('initial-state').classList.remove('hidden');
+        document.getElementById('refInput').value = '';
+        document.getElementById('refInput').focus();
+    }
+</script>
+</body>
+</html>

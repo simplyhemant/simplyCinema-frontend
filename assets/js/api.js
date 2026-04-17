@@ -26,7 +26,11 @@ async function apiCall(method, endpoint, body = null, isPublic = false) {
     const res = await fetch(`${BASE_URL}${endpoint}`, options);
     if (res.status === 401) { logout(); return null; }
     if (res.status === 403) { showToast("You don't have permission", "error"); return null; }
-    if (res.status === 409) { showToast("Seats just got taken! Please re-select.", "error"); return null; }
+    if (res.status === 409) {
+      const err = await res.json().catch(() => ({}));
+      showToast(err.message || "Seats just got taken! Please re-select.", "error");
+      return null;
+    }
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       showToast(err.message || "Something went wrong", "error");
@@ -168,8 +172,10 @@ const Movies = {
   // GET /api/movies/search?keyword=...
   search: (keyword) => apiCall("GET", `/api/movies/search?keyword=${encodeURIComponent(keyword)}`),
   // GET /api/movies/now-showing
-  getNowShowing: async (pageNo = 0, pageSize = 100) => {
-    const res = await apiCall("GET", `/api/movies/now-showing?pageNo=${pageNo}&pageSize=${pageSize}`);
+  getNowShowing: async (cityId = null, pageNo = 0, pageSize = 100) => {
+    let url = `/api/movies/now-showing?pageNo=${pageNo}&pageSize=${pageSize}`;
+    if (cityId) url += `&cityId=${cityId}`;
+    const res = await apiCall("GET", url);
     return res?.content || res || [];
   },
   // GET /api/movies/upcoming
@@ -192,12 +198,25 @@ const Languages = {
   getAll: () => apiCall("GET", "/api/languages/all"),
 };
 
-const Shows = {
-  // Get shows by movie: GET /api/show/movies/{movieId}
-  getByMovie: (movieId) => apiCall("GET", `/api/show/movies/${movieId}`),
+const Formats = {
+  getAll: () => apiCall("GET", "/api/formats"),
+};
 
-  // Alias for backward compat — ignores cityId/date, fetches all shows for a movie
-  query: (movieId, cityId, date) => apiCall("GET", `/api/show/movies/${movieId}`),
+const Shows = {
+  // Get shows by movie: GET /api/show/movies/{movieId}?languageId=...&formatId=...
+  getByMovie: (movieId, langId = null, formatId = null, cityId = null, date = null) => {
+    let url = `/api/show/movies/${movieId}`;
+    const params = [];
+    if (langId) params.push(`languageId=${langId}`);
+    if (formatId) params.push(`formatId=${formatId}`);
+    if (cityId) params.push(`cityId=${cityId}`);
+    if (date) params.push(`date=${date}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return apiCall("GET", url);
+  },
+
+  // Alias for backward compat
+  query: (movieId, cityId, date, langId = null, formatId = null) => Shows.getByMovie(movieId, langId, formatId, cityId, date),
 
   // GET /api/show/{id}
   getById: (id) => apiCall("GET", `/api/show/${id}`),
@@ -216,6 +235,13 @@ const Shows = {
 
   // DELETE /api/show/delete/{id}
   delete: (id) => apiCall("DELETE", `/api/show/delete/${id}`),
+
+  // GET /api/show/movies/{movieId}/filters?cityId=...
+  getAvailableFilters: (movieId, cityId = null) => {
+    let url = `/api/show/movies/${movieId}/filters`;
+    if (cityId) url += `?cityId=${cityId}`;
+    return apiCall("GET", url);
+  }
 };
 
 const Theatres = {
@@ -258,8 +284,14 @@ const Bookings = {
   // POST /api/bookings/release
   releaseSeats: (showId, seatIds) => apiCall("POST", "/api/bookings/release", { showId, seatIds }),
 
-  // GET /api/bookings/locked/show/{showId}
-  getLockedSeats: (showId) => apiCall("GET", `/api/bookings/locked/show/${showId}`)
+    // GET /api/bookings/locked/show/{showId}
+    getLockedSeats: (showId) => apiCall("GET", `/api/bookings/locked/show/${showId}`),
+
+    // GET /api/bookings/verify/{reference}
+    verify: (reference) => apiCall("GET", `/api/bookings/verify/${reference}`),
+
+    // GET /api/bookings/{bookingId}
+    getDetails: (id) => apiCall("GET", `/api/bookings/${id}`)
 };
 
 const User = {

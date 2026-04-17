@@ -10,10 +10,22 @@
             <span class="text-[10px] text-outline">v2.4.0</span>
         </div>
         <div class="flex items-center gap-3">
-            <a href="/pages/customer/home.html" class="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-high border border-white/10 text-outline hover:text-white transition-all text-xs font-bold">
+            <a id="exit-app-btn" href="/pages/customer/home.html" class="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-high border border-white/10 text-outline hover:text-white transition-all text-xs font-bold">
                 <span class="material-symbols-outlined text-[16px]">storefront</span>
                 Exit to App
             </a>
         </div>
     </div>
 </header>
+
+<script>
+    (() => {
+        if (typeof getRole === 'function') {
+            const role = getRole();
+            if (role === 'THEATRE_OWNER' || role === 'THEATRE_STAFF') {
+                const btn = document.getElementById('exit-app-btn');
+                if (btn) btn.style.display = 'none';
+            }
+        }
+    })();
+</script>

@@ -327,10 +327,19 @@
 
   document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const movieId = urlParams.get('id');
+    let movieId = urlParams.get('id') || urlParams.get('movieId');
+    
+    // Fallback to sessionStorage if URL param is missing (prevent stripping redirects from breaking flow)
+    if(!movieId) {
+        const bookingData = JSON.parse(sessionStorage.getItem('sc_booking') || '{}');
+        movieId = bookingData.movieId;
+        if(movieId) console.log('Recovered movieId from session:', movieId);
+    }
+
     window.movieIdGlobal = movieId;
     if(!movieId) {
-      window.location.href = '/pages/customer/home';
+      console.warn('No movieId found in URL or session, redirecting to home');
+      window.location.href = 'home';
       return;
     }
 
@@ -434,63 +443,95 @@
       updateProceedBtn();
 
       // Fetch Languages
-      langContainer.innerHTML = '<span class="text-xs text-outline">Loading...</span>';
+      let cityId = null;
       try {
-          const allLangs = await Languages.getAll();
-          if(movie.languageIds && movie.languageIds.length > 0) {
-              const movieLangs = allLangs.filter(l => movie.languageIds.includes(l.id));
-              langContainer.innerHTML = movieLangs.map(l => 
-                  `<button onclick="selectLang('${l.name}')" id="lang-btn-${l.name}" class="px-5 py-2 rounded-full border border-white/10 text-sm font-semibold text-white/80 hover:border-primary/50 transition-colors bg-surface-container-high lang-btn">
+          const savedCity = JSON.parse(localStorage.getItem('sc_city'));
+          if(savedCity) cityId = savedCity.cityId;
+      } catch(e) {}
+
+      langContainer.innerHTML = '<span class="text-xs text-outline">Loading...</span>';
+      formatContainer.innerHTML = '<span class="text-xs text-outline">Loading...</span>';
+
+      try {
+          const filters = await Shows.getAvailableFilters(movie.id, cityId);
+          console.log('Available filters fetched:', filters);
+
+          // Render Languages
+          if(filters.languages && filters.languages.length > 0) {
+              langContainer.innerHTML = filters.languages.map(l => 
+                  `<button onclick="selectLang(${l.id}, '${l.name}')" id="lang-btn-${l.id}" class="px-5 py-2 rounded-full border border-white/10 text-sm font-semibold text-white/80 hover:border-primary/50 transition-colors bg-surface-container-high lang-btn">
                       ${l.name}
                   </button>`
               ).join('');
           } else {
-               langContainer.innerHTML = '<span class="text-xs text-outline italic">No specific languages found.</span>';
+               langContainer.innerHTML = '<span class="text-xs text-outline italic">No shows available for this movie right now.</span>';
+          }
+
+          // Render Formats
+          if(filters.formats && filters.formats.length > 0) {
+              formatContainer.innerHTML = filters.formats.map(f => 
+                  `<button onclick="selectFormat(${f.id}, '${f.name}')" id="fmt-btn-${f.id}" class="px-5 py-2 rounded-full border border-white/10 text-sm font-semibold text-white/80 hover:border-primary/50 transition-colors bg-surface-container-high fmt-btn">
+                      ${f.name}
+                  </button>`
+              ).join('');
+          } else {
+              formatContainer.innerHTML = '<span class="text-xs text-outline italic">No specific formats found.</span>';
           }
       } catch(e) {
-          langContainer.innerHTML = '<span class="text-xs text-error">Failed to load languages.</span>';
+          langContainer.innerHTML = '<span class="text-xs text-error">Failed to load options.</span>';
+          formatContainer.innerHTML = '<span class="text-xs text-error">Failed to load options.</span>';
       }
-
-      // Render static formats (or fetch from Enum if API supported)
-      const formats = ['2D', '3D', 'IMAX 2D', 'IMAX 3D', '4DX', 'Dolby Atmos'];
-      formatContainer.innerHTML = formats.map(f => 
-          `<button onclick="selectFormat('${f}')" id="fmt-btn-${f.replace(/\s+/g, '')}" class="px-5 py-2 rounded-full border border-white/10 text-sm font-semibold text-white/80 hover:border-primary/50 transition-colors bg-surface-container-high fmt-btn">
-              ${f}
-          </button>`
-      ).join('');
-
-      // Auto-select 2D by default to save clicks if wanted, but forcing choice is safer.
       
       modal.classList.remove('hidden');
   }
 
-  function selectLang(lang) {
-      console.log('Language selected:', lang);
-      selectedLang = lang;
+  let selectedLangId = null;
+  let selectedFormatId = null;
+
+  function selectLang(id, name) {
+      if(selectedLangId === id) {
+          selectedLangId = null;
+          selectedLang = null;
+      } else {
+          selectedLang = name;
+          selectedLangId = id;
+      }
+      
       document.querySelectorAll('.lang-btn').forEach(b => {
           b.classList.remove('bg-primary-container', 'text-white', 'border-primary-container');
           b.classList.add('bg-surface-container-high', 'text-white/80', 'border-white/10');
       });
-      // Use escape for ID since language names might have spaces (though rare, good practice)
-      const btn = document.getElementById(`lang-btn-${lang}`);
-      if(btn) {
-          btn.classList.add('bg-primary-container', 'text-white', 'border-primary-container');
-          btn.classList.remove('bg-surface-container-high', 'text-white/80', 'border-white/10');
+
+      if(selectedLangId) {
+          const btn = document.getElementById(`lang-btn-${id}`);
+          if(btn) {
+              btn.classList.add('bg-primary-container', 'text-white', 'border-primary-container');
+              btn.classList.remove('bg-surface-container-high', 'text-white/80', 'border-white/10');
+          }
       }
       updateProceedBtn();
   }
 
-  function selectFormat(fmt) {
-      console.log('Format selected:', fmt);
-      selectedFormat = fmt;
+  function selectFormat(id, name) {
+      if(selectedFormatId === id) {
+          selectedFormatId = null;
+          selectedFormat = null;
+      } else {
+          selectedFormat = name;
+          selectedFormatId = id;
+      }
+
       document.querySelectorAll('.fmt-btn').forEach(b => {
           b.classList.remove('bg-primary-container', 'text-white', 'border-primary-container');
           b.classList.add('bg-surface-container-high', 'text-white/80', 'border-white/10');
       });
-      const btn = document.getElementById(`fmt-btn-${fmt.replace(/\s+/g, '')}`);
-      if(btn) {
-          btn.classList.add('bg-primary-container', 'text-white', 'border-primary-container');
-          btn.classList.remove('bg-surface-container-high', 'text-white/80', 'border-white/10');
+
+      if(selectedFormatId) {
+          const btn = document.getElementById(`fmt-btn-${id}`);
+          if(btn) {
+              btn.classList.add('bg-primary-container', 'text-white', 'border-primary-container');
+              btn.classList.remove('bg-surface-container-high', 'text-white/80', 'border-white/10');
+          }
       }
       updateProceedBtn();
   }
@@ -508,17 +549,28 @@
 
   function proceedToShowtimes() {
       if(!currentMovie) return;
-      console.log('Proceeding with:', { selectedLang, selectedFormat });
+      
+      console.log('Proceeding with selection:', { selectedLangId, selectedFormatId });
+      
+      // Removed mandatory check as per new requirement
+      
       sessionStorage.setItem('sc_booking', JSON.stringify({ 
           movieId: currentMovie.id, 
           title: currentMovie.title, 
           posterUrl: currentMovie.posterUrl,
-          language: selectedLang || 'All Languages',
-          format: selectedFormat || 'Standard'
+          language: selectedLang,
+          languageId: selectedLangId,
+          format: selectedFormat,
+          formatId: selectedFormatId
       }));
-      const url = `/pages/customer/movie-shows?movieId=${currentMovie.id}&lang=${encodeURIComponent(selectedLang || '')}&format=${encodeURIComponent(selectedFormat || '')}`;
-      console.log('Redirecting to:', url);
-      window.location.href = url;
+
+      const langParam = selectedLangId ? `&langId=${selectedLangId}` : '';
+      const formatParam = selectedFormatId ? `&formatId=${selectedFormatId}` : '';
+      
+      const isSubdir = window.location.pathname.includes('/simplyCinema-frontend/');
+      const basePath = isSubdir ? '/simplyCinema-frontend/pages/customer/movie-shows' : '/pages/customer/movie-shows';
+      
+      window.location.href = `${basePath}?movieId=${currentMovie.id}${langParam}${formatParam}`;
   }
 
   function scrollToTrailer() {

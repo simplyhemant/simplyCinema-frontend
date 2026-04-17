@@ -108,7 +108,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const theatreId = urlParams.get('id');
 
-    let selectedDate = new Date().toISOString().split('T')[0];
+    let selectedDate = formatLocalDate(new Date());
     let allMovies = []; // Cache to avoid multiple fetches
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -157,7 +157,7 @@
         for(let i=0; i<7; i++) {
             const date = new Date(today);
             date.setDate(today.getDate() + i);
-            const dateStr = date.toISOString().split('T')[0];
+            const dateStr = formatLocalDate(date);
             
             const dayName = i === 0 ? 'Today' : (i === 1 ? 'Tom' : date.toLocaleDateString('en-US', { weekday: 'short' }));
             const dayNum = date.getDate();
