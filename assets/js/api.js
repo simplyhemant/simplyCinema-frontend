@@ -28,7 +28,7 @@ async function apiCall(method, endpoint, body = null, isPublic = false) {
     if (res.status === 403) { showToast("You don't have permission", "error"); return null; }
     if (res.status === 409) {
       const err = await res.json().catch(() => ({}));
-      showToast(err.message || "Seats just got taken! Please re-select.", "error");
+      showToast(err.message || "Cannot deactivate staff member who is currently on duty", "error");
       return null;
     }
     if (!res.ok) {
@@ -36,7 +36,18 @@ async function apiCall(method, endpoint, body = null, isPublic = false) {
       showToast(err.message || "Something went wrong", "error");
       return null;
     }
-    return res.status === 204 ? true : res.json();
+
+    // Handle successful responses (200, 204 etc)
+    if (res.status === 204) return true;
+
+    const text = await res.text();
+    if (!text) return true; // Empty 200 response
+
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      return text; // Return as text if not JSON
+    }
   } catch (e) {
     showToast("Connection failed. Check your internet.", "error");
     return null;
@@ -158,8 +169,7 @@ const Movies = {
     // Ensure we don't send "null" strings to the backend
     const p = (pageNo === null || isNaN(pageNo)) ? 0 : pageNo;
     const s = (pageSize === null || isNaN(pageSize)) ? 100 : pageSize;
-    const res = await apiCall("GET", `/api/movies/all?pageNo=${p}&pageSize=${s}`);
-    return res?.content || res || [];
+    return await apiCall("GET", `/api/movies/all?pageNo=${p}&pageSize=${s}`);
   },
   // GET /api/movies/{movieId}
   getById: (id) => apiCall("GET", `/api/movies/${id}`),
@@ -175,18 +185,15 @@ const Movies = {
   getNowShowing: async (cityId = null, pageNo = 0, pageSize = 100) => {
     let url = `/api/movies/now-showing?pageNo=${pageNo}&pageSize=${pageSize}`;
     if (cityId) url += `&cityId=${cityId}`;
-    const res = await apiCall("GET", url);
-    return res?.content || res || [];
+    return await apiCall("GET", url);
   },
   // GET /api/movies/upcoming
   getUpcoming: async (pageNo = 0, pageSize = 100) => {
-    const res = await apiCall("GET", `/api/movies/upcoming?pageNo=${pageNo}&pageSize=${pageSize}`);
-    return res?.content || res || [];
+    return await apiCall("GET", `/api/movies/upcoming?pageNo=${pageNo}&pageSize=${pageSize}`);
   },
   // GET /api/movies/genre/{id}
   getByGenre: async (genreId, pageNo = 0, pageSize = 100) => {
-    const res = await apiCall("GET", `/api/movies/genre/${genreId}?pageNo=${pageNo}&pageSize=${pageSize}`);
-    return res?.content || res || [];
+    return await apiCall("GET", `/api/movies/genre/${genreId}?pageNo=${pageNo}&pageSize=${pageSize}`);
   },
 };
 
@@ -255,6 +262,8 @@ const Theatres = {
   create: (data) => apiCall("POST", `/api/theatre/owner/create`, data),
   update: (id, data) => apiCall("PUT", `/api/theatre/owner/update/${id}`, data),
   delete: (id) => apiCall("DELETE", `/api/theatre/owner/delete/${id}`),
+  activate: (id) => apiCall("PATCH", `/api/theatre/owner/${id}/activate`),
+  deactivate: (id) => apiCall("PATCH", `/api/theatre/owner/${id}/deactivate`),
   search: (keyword) => apiCall("GET", `/api/theatre/search?keyword=${encodeURIComponent(keyword)}`)
 };
 
@@ -284,14 +293,14 @@ const Bookings = {
   // POST /api/bookings/release
   releaseSeats: (showId, seatIds) => apiCall("POST", "/api/bookings/release", { showId, seatIds }),
 
-    // GET /api/bookings/locked/show/{showId}
-    getLockedSeats: (showId) => apiCall("GET", `/api/bookings/locked/show/${showId}`),
+  // GET /api/bookings/locked/show/{showId}
+  getLockedSeats: (showId) => apiCall("GET", `/api/bookings/locked/show/${showId}`),
 
-    // GET /api/bookings/verify/{reference}
-    verify: (reference) => apiCall("GET", `/api/bookings/verify/${reference}`),
+  // GET /api/bookings/verify/{reference}
+  verify: (reference) => apiCall("GET", `/api/bookings/verify/${reference}`),
 
-    // GET /api/bookings/{bookingId}
-    getDetails: (id) => apiCall("GET", `/api/bookings/${id}`)
+  // GET /api/bookings/{bookingId}
+  getDetails: (id) => apiCall("GET", `/api/bookings/${id}`)
 };
 
 const User = {

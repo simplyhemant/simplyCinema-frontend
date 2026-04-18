@@ -137,7 +137,8 @@
             }
 
             // 2. Load all movies to map movieIds to Poster/Title
-            allMovies = await Movies.getAll(0, 500);
+            const movieRes = await Movies.getAll(0, 500) || {};
+            allMovies = movieRes.content || [];
 
             // 3. Load shows for this theatre
             generateDateSelector();

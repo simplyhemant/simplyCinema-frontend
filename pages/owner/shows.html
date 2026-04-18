@@ -86,11 +86,13 @@
             <div class="col-span-2 md:col-span-1">
                 <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Select Movie</label>
                 <select id="movieId" required onchange="onMovieChange()" class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary"></select>
+                <p id="movie-info" class="text-[9px] text-primary/60 mt-1 uppercase font-black tracking-widest hidden"></p>
             </div>
 
             <div class="col-span-2 md:col-span-1">
                 <label class="text-[10px] uppercase font-bold text-outline tracking-widest block mb-2">Select Screen</label>
-                <select id="screenId" required class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary"></select>
+                <select id="screenId" required onchange="updateCompatibleFormats()" class="w-full bg-surface-container-highest border-none rounded-lg h-12 px-4 text-white focus:ring-1 focus:ring-primary"></select>
+                <p id="screen-info" class="text-[9px] text-primary/60 mt-1 uppercase font-black tracking-widest hidden"></p>
             </div>
 
             <div class="col-span-2 md:col-span-1">
@@ -162,7 +164,8 @@
 
   async function loadMovies() {
       try {
-          movies = await Movies.getAll(0, 100) || [];
+          const res = await Movies.getAll(0, 500) || {};
+          movies = res.content || [];
           const select = document.getElementById('movieId');
           if (movies.length === 0) {
               select.innerHTML = '<option value="">No movies available</option>';
@@ -224,10 +227,57 @@
     langSelect.innerHTML = '<option value="">Select Language</option>' + 
         movieLangs.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
 
-    // Populate Formats for this movie (movie.formats is now a Set/List of Enums)
-    const movieFormats = movie.formats || [];
-    formatSelect.innerHTML = '<option value="">Select Format</option>' + 
-        movieFormats.map(f => `<option value="${f}">${formatDisplayNames[f] || f}</option>`).join('');
+    // Trigger format update based on both movie and screen
+    updateCompatibleFormats();
+  }
+
+  const SCREEN_COMPATIBILITY = {
+      'REGULAR': ['TWO_D'],
+      'THREE_D': ['TWO_D', 'THREE_D'],
+      'IMAX': ['TWO_D', 'IMAX'],
+      'FOUR_DX': ['TWO_D', 'FOUR_DX'],
+      'DOLBY_ATMOS': ['TWO_D']
+  };
+
+  function updateCompatibleFormats() {
+      const movieId = document.getElementById('movieId').value;
+      const screenId = document.getElementById('screenId').value;
+      const formatSelect = document.getElementById('formatId');
+      const screenInfo = document.getElementById('screen-info');
+      const movieInfo = document.getElementById('movie-info');
+
+      if (!movieId || !screenId) {
+          formatSelect.innerHTML = '<option value="">Select Format</option>';
+          if (!movieId) movieInfo.classList.add('hidden');
+          if (!screenId) screenInfo.classList.add('hidden');
+          return;
+      }
+
+      const movie = movies.find(m => m.id == movieId);
+      const screen = currentTheatreScreens.find(s => s.id == screenId);
+
+      if (!movie || !screen) return;
+
+      // Show movie formats info
+      const movieFormats = movie.formats || [];
+      movieInfo.innerText = `Available: ${movieFormats.map(f => formatDisplayNames[f] || f).join(', ')}`;
+      movieInfo.classList.remove('hidden');
+
+      // Show screen type info
+      screenInfo.innerText = `Technical: ${screen.screenType || 'REGULAR'}`;
+      screenInfo.classList.remove('hidden');
+      const supportedByScreen = SCREEN_COMPATIBILITY[screen.screenType] || ['TWO_D'];
+
+      // Intersection: Formats supported by both movie AND screen
+      const compatibleFormats = movieFormats.filter(f => supportedByScreen.includes(f));
+
+      formatSelect.innerHTML = '<option value="">Select Format</option>' + 
+          compatibleFormats.map(f => `<option value="${f}">${formatDisplayNames[f] || f}</option>`).join('');
+
+      if (compatibleFormats.length === 0) {
+          formatSelect.innerHTML = '<option value="">No Compatible Formats</option>';
+          showToast("Warning: This screen cannot play any of the movie's available formats.", "error");
+      }
   }
 
   async function loadMyTheatres() {
@@ -365,7 +415,17 @@
                   </div>
 
                   <div class="col-span-1">
-                    <span class="px-2.5 py-1 bg-green-500/10 text-green-500 text-[9px] rounded-full font-black uppercase tracking-widest border border-green-500/20">${s.status || 'UPCOMING'}</span>
+                    ${(() => {
+                        const status = s.status || 'UPCOMING';
+                        const isActive = s.isActive !== false;
+                        if (!isActive || status === 'CANCELLED') {
+                            return `<span class="px-2.5 py-1 bg-error/10 text-error text-[9px] rounded-full font-black uppercase tracking-widest border border-error/20">Cancelled</span>`;
+                        }
+                        if (status === 'ACTIVE') {
+                            return `<span class="px-2.5 py-1 bg-green-500/10 text-green-500 text-[9px] rounded-full font-black uppercase tracking-widest border border-green-500/20">Active</span>`;
+                        }
+                        return `<span class="px-2.5 py-1 bg-primary/10 text-primary text-[9px] rounded-full font-black uppercase tracking-widest border border-primary/20">${status}</span>`;
+                    })()}
                   </div>
 
                   <div class="col-span-2 text-right flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

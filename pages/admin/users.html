@@ -86,8 +86,24 @@
          </div>
          <button onclick="fetchUsers()" class="px-5 py-2.5 rounded-full border border-white/10 text-white hover:bg-surface-container font-medium text-sm transition-all flex items-center gap-2">
             <span class="material-symbols-outlined text-[16px]">refresh</span> Refresh
-         </button>
       </div>
+    </div>
+    
+    <!-- Role Filter Tabs -->
+    <div class="flex flex-col md:flex-row gap-6 items-center justify-between bg-surface-container-low p-4 rounded-3xl border border-white/5 shadow-inner">
+        <div class="flex bg-surface-container-lowest p-1 rounded-2xl border border-white/5 w-full md:w-auto overflow-x-auto custom-scrollbar">
+            <button onclick="setFilter('all')" id="filter-all" class="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all filter-tab active-tab bg-primary text-background flex-shrink-0">All Users</button>
+            <button onclick="setFilter('ROLE_CUSTOMER')" id="filter-customer" class="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all filter-tab text-outline hover:text-white flex-shrink-0">Customers</button>
+            <button onclick="setFilter('ROLE_THEATRE_OWNER')" id="filter-owner" class="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all filter-tab text-outline hover:text-white flex-shrink-0">Owners</button>
+            <button onclick="setFilter('ROLE_THEATRE_STAFF')" id="filter-staff" class="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all filter-tab text-outline hover:text-white flex-shrink-0">Staff</button>
+            <button onclick="setFilter('ROLE_ADMIN')" id="filter-admin" class="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all filter-tab text-outline hover:text-white flex-shrink-0">Admins</button>
+        </div>
+        
+        <div class="relative w-full md:w-64">
+            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+            <input type="text" id="user-search" onkeyup="handleSearch(this.value)" placeholder="Quick search..." 
+                   class="w-full bg-surface-container-lowest border border-white/10 rounded-2xl pl-10 pr-4 py-2 text-xs text-white focus:border-primary outline-none transition-all">
+        </div>
     </div>
 
     <div class="bg-surface-container-low rounded-xl border border-white/5 overflow-hidden">
@@ -112,24 +128,101 @@
   injectComponent("#admin-sidebar-placeholder", "../../components/admin-sidebar.html");
   injectComponent("#admin-topbar-placeholder", "../../components/admin-topbar.html");
 
+  let allUsers = [];
+  let currentFilter = 'all';
+  let searchQuery = '';
+
   document.addEventListener('DOMContentLoaded', () => {
       requireAuth(['ADMIN']);
       fetchUsers();
   });
 
   async function fetchUsers() {
-      const container = document.getElementById('users-list');
-      container.innerHTML = '<div class="p-8 text-center"><div class="full-screen-loader" style="position:static;width:24px;height:24px;margin: 0 auto 10px auto;"></div><p class="text-outline text-sm">Fetching users...</p></div>';
-
       try {
-          const users = await Admin.getUsers();
-          if(!users || users.length === 0) {
-             container.innerHTML = '<div class="p-8 text-center text-outline">No users found.</div>';
-             return;
-          }
+          const res = await Admin.getUsers();
+          allUsers = res || [];
+          applyFilterAndRender();
+      } catch(e) {
+          document.getElementById('users-list').innerHTML = '<div class="p-8 text-center text-error">Failed to fetch users.</div>';
+      }
+  }
 
-          container.innerHTML = '';
-          users.forEach(u => {
+  function setFilter(filter) {
+      currentFilter = filter;
+      
+      // Update UI Tabs
+      document.querySelectorAll('.filter-tab').forEach(btn => {
+          btn.classList.remove('active-tab', 'bg-primary', 'text-background');
+          btn.classList.add('text-outline', 'hover:text-white');
+      });
+      
+      const targetId = filter === 'all' ? 'filter-all' : 
+                       filter === 'ROLE_CUSTOMER' ? 'filter-customer' :
+                       filter === 'ROLE_THEATRE_OWNER' ? 'filter-owner' :
+                       filter === 'ROLE_THEATRE_STAFF' ? 'filter-staff' : 'filter-admin';
+                       
+      const activeBtn = document.getElementById(targetId);
+      if (activeBtn) {
+          activeBtn.classList.add('active-tab', 'bg-primary', 'text-background');
+          activeBtn.classList.remove('text-outline', 'hover:text-white');
+      }
+      
+      applyFilterAndRender();
+  }
+
+  function handleSearch(val) {
+      searchQuery = val.toLowerCase();
+      applyFilterAndRender();
+  }
+
+  function applyFilterAndRender() {
+      const container = document.getElementById('users-list');
+      const loadingHTML = '<div class="p-8 text-center"><div class="full-screen-loader" style="position:static;width:24px;height:24px;margin: 0 auto 10px auto;"></div><p class="text-outline text-sm">Processing...</p></div>';
+      container.innerHTML = loadingHTML;
+
+      let filtered = [...allUsers];
+
+      // Role Filter
+      if (currentFilter !== 'all') {
+          filtered = filtered.filter(u => {
+              const r = u.roles || [];
+              if (currentFilter === 'ROLE_CUSTOMER') {
+                  // A customer is anyone with ROLE_CUSTOMER OR anyone with NO admin/owner/staff roles
+                  return r.includes('ROLE_CUSTOMER') || (
+                      !r.includes('ROLE_ADMIN') && 
+                      !r.includes('ROLE_THEATRE_OWNER') && 
+                      !r.includes('ROLE_THEATRE_STAFF')
+                  );
+              }
+              return r.includes(currentFilter);
+          });
+      }
+
+      // Search Query
+      if (searchQuery) {
+          filtered = filtered.filter(u => 
+              (u.firstName || '').toLowerCase().includes(searchQuery) ||
+              (u.lastName || '').toLowerCase().includes(searchQuery) ||
+              (u.email || '').toLowerCase().includes(searchQuery)
+          );
+      }
+
+      renderUsers(filtered);
+  }
+
+  function renderUsers(users) {
+      const container = document.getElementById('users-list');
+      if(!users || users.length === 0) {
+          container.innerHTML = '<div class="p-16 text-center flex flex-col items-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">' +
+                                '<span class="material-symbols-outlined text-outline/20 text-6xl">person_search</span>' +
+                                '<div class="text-outline font-bold uppercase tracking-widest text-[10px]">No matching users found</div>' +
+                                '</div>';
+          updateStats(users); // Still update stats based on what's visible? Or keep global stats?
+          return;
+      }
+
+      container.innerHTML = '';
+      users.forEach(u => {
              const row = document.createElement('div');
              row.className = 'p-6 grid grid-cols-12 gap-4 items-center hover:bg-surface-container transition-colors';
              
@@ -178,27 +271,27 @@
                    </button>
                 </div>
              `;
-             container.appendChild(row);
-          });
+          container.appendChild(row);
+      });
 
-          // ✅ Update Stats
-          const total = users.length;
-          const active = users.filter(u => u.isActive !== false).length;
-          const inactive = total - active;
+      updateStats(allUsers); // Stats always show global totals unless specified otherwise
+  }
 
-          document.getElementById('stat-total').innerText = total;
-          document.getElementById('stat-active').innerText = active;
-          document.getElementById('stat-inactive').innerText = inactive;
-          const statsEl = document.getElementById('user-stats');
-          if (statsEl) {
-              statsEl.classList.remove('hidden');
-              statsEl.classList.add('flex');
-          }
+  function updateStats(users) {
+      const total = users.length;
+      const active = users.filter(u => u.isActive !== false).length;
+      const inactive = total - active;
 
-      } catch(e) {
-          container.innerHTML = '<div class="p-8 text-center text-error">Failed to fetch users.</div>';
+      document.getElementById('stat-total').innerText = total;
+      document.getElementById('stat-active').innerText = active;
+      document.getElementById('stat-inactive').innerText = inactive;
+      const statsEl = document.getElementById('user-stats');
+      if (statsEl) {
+          statsEl.classList.remove('hidden');
+          statsEl.classList.add('flex');
       }
   }
+
 
   async function toggleUserStatus(userId, currentStatus) {
       const newStatus = !currentStatus;
@@ -341,7 +434,6 @@
           showToast("Failed to remove role", "error");
       }
   }
-</script>
 </script>
 </body>
 </html>

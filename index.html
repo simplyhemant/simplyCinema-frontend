@@ -397,10 +397,13 @@
       soonContainer.innerHTML = '<div class="text-white flex items-center gap-2 py-10"><div class="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> Loading...</div>';
 
       try {
-        const [nowShowing, upcoming] = await Promise.all([
+        let [nowShowingRes, upcomingRes] = await Promise.all([
           Movies.getNowShowing(),
           Movies.getUpcoming()
         ]);
+        
+        const nowShowing = nowShowingRes?.content || [];
+        const upcoming = upcomingRes?.content || [];
 
         // Hero Banner — use first 5 now-showing movies
         heroMovies = (nowShowing || []).slice(0, 5);

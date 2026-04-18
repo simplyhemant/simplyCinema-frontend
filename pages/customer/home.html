@@ -221,10 +221,13 @@
       let upcomingMovies = [];
 
       if (activeGenreId === 'all') {
-          showingMovies = await Movies.getNowShowing(cityId);
-          upcomingMovies = await Movies.getUpcoming();
+          const showingRes = await Movies.getNowShowing(cityId);
+          showingMovies = showingRes?.content || [];
+          const upcomingRes = await Movies.getUpcoming();
+          upcomingMovies = upcomingRes?.content || [];
       } else {
-          const genreMovies = await Movies.getByGenre(activeGenreId);
+          const genreRes = await Movies.getByGenre(activeGenreId);
+          const genreMovies = genreRes?.content || [];
           const today = new Date();
           showingMovies = genreMovies.filter(m => !m.releaseDate || new Date(m.releaseDate) <= today);
           upcomingMovies = genreMovies.filter(m => m.releaseDate && new Date(m.releaseDate) > today);

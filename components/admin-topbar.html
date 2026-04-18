@@ -22,7 +22,8 @@
     (() => {
         if (typeof getRole === 'function') {
             const role = getRole();
-            if (role === 'THEATRE_OWNER' || role === 'THEATRE_STAFF') {
+            // Show for ADMIN and THEATRE_OWNER, hide for STAFF
+            if (role === 'THEATRE_STAFF') {
                 const btn = document.getElementById('exit-app-btn');
                 if (btn) btn.style.display = 'none';
             }

@@ -157,7 +157,10 @@
                     </div>
                     <div class="flex gap-2">
                         <button onclick='openEditModal(${JSON.stringify(s).replace(/'/g, "&apos;")})' class="p-2 text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
-                        <button onclick="deleteScreen(${s.id})" class="p-2 text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+                        ${s.isActive ? 
+                            `<button onclick="toggleStatus(${s.id}, false)" class="p-2 text-outline hover:text-error transition-colors" title="Deactivate"><span class="material-symbols-outlined text-sm">do_not_disturb_on</span></button>` :
+                            `<button onclick="toggleStatus(${s.id}, true)" class="p-2 text-outline hover:text-green-500 transition-colors" title="Activate"><span class="material-symbols-outlined text-sm">check_circle</span></button>`
+                        }
                     </div>
                   </div>
                   <div>
@@ -228,18 +231,28 @@
       }
   };
 
-  async function deleteScreen(id) {
-      if(!confirm("Are you sure you want to remove this screen? This will also remove scheduled shows.")) return;
+  async function toggleStatus(id, activate) {
+      if(!confirm(`Are you sure you want to ${activate ? 'activate' : 'deactivate'} this screen?`)) return;
       try {
           showLoader();
-          await Screens.delete(id);
-          showToast("Screen removed");
+          if (activate) {
+              await Screens.activate(id);
+              showToast("Screen activated");
+          } else {
+              await Screens.deactivate(id);
+              showToast("Screen deactivated");
+          }
           fetchScreens(theatreSelector.value);
       } catch(err) {
-          showToast("Failed to delete screen", "error");
+          showToast(`Failed to ${activate ? 'activate' : 'deactivate'} screen`, "error");
       } finally {
           hideLoader();
       }
+  }
+
+  async function deleteScreen(id) {
+       // Keep deleteScreen for hard removal if Admin, but for Owner we primarily use toggleStatus
+       toggleStatus(id, false);
   }
 </script>
 </body>
