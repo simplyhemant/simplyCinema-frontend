@@ -66,6 +66,10 @@
   <script src="../../assets/js/utils.js"></script>
   <script src="../../assets/js/auth.js"></script>
   <script src="../../assets/js/api.js"></script>
+  
+  <!-- SockJS and Stomp for WebSockets -->
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
 <body class="bg-[#0b0b0b] text-on-background font-body selection:bg-primary/30 min-h-screen">
 
@@ -260,7 +264,7 @@
       }
       allSeats = seats;
       renderRealGrid(seats);
-      startPollingLockedSeats();
+      connectWebSocket(showId); // Connect to WebSocket instead of polling
     } catch(err) {
       gridEl.innerHTML = '<div class="text-error mt-10">Failed to load seats map.</div>';
     }
@@ -476,6 +480,85 @@
   document.getElementById('btn-proceed').addEventListener('click', navigateToCheckout);
   document.getElementById('btn-proceed-mobile').addEventListener('click', navigateToCheckout);
 
+  let stompClient = null;
+
+  function connectWebSocket(showId) {
+      if (stompClient !== null && stompClient.connected) {
+          stompClient.disconnect();
+      }
+
+      // Use the BASE_URL from api.js to construct the endpoint
+      // SockJS handles the protocol (http/https -> ws/wss)
+      const socket = new SockJS(`${BASE_URL}/ws-seats`);
+      stompClient = Stomp.over(socket);
+      
+      // Disable debug logging to keep console clean
+      stompClient.debug = null;
+
+      stompClient.connect({}, (frame) => {
+          console.log('Connected to WebSocket: ' + frame);
+          
+          // Subscribe to the specific show topic
+          stompClient.subscribe(`/topic/seats/${showId}`, (message) => {
+              const lockedIds = JSON.parse(message.body);
+              updateSeatsUI(lockedIds);
+          });
+
+          // Initial load of locked seats
+          loadInitialLockedSeats(showId);
+      }, (error) => {
+          console.error('WebSocket Error: ', error);
+          // Fallback to polling if WebSocket fails
+          console.log('Falling back to polling...');
+          startPollingLockedSeats();
+      });
+  }
+
+  async function loadInitialLockedSeats(showId) {
+      try {
+          const lockedStringIds = await Bookings.getLockedSeats(showId);
+          updateSeatsUI(lockedStringIds);
+      } catch(e) {}
+  }
+
+  function updateSeatsUI(lockedStringIds) {
+      if (!lockedStringIds) return;
+      const lockedIds = lockedStringIds.map(x => parseInt(x));
+      
+      const allButtons = document.querySelectorAll('.seat-btn');
+      allButtons.forEach(btn => {
+          const sid = parseInt(btn.dataset.seatId);
+          if(!sid) return;
+
+          const seatObj = allSeats.find(s => s.id === sid);
+          if(seatObj && seatObj.status === 'AVAILABLE') {
+              const isLocked = lockedIds.includes(sid);
+              
+              if(isLocked) {
+                  btn.classList.remove('seat-available', 'seat-selected');
+                  btn.classList.add('seat-booked');
+                  btn.disabled = true;
+                  
+                  if(selectedSeatIds.has(sid)) {
+                      selectedSeatIds.delete(sid);
+                      updateSummary();
+                      showToast("A selected seat was just reserved by someone else.", "error");
+                  }
+              } else {
+                  btn.disabled = false;
+                  if(selectedSeatIds.has(sid)) {
+                      btn.classList.remove('seat-booked', 'seat-available');
+                      btn.classList.add('seat-selected');
+                  } else {
+                      btn.classList.remove('seat-booked', 'seat-selected');
+                      btn.classList.add('seat-available');
+                  }
+              }
+          }
+      });
+  }
+
+  // Backup Polling Logic (used as fallback or for environments without WS support)
   let pollInterval = null;
   function startPollingLockedSeats() {
       if(pollInterval) clearInterval(pollInterval);
@@ -487,45 +570,7 @@
       if(!currentShowId) return;
       try {
           const lockedStringIds = await Bookings.getLockedSeats(currentShowId);
-          // convert strings to numbers
-          const lockedIds = lockedStringIds.map(x => parseInt(x));
-          
-          const allButtons = document.querySelectorAll('.seat-btn');
-          allButtons.forEach(btn => {
-              const sid = parseInt(btn.dataset.seatId);
-              if(!sid) return;
-
-              // If it's naturally available in DB but locked in Redis:
-              const seatObj = allSeats.find(s => s.id === sid);
-              if(seatObj && seatObj.status === 'AVAILABLE') {
-                  const isLocked = lockedIds.includes(sid);
-                  
-                  if(isLocked) {
-                      // someone else locked it
-                      btn.classList.remove('seat-available', 'seat-selected');
-                      btn.classList.add('seat-booked');
-                      btn.disabled = true;
-                      
-                      // Auto-deselect if we had it selected
-                      if(selectedSeatIds.has(sid)) {
-                          selectedSeatIds.delete(sid);
-                          updateSummary();
-                          showToast("A selected seat was just reserved by someone else.", "error");
-                      }
-                  } else {
-                      // Available and NOT locked
-                      btn.disabled = false;
-                      // if we happen to have this selected
-                      if(selectedSeatIds.has(sid)) {
-                          btn.classList.remove('seat-booked', 'seat-available');
-                          btn.classList.add('seat-selected');
-                      } else {
-                          btn.classList.remove('seat-booked', 'seat-selected');
-                          btn.classList.add('seat-available');
-                      }
-                  }
-              }
-          });
+          updateSeatsUI(lockedStringIds);
       } catch(e) {}
   }
 </script>
