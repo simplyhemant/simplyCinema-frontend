@@ -3,8 +3,8 @@
 // CorsConfig.java allowedOrigins list.
 
 // const BASE_URL = "https://autos-antibody-usgs-tribune.trycloudflare.com";  // Deployed AWS Backend URL , cloudflare
-const BASE_URL = "https://simplyhemant.duckdns.org";  // Secure AWS Backend via DuckDNS
-// const BASE_URL = "http://localhost:8080";  // Local Backend
+// const BASE_URL = "https://simplyhemant.duckdns.org";  // Secure AWS Backend via DuckDNS
+const BASE_URL = "http://localhost:8080";  // Local Backend
 
 function getHeaders(isPublic = false) {
   const headers = {
@@ -18,10 +18,10 @@ function getHeaders(isPublic = false) {
   return headers;
 }
 
-async function apiCall(method, endpoint, body = null, isPublic = false) {
+async function apiCall(method, endpoint, body = null, isPublic = false, extraOptions = {}) {
   showLoader();
   try {
-    const options = { method, headers: getHeaders(isPublic) };
+    const options = { method, headers: getHeaders(isPublic), ...extraOptions };
     if (body) options.body = JSON.stringify(body);
     const res = await fetch(`${BASE_URL}${endpoint}`, options);
     if (res.status === 401) { logout(); return null; }
@@ -291,7 +291,7 @@ const Bookings = {
   lockSeats: (showId, seatIds) => apiCall("POST", "/api/bookings/lock", { showId, seatIds }),
 
   // POST /api/bookings/release
-  releaseSeats: (showId, seatIds) => apiCall("POST", "/api/bookings/release", { showId, seatIds }),
+  releaseSeats: (showId, seatIds, options = {}) => apiCall("POST", "/api/bookings/release", { showId, seatIds }, false, options),
 
   // GET /api/bookings/locked/show/{showId}
   getLockedSeats: (showId) => apiCall("GET", `/api/bookings/locked/show/${showId}`),
