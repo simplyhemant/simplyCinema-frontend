@@ -8,10 +8,10 @@ A modern, responsive movie ticket booking experience built with standard HTML5, 
 
 | Type | Link |
 | :--- | :--- |
-| **🚀 Live Demo** | [Add Live Vercel URL Here] |
-| **🌐 Backend API** | [Add AWS Backend URL Here] |
-| **📘 API Documentation** | [Add AWS Backend URL Here]/swagger-ui/index.html |
-| **⚙️ Swagger JSON** | [Add AWS Backend URL Here]/v3/api-docs |
+| **🚀 Live Demo** | https://simply-cinema-frontend.vercel.app/ |
+| **🌐 Backend API** | https://github.com/simplyhemant/simplyCinema-backend |
+| **📘 API Documentation** | https://documenter.getpostman.com/view/39898850/2sB3Wnv1eV |
+| **⚙️ Swagger JSON** | http://13.201.58.222:8080/swagger-ui/index.html |
 
 ---
 
