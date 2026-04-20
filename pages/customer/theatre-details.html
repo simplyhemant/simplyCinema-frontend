@@ -110,6 +110,8 @@
 
     let selectedDate = formatLocalDate(new Date());
     let allMovies = []; // Cache to avoid multiple fetches
+    let activeLangIds = new Set();
+    let activeFormatIds = new Set();
 
     document.addEventListener('DOMContentLoaded', async () => {
         if (!theatreId) {
@@ -160,32 +162,67 @@
             date.setDate(today.getDate() + i);
             const dateStr = formatLocalDate(date);
             
-            const dayName = i === 0 ? 'Today' : (i === 1 ? 'Tom' : date.toLocaleDateString('en-US', { weekday: 'short' }));
+            const dayName = i === 0 ? 'TODAY' : date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
             const dayNum = date.getDate();
-            const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+            const monthName = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
 
             const btn = document.createElement('button');
-            btn.className = `date-btn min-w-[50px] snap-center flex flex-col items-center justify-center py-1.5 px-2 rounded-lg transition-all border ${selectedDate === dateStr ? 'bg-primary-container border-primary-container text-white shadow-md' : 'bg-transparent border-transparent text-on-surface-variant hover:text-white hover:bg-white/5'}`;
+            const isActive = selectedDate === dateStr;
+            btn.className = `date-btn min-w-[60px] snap-center flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all border ${isActive ? 'bg-primary text-black border-primary shadow-lg scale-105' : 'bg-white/5 border-white/5 text-white/40 hover:border-white/20 hover:text-white'}`;
             btn.innerHTML = `
-                <span class="text-[8px] uppercase tracking-widest font-bold mb-0.5 opacity-80">${dayName}</span>
-                <span class="text-sm font-headline font-black leading-none">${dayNum}</span>
-                <span class="text-[8px] uppercase font-medium mt-0.5 opacity-60">${monthName}</span>
+                <span class="text-[8px] font-black tracking-widest opacity-60">${dayName}</span>
+                <span class="text-sm font-headline font-black leading-none my-0.5">${dayNum}</span>
+                <span class="text-[8px] font-black tracking-widest opacity-60">${monthName}</span>
             `;
 
             btn.onclick = () => {
-                // Update selected date
                 selectedDate = dateStr;
-                // Update UI visually
-                document.querySelectorAll('.date-btn').forEach(b => {
-                    b.className = 'date-btn min-w-[50px] snap-center flex flex-col items-center justify-center py-1.5 px-2 rounded-lg transition-all border bg-transparent border-transparent text-on-surface-variant hover:text-white hover:bg-white/5';
-                });
-                btn.className = 'date-btn min-w-[50px] snap-center flex flex-col items-center justify-center py-1.5 px-2 rounded-lg transition-all border bg-primary-container border-primary-container text-white shadow-md';
-                
-                // Reload shows
+                generateDateSelector();
                 loadShowsForTheatre();
             };
             container.appendChild(btn);
         }
+    }
+
+    function renderFilterChips(langs, fmts) {
+        // Create filter bar if it doesn't exist
+        let filterBar = document.getElementById('filter-bar');
+        if(!filterBar) {
+            filterBar = document.createElement('div');
+            filterBar.id = 'filter-bar';
+            filterBar.className = 'flex flex-wrap items-center gap-4 py-4 border-b border-white/5 mb-6 overflow-x-auto hide-scrollbar';
+            const container = document.getElementById('movies-container');
+            container.parentNode.insertBefore(filterBar, container);
+        }
+
+        const renderItems = (items, activeSet, type) => {
+            return (items || []).map(item => {
+                const isActive = activeSet.has(String(item.id));
+                return `
+                <button onclick="toggleFilter('${type}', '${item.id}')" 
+                        class="px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest transition-all
+                        ${isActive ? 'bg-primary-container text-white border-primary shadow-lg' : 'bg-white/5 text-outline border-white/10 hover:border-white/20'}">
+                    ${item.name}
+                </button>`;
+            }).join('');
+        };
+
+        filterBar.innerHTML = `
+            <div class="flex gap-2 border-r border-white/10 pr-4 mr-2">${renderItems(langs, activeLangIds, 'lang')}</div>
+            <div class="flex gap-2">${renderItems(fmts, activeFormatIds, 'fmt')}</div>
+        `;
+    }
+
+    function toggleFilter(type, id) {
+        const targetSet = (type === 'lang') ? activeLangIds : activeFormatIds;
+        const idStr = String(id);
+        
+        if (targetSet.has(idStr)) {
+            targetSet.delete(idStr);
+        } else {
+            targetSet.add(idStr);
+        }
+        loadShowsForTheatre();
     }
 
     async function loadShowsForTheatre() {
@@ -199,13 +236,37 @@
                 return;
             }
 
-            // Group shows by Movie ID, filtering by selectedDate
+            // Derive available filters from shows
+            const availableLangs = [];
+            const availableFmts = [];
+            const langSet = new Set();
+            const fmtSet = new Set();
+
+            shows.forEach(s => {
+                if(s.showDate === selectedDate) {
+                    if(!langSet.has(s.languageId)) {
+                        langSet.add(s.languageId);
+                        availableLangs.push({ id: s.languageId, name: s.languageName });
+                    }
+                    if(!fmtSet.has(s.format)) {
+                        fmtSet.add(s.format);
+                        availableFmts.push({ id: s.format, name: s.formatName || '2D' });
+                    }
+                }
+            });
+            renderFilterChips(availableLangs, availableFmts);
+
+            // Group shows by Movie ID, filtering by selectedDate, lang, and format
             const movieShowsMap = {};
             let hasShowsToday = false;
 
             shows.forEach(show => {
-                if(show.showDate !== selectedDate) return; // Only today
+                if(show.showDate !== selectedDate) return; 
                 if(show.status === 'CANCELLED') return;
+                
+                // Apply filters
+                if(activeLangIds.size > 0 && !activeLangIds.has(String(show.languageId))) return;
+                if(activeFormatIds.size > 0 && !activeFormatIds.has(String(show.format))) return;
 
                 if(!movieShowsMap[show.movieId]) {
                     movieShowsMap[show.movieId] = [];
@@ -215,7 +276,7 @@
             });
 
             if(!hasShowsToday) {
-                container.innerHTML = '<div class="p-10 text-center text-outline bg-surface-container rounded-xl border border-white/5">No shows scheduled for today in this cinema. Try selecting a different date.</div>';
+                container.innerHTML = '<div class="p-10 text-center text-outline bg-surface-container rounded-xl border border-white/5">No shows matching your filters. Try selecting a different date or filter.</div>';
                 return;
             }
 
@@ -233,16 +294,17 @@
                 const sortedShows = showGroup.sort((a,b) => a.showTime.localeCompare(b.showTime));
                 
                 const card = document.createElement('div');
-                card.className = 'bg-surface-container-low border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-colors shadow-lg flex flex-col md:flex-row';
+                card.className = 'bg-surface-container-low border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-colors shadow-lg flex flex-col md:flex-row mb-6';
                 
                 const posterUrl = movieInfo.posterUrl && movieInfo.posterUrl !== 'null' ? movieInfo.posterUrl : 'https://via.placeholder.com/150x225';
 
                 let timesHtml = sortedShows.map(s => {
-                    const t = new Date(s.startTime || ('1970-01-01T' + s.showTime)).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const parsedDate = new Date(`1970-01-01T${s.showTime}`);
+                    const t = isNaN(parsedDate) ? s.showTime : parsedDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     return `
                         <button onclick="bookShow(${s.id}, ${movieId}, '${movieInfo.title.replace(/'/g, "\\'")}', '${posterUrl}')" class="px-5 py-2.5 rounded border border-white/10 text-sm font-bold text-white hover:bg-primary-container hover:text-white hover:border-primary transition-all duration-300 relative group flex flex-col items-center">
                             <span class="tracking-wide">${t}</span>
-                            <span class="text-[9px] text-outline group-hover:text-primary-fixed uppercase mt-0.5 tracking-[0.2em] font-black">2D</span>
+                            <span class="text-[9px] text-outline group-hover:text-primary-fixed uppercase mt-0.5 tracking-[0.2em] font-black">${s.formatName || '2D'}</span>
                         </button>
                     `;
                 }).join('');
@@ -280,8 +342,13 @@
              title: title, 
              posterUrl: posterUrl 
         }));
-        window.location.href = `/pages/customer/seat-selection.html?showId=${showId}`;
+        const isSubdir = window.location.pathname.includes('/simplyCinema-frontend/');
+        const basePath = isSubdir ? '/simplyCinema-frontend/pages/customer/seat-selection' : '/pages/customer/seat-selection';
+        window.location.href = `${basePath}?showId=${showId}`;
     }
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>

@@ -9,8 +9,8 @@ const PRICING = {
 };
 
 const SHOW_TIMES = ['10:00:00', '14:00:00', '18:00:00', '22:00:00'];
-const START_DATE = new Date('2026-04-15T00:00:00Z');
-const NUM_DAYS = 6;
+const START_DATE = new Date();
+const NUM_DAYS = 7;
 
 // Helper to get end time (3 hours later)
 function getEndShowTime(startTimeStr) {

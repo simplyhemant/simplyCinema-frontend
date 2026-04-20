@@ -3,8 +3,8 @@
 // CorsConfig.java allowedOrigins list.
 
 // const BASE_URL = "https://autos-antibody-usgs-tribune.trycloudflare.com";  // Deployed AWS Backend URL , cloudflare
-const BASE_URL = "https://simplyhemant.duckdns.org";  // Secure AWS Backend via DuckDNS
-// const BASE_URL = "http://localhost:8080";  // Local Backend
+// const BASE_URL = "https://simplyhemant.duckdns.org";  // Secure AWS Backend via DuckDNS
+const BASE_URL = "http://localhost:8080";  // Local Backend
 
 function getHeaders(isPublic = false) {
   const headers = {
